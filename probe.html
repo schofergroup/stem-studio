@@ -1,0 +1,1095 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>STEM Notes — Safari Geometry Probe</title>
+<style>
+@font-face{font-family:"Times New Roman";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;}
+@font-face{font-family:"Times New Roman";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;}
+@font-face{font-family:"Times New Roman";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/Times-Bold.woff2") format("woff2");font-weight:700;font-style:normal;}
+@font-face{font-family:"Times";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;}
+@font-face{font-family:"Helvetica Neue";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/helvetica-neue-400.woff2") format("woff2");font-weight:400;font-style:normal;}
+@font-face{font-family:"Helvetica Neue";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/helvetica-neue-500.woff2") format("woff2");font-weight:500;font-style:normal;}
+</style>
+<style>
+:root {
+  --keycap-background: #ffffff;
+  --keycap-text: #231f20;
+  --keycap-font-size: 20px;
+  --keycap-height: 42px;
+  --keyboard-accent-color: #231f20;
+  --keycap-background-pressed: #231f20;
+  --keycap-text-pressed: #ffffff;
+  --keyboard-padding-top: 20px;
+  --keyboard-padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+div.ML__keyboard .MLK__backdrop {
+  background: #ffffff !important;
+  width: 1032px !important;
+  max-width: calc(100vw - 40px) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  top: auto !important;
+  bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+  border-radius: 16px !important;
+  border: 1px solid #e0e0e0 !important;
+  outline: 1px solid #eaeaea !important;
+  outline-offset: 2px !important;
+  overflow: hidden !important;
+  padding: 18px 20px 20px !important;
+}
+div.ML__keyboard .MLK__toolbar,
+div.ML__keyboard .MLK__toolbar * { color: #231f20 !important; }
+div.ML__keyboard .MLK__toolbar { margin-bottom: 10px !important; }
+div.ML__keyboard .MLK__row > * { border-radius: 10px !important; }
+div.ML__keyboard .MLK__keycap { border: 1px solid #e0e0e0 !important; overflow: visible !important; }
+div.ML__keyboard .MLK__row .action { background: #f6f7f7 !important; border: 1px solid #e0e0e0 !important; }
+div.ML__keyboard .MLK__row .shift { background: #f6f7f7 !important; border: 1px solid #e0e0e0 !important; }
+div.ML__keyboard .MLK__keycap:hover { background: #f6f7f7 !important; }
+div.ML__keyboard .MLK__row .action:hover,
+div.ML__keyboard .MLK__row .shift:hover { background: #231f20 !important; color: #ffffff !important; border-color: #231f20 !important; }
+div.ML__keyboard .MLK__keycap:active,
+div.ML__keyboard .MLK__row .action:active,
+div.ML__keyboard .MLK__row .shift:active { background: #231f20 !important; color: #ffffff !important; border-color: #231f20 !important; }
+div.ML__keyboard .MLK__keycap svg,
+div.ML__keyboard .MLK__row .action svg,
+div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: none !important; overflow: visible !important; }
+
+
+  :root {
+    --border:#d9dadb; --bg-soft:#f6f7f7; --ink:#231f20; --ink-soft:#676767;
+    --accent:#231f30;
+    /* keyterm colours — tweak to match your Webflow variables */
+    --key-purple:#6b3fb5; --key-blue:#2563a8; --key-green:#1f8a54;
+    --key-red:#b5384a; --key-orange:#c8721c;
+    /* ===== SITE PALETTE v2.0 (from stem-notes-shared-v5.css; re-paste on bump) ===== */
+    /* ruby-red */
+  --ruby-red-05: #D22026;
+  --ruby-red-04: #E14855;
+  --ruby-red-03: rgba(243, 128, 129, 0.85);
+  --ruby-red-02: rgba(250, 192, 185, 0.85);
+  --ruby-red-01: rgba(251, 211, 212, 0.85);
+  /* vermillion-red */
+  --vermillion-red-05: #EA3E25;
+  --vermillion-red-04: #F05F32;
+  --vermillion-red-03: rgba(245, 131, 96, 0.85);
+  --vermillion-red-02: rgba(248, 171, 154, 0.85);
+  --vermillion-red-01: rgba(251, 207, 200, 0.85);
+  /* tangerine-orange */
+  --tangerine-orange-05: #F5893D;
+  --tangerine-orange-04: #F6A548;
+  --tangerine-orange-03: rgba(251, 177, 79, 0.85);
+  --tangerine-orange-02: rgba(253, 196, 119, 0.85);
+  --tangerine-orange-01: rgba(255, 219, 171, 0.85);
+  /* pineapple-yellow */
+  --pineapple-yellow-05: #FFD832;
+  --pineapple-yellow-04: #FEE25C;
+  --pineapple-yellow-03: rgba(255, 241, 130, 0.85);
+  --pineapple-yellow-02: rgba(255, 247, 172, 0.85);
+  --pineapple-yellow-01: rgba(253, 249, 199, 0.85);
+  /* banana-yellow */
+  --banana-yellow-05: #FEE600;
+  --banana-yellow-04: #FBF065;
+  --banana-yellow-03: rgba(254, 244, 146, 0.85);
+  --banana-yellow-02: rgba(253, 247, 189, 0.85);
+  --banana-yellow-01: rgba(254, 251, 217, 0.85);
+  /* kiwi-green */
+  --kiwi-green-05: #C8C82D;
+  --kiwi-green-04: #D8E25A;
+  --kiwi-green-03: rgba(221, 230, 123, 0.85);
+  --kiwi-green-02: rgba(229, 235, 153, 0.85);
+  --kiwi-green-01: rgba(237, 241, 186, 0.85);
+  /* olive-green */
+  --olive-green-05: #849C3C;
+  --olive-green-04: #99B53D;
+  --olive-green-03: rgba(184, 204, 105, 0.85);
+  --olive-green-02: rgba(203, 216, 139, 0.85);
+  --olive-green-01: rgba(229, 236, 195, 0.85);
+  /* apple-green */
+  --apple-green-05: #7DAE48;
+  --apple-green-04: #91C954;
+  --apple-green-03: rgba(167, 210, 117, 0.85);
+  --apple-green-02: rgba(191, 218, 149, 0.85);
+  --apple-green-01: rgba(222, 235, 183, 0.85);
+  /* frog-green */
+  --frog-green-05: #398C42;
+  --frog-green-04: #4FB24C;
+  --frog-green-03: rgba(125, 197, 113, 0.85);
+  --frog-green-02: rgba(178, 217, 160, 0.85);
+  --frog-green-01: rgba(219, 235, 195, 0.85);
+  /* emerald-green */
+  --emerald-green-05: #209467;
+  --emerald-green-04: #34B36E;
+  --emerald-green-03: rgba(88, 189, 135, 0.85);
+  --emerald-green-02: rgba(147, 207, 164, 0.85);
+  --emerald-green-01: rgba(193, 223, 188, 0.85);
+  /* aqua-blue */
+  --aqua-blue-05: #069796;
+  --aqua-blue-04: #37BAC1;
+  --aqua-blue-03: rgba(129, 207, 210, 0.85);
+  --aqua-blue-02: rgba(179, 224, 224, 0.85);
+  --aqua-blue-01: rgba(207, 235, 236, 0.85);
+  /* ocean-blue */
+  --ocean-blue-05: #1A9AD3;
+  --ocean-blue-04: #49B2D3;
+  --ocean-blue-03: rgba(117, 206, 225, 0.85);
+  --ocean-blue-02: rgba(184, 228, 240, 0.85);
+  --ocean-blue-01: rgba(220, 241, 248, 0.85);
+  /* royal-blue */
+  --royal-blue-05: #285FAC;
+  --royal-blue-04: #3777BD;
+  --royal-blue-03: rgba(76, 150, 209, 0.85);
+  --royal-blue-02: rgba(112, 186, 231, 0.85);
+  --royal-blue-01: rgba(182, 227, 249, 0.85);
+  /* jesus-blue */
+  --jesus-blue-05: #3F62AA;
+  --jesus-blue-04: #6A87C3;
+  --jesus-blue-03: rgba(138, 159, 208, 0.85);
+  --jesus-blue-02: rgba(172, 185, 220, 0.85);
+  --jesus-blue-01: rgba(217, 220, 231, 0.85);
+  /* cerulean-blue */
+  --cerulean-blue-05: #475BA9;
+  --cerulean-blue-04: #5D68B0;
+  --cerulean-blue-03: rgba(137, 143, 199, 0.85);
+  --cerulean-blue-02: rgba(188, 189, 223, 0.85);
+  --cerulean-blue-01: rgba(232, 233, 245, 0.85);
+  /* bts-purple */
+  --bts-purple-05: #5957A6;
+  --bts-purple-04: #766BB0;
+  --bts-purple-03: rgba(154, 144, 197, 0.85);
+  --bts-purple-02: rgba(186, 174, 214, 0.85);
+  --bts-purple-01: rgba(223, 216, 236, 0.85);
+  /* wonka-purple */
+  --wonka-purple-05: #5D2F8A;
+  --wonka-purple-04: #824698;
+  --wonka-purple-03: rgba(161, 111, 175, 0.85);
+  --wonka-purple-02: rgba(204, 171, 206, 0.85);
+  --wonka-purple-01: rgba(236, 216, 233, 0.85);
+  /* magenta-purple */
+  --magenta-purple-05: #963181;
+  --magenta-purple-04: #B660A0;
+  --magenta-purple-03: rgba(215, 142, 189, 0.85);
+  --magenta-purple-02: rgba(232, 207, 218, 0.85);
+  --magenta-purple-01: rgba(240, 227, 233, 0.85);
+  /* barbie-pink */
+  --barbie-pink-05: #DA5A82;
+  --barbie-pink-04: #E2819B;
+  --barbie-pink-03: rgba(231, 168, 184, 0.85);
+  --barbie-pink-02: rgba(236, 199, 204, 0.85);
+  --barbie-pink-01: rgba(244, 227, 230, 0.85);
+  /* grapefruit-pink */
+  --grapefruit-pink-05: #F16279;
+  --grapefruit-pink-04: #F16A7D;
+  --grapefruit-pink-03: rgba(245, 152, 173, 0.85);
+  --grapefruit-pink-02: rgba(249, 191, 197, 0.85);
+  --grapefruit-pink-01: rgba(252, 220, 220, 0.85);
+  /* alexander-pink */
+  --alexander-pink-05: #E373AD;
+  --alexander-pink-04: #E994BF;
+  --alexander-pink-03: rgba(237, 179, 210, 0.85);
+  --alexander-pink-02: rgba(242, 199, 221, 0.85);
+  --alexander-pink-01: rgba(245, 216, 231, 0.85);
+  /* watermelon-pink */
+  --watermelon-pink-05: #F182A7;
+  --watermelon-pink-04: #F4A7C1;
+  --watermelon-pink-03: rgba(246, 183, 203, 0.85);
+  --watermelon-pink-02: rgba(250, 201, 214, 0.85);
+  --watermelon-pink-01: rgba(249, 210, 220, 0.85);
+  /* noir-black */
+  --noir-black-05: #010101;
+  --noir-black-04: #231F20;
+  --noir-black-03: rgba(66, 66, 66, 0.85);
+  --noir-black-02: rgba(110, 112, 113, 0.85);
+  --noir-black-01: rgba(145, 148, 149, 0.85);
+  /* grandma-grey */
+  --grandma-grey-05: #f2f2f3;
+  --grandma-grey-04: #BABCBE;
+  --grandma-grey-03: rgba(229, 230, 230, 0.85);
+  --grandma-grey-02: rgba(242, 242, 242, 0.85);
+  --grandma-grey-01: rgba(249, 251, 251, 0.85);
+  /* coffee-brown */
+  --coffee-brown-05: #673F34;
+  --coffee-brown-04: #9E6D46;
+  --coffee-brown-03: rgba(184, 147, 118, 0.85);
+  --coffee-brown-02: rgba(203, 175, 152, 0.85);
+  --coffee-brown-01: rgba(224, 209, 196, 0.85);
+    /* code-token accents (used in the Coded view) */
+    --tok-eq:#1f8a54; --tok-key:#6b3fb5; --tok-code:#b5384a;
+    /* ===== CODED / MARK-UP PARTS — tweak these two ===== */
+    --code-bg:#f6f7f7;    /* background behind coded / marked-up parts */
+    --code-ink:#26418f;   /* dark blue text for coded parts — set to your royal-blue-05 hex */
+    --math-ink:#9b1b30;   /* ruby red for mathematical input \(...\) \[...\] — set to your ruby-red-05 hex */
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#fff;
+  }
+  .wrap { max-width:1366px; margin:0 auto; padding:22px 22px 120px; }
+
+  h1.app-title { font-size:18px; letter-spacing:.02em; margin:0 0 2px; }
+  .sub { font-size:12.5px; color:var(--ink-soft); margin:0 0 18px; }
+
+  /* ---- top toolbar ---- */
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; border-bottom:1px solid var(--border); margin-bottom:18px; }
+  .tab {
+    padding:9px 15px; border:1px solid transparent; border-bottom:none;
+    border-radius:9px 9px 0 0; background:none; cursor:pointer;
+    font-size:13.5px; color:var(--ink-soft); position:relative; top:1px;
+  }
+  .tab:hover { color:var(--ink); }
+  .tab.active { color:var(--ink); border-color:var(--border); background:#fff; font-weight:600; }
+
+  .bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+  button.btn {
+    padding:7px 12px; border:1px solid var(--border); border-radius:8px;
+    background:#fff; color:var(--ink); cursor:pointer; font-size:13px;
+  }
+  button.btn:hover { background:var(--bg-soft); }
+  button.btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  button.btn.primary:hover { background:#000; }
+  button.btn.mini { padding:4px 8px; font-size:12px; }
+  .spacer { flex:1; }
+  .muted { font-size:12px; color:var(--ink-soft); }
+
+  /* ---- beats (Edit view) ---- */
+  .beat {
+    border:1px solid var(--border); border-radius:12px; padding:14px;
+    margin-bottom:14px; background:#fff;
+  }
+  .beat-head { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+  .beat-num {
+    font-size:12px; color:var(--ink-soft); min-width:26px;
+    font-variant-numeric:tabular-nums;
+  }
+  select.speaker, input.asset, input.trigger, input.reveal, input.hide {
+    padding:6px 9px; border:1px solid var(--border); border-radius:7px;
+    font-size:13px; font-family:inherit; color:var(--ink); background:#fff;
+  }
+  select.speaker { min-width:150px; }
+  /* v2.1 — audio-only beats: preview dimmed and tagged, because nothing in it
+     will reach the notes page. */
+  .beat.is-audio-only .preview { opacity:.42; }
+  .beat.is-audio-only .beat-head::after {
+    content:"audio only \00B7 not written to notes";
+    font-size:11px; letter-spacing:.03em; color:var(--ink-soft);
+    border:1px solid var(--border); border-radius:6px; padding:3px 8px;
+    white-space:nowrap;
+  }
+  input.reveal, input.hide, input.trigger { width:100%; }
+  .beat-body { display:grid; grid-template-columns:minmax(0,1fr) 675px; gap:12px; }
+  /* v45: a beat in PAGE VIEW narrows the Source and widens the preview so the
+     whole A4 page (right edge included) is visible */
+  .beat.paper-pages .beat-body{ grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); }
+  .beat.paper-pages .preview.render{ width:100%; max-width:880px; }
+  /* v64: a paper beat is ONE SCREENFUL — Source and the page preview are each
+     capped to the window and scroll independently, so a 15-page paper no
+     longer drags the two columns out of alignment. The outer page scroll
+     moves between beats; inside a beat, each pane keeps its own place. */
+  .beat.paper-pages .beat-body > div{ display:flex; flex-direction:column; min-height:0;
+    max-height:calc(100vh - 90px); }
+  .beat.paper-pages .src-wrap{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+  .beat.paper-pages .preview.render{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+  /* v65: in the flex columns above, a label row's automatic minimum size let a
+     22px-high row grow to its buttons' height on one side only — pin BOTH
+     label rows to exactly 22px so the two boxes top-align again. */
+  .beat.paper-pages .beat-body > div > .field-label{ flex:0 0 22px; min-height:0; height:22px; }
+  /* v65: Export PDF sits at the ROW'S RIGHT EDGE — directly below the beat's
+     Delete button — so it reads as a beat action, not part of the view toggle. */
+  .beat-body .field-label .pv-export{ margin-left:auto; }
+  /* v65: click-to-sync flash — marks the Source lines a clicked block came from */
+  .src-sync-flash{ position:absolute; left:2px; right:2px; height:22px;
+    background:#f6e5e9; border-radius:4px; opacity:.9; pointer-events:none;
+    transition:opacity .9s ease; z-index:2; }
+  @media (max-width:760px){ .beat-body { grid-template-columns:1fr; } .beat-body .preview.render{width:100%;} }
+
+  .field-label { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin:0 0 5px; }
+  /* v46: the label rows above Source and Live preview are the SAME height
+     whether or not the view-toggle button is present, so the two boxes
+     top-align exactly */
+  .beat-body .field-label{ height:22px; display:flex; align-items:center; gap:8px; margin:0 0 5px; }
+  .beat-body .field-label .pv-mode{ padding:2px 8px; font-size:11.5px; line-height:1.2; }
+  /* Source editor: transparent textarea over a highlight backdrop.
+     Both layers share identical metrics so the grey pills line up exactly
+     behind the equation/code/keyterm markup — body prose stays on white. */
+  .src-wrap { position:relative; }
+  .src, .src-backdrop {
+    box-sizing:border-box; width:100%; min-height:120px; margin:0;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:13px;
+    line-height:1.5; letter-spacing:0;
+    border:1px solid var(--border); border-radius:8px; padding:10px 11px;
+    white-space:pre-wrap; word-wrap:break-word; overflow-wrap:break-word;
+  }
+  .src-backdrop {
+    position:absolute; top:0; left:0; right:0; bottom:0; min-height:0;
+    overflow:hidden; pointer-events:none; color:transparent;
+    background:#fff; border-color:transparent;
+  }
+  .src {
+    position:relative; display:block; resize:none; overflow-y:hidden;
+    color:var(--ink); background:transparent;   /* real, visible text — caret stays exact */
+  }
+  .src:focus { outline:none; }
+  .src-wrap:focus-within .src { border-color:#b9babb; box-shadow:0 0 0 3px rgba(0,0,0,.03); }
+  .src-backdrop .hl {
+    background:var(--code-bg); color:transparent; border-radius:4px;
+    box-shadow:0 0 0 1.5px var(--code-bg);   /* pill only — text sits on the textarea above */
+  }
+  .src-backdrop .hl-math { background:#f6e5e9; box-shadow:0 0 0 1.5px #f6e5e9; }   /* faint ruby pill for maths */
+
+  .preview {
+    border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+    min-height:120px; background:#fff; overflow-wrap:anywhere;
+  }
+  /* v35: Edit live preview mirrors content-with-notes — 675px box, 15px padding */
+  .beat-body .preview.render{width:675px;max-width:100%;padding:15px;box-sizing:border-box;}
+  /* v35: block-tab authoring indicator chip (true 208px tab shows in Pages preview) */
+  .ob-blk-wrap{position:relative;}
+  .ob-tab-chip{position:absolute;top:0;z-index:5;display:inline-block;padding:6px 12px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;line-height:16px;letter-spacing:.1px;
+    font-weight:400;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);}
+  .ob-tab-chip .w400{font-weight:400;} .ob-tab-chip .w500{font-weight:500;}
+  .ob-tab-chip[data-side="right"]{right:-6px;border-radius:0 10px 10px 0;}
+  .ob-tab-chip[data-side="left"]{left:-6px;border-radius:10px 0 0 10px;}
+  /* Prose everywhere in previews/reading = Times */
+  .render {
+    font-family:"Times New Roman",Times,serif;
+    font-size:17px; line-height:21.25px; letter-spacing:0.05px; color:#231f20; font-weight:400;
+  }
+  .render p { margin:0 0 10px; }
+  /* v37: document masthead (title block at the top of the notes) */
+  .doc-masthead { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; }
+  .doc-masthead .dm-text { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-size:15px; line-height:21.25px; letter-spacing:0.1px; color:#231f20; font-weight:400; }
+  .doc-masthead .dm-subject { font-weight:500; }
+  .doc-masthead .dm-line b { font-weight:500; }
+  .doc-masthead .dm-gap { height:10px; }
+  .doc-masthead .dm-logo { flex:none; }
+  /* v37.1: logo BOTTOM sits on the last line's baseline (68.63px from the block top),
+     not the line-box bottom (73.75px) — so it reads as bottom-aligned to the last text
+     row and shares the same gap to the rule as the text. */
+  .doc-masthead .dm-logo svg { height:68.6px; width:auto; display:block; }
+  .dm-rule { height:1px; background:#231f20; margin:10px 0 0; }
+  /* Edit-tab live preview: one block per blank-line paragraph, spaced by 10px
+     to mirror the live page's .content-with-notes row gap. A single newline
+     inside a paragraph stays a soft wrap. */
+  .render .notes > .pv-para { margin:0 0 10px; }
+  .render .notes > .pv-para:last-child { margin-bottom:0; }
+  /* roman-numeral list item (mirrors the runtime's numeral gutter) */
+  .render .notes > .pv-item { display:flex; align-items:flex-start; }
+  .render .notes > .pv-item .pv-rn-num { flex:none; min-width:25px; margin-right:13px; text-align:right;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:15px; line-height:21.25px; letter-spacing:0.1px; color:#231f20; }
+  .render .notes > .pv-item .pv-rn-text { flex:1; }
+  /* v36: arabic list numeral — HN 500, 15px (same as the roman list), same 25px gutter */
+  .render .notes > .pv-item .pv-rn-num.pv-anum { font-weight:500; font-size:15px; }
+  /* indented paragraph (">" prefix) — left edge aligns with list-item text (25px gutter + 13px) */
+  .render .notes > .pv-indent { padding-left:38px; }
+  /* v27: a "tight" block — no blank line was typed above it, so it sits flush
+     against the block above with no gap. -10px cancels .pv-para's 10px bottom
+     margin (adjacent margins collapse to 10 + -10 = 0). This mirrors the runtime,
+     where the same pull cancels the container's 10px flex gap. */
+  .render .notes > .pv-tight { margin-top:-10px; }
+  /* v27: ">>" — FIRST LINE only is indented to the list-text position; the rest
+     of the paragraph runs full width. Paired with .pv-tight this gives the book
+     convention: a paragraph gets either space above it or a first-line indent. */
+  .render .notes > .pv-first-indent { text-indent:38px; }
+  /* v28: text-indent inherits and applies to inline-block boxes, so a cue chip
+     inside a ">>" paragraph would carry its own 38px indent. Reset it on the
+     chips; the paragraph's own first-line indent is unaffected. */
+  .render .notes > .pv-first-indent .cue,
+  .render .notes > .pv-first-indent .rh-cue { text-indent:0; }
+  /* never pull the very first block up past the top of the column */
+  .render .notes > .pv-tight:first-child { margin-top:0; }
+  /* extra blank-line spacing (real vertical space, mirrors the runtime spacer) */
+  .render .notes > .pv-space { width:100%; }
+  /* v31: page-break marker in the Edit preview / Reading view */
+  .render .pv-pagebreak { width:100%; text-align:center; margin:8px 0; border-top:1px dashed #c9c9c9; line-height:0; }
+  .render .pv-pagebreak::before { content:"page break"; display:inline-block; transform:translateY(-50%); background:#fff; padding:0 8px; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:0.4px; color:#9a9a9a; }
+  /* v33: marks column - right-aligned mark value on a question's first line */
+  .render .pv-marked { display:flex; align-items:flex-start; }
+  .render .pv-marked > .pv-marked-text { flex:1; }
+  .render .pv-marks { flex:none; margin-left:13px; text-align:right; white-space:nowrap; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:15px; line-height:21.25px; letter-spacing:0.1px; color:#231f20; }   /* v50: 21.25 line height per spec */
+  .beat-meta { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  .beat-meta > div { flex:1; min-width:180px; }
+  input.trigger, input.asset { width:100%; }
+  .beat-tools { display:flex; gap:6px; margin-left:auto; }
+
+  /* keyterm styling — v14: now matches the LIVE keyterm system embed exactly.
+     Was: 1.5px DOTTED border-bottom, letter-spacing 0.2px — neither of which
+     students ever saw. Live is a 2px SOLID underline, 4px offset, 0.25px. */
+  .keyterm {
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:20px; letter-spacing:0.25px;
+    color:#231f20; font-weight:500;                         /* text always #231f20 */
+    text-decoration-line:underline;
+    text-decoration-color:var(--kt,var(--key-purple));      /* colour is the underline */
+    text-decoration-thickness:2px;
+    text-underline-offset:4px;
+    text-decoration-skip-ink:none;
+    cursor:help;
+  }
+  /* v16: keyterm card in the Edit preview — mirrors the real callout metrics
+     (header HN 500 11.5/15 #676767 0.2px; body HN 400 13/16 #231f20 0.1px) so a
+     ~word~ run reads at the size it will actually be. */
+  .kt-card { width:125px; background:rgba(223,223,223,.75); border-radius:10px; padding:10px; margin:6px 0; }
+  .kt-card.kt-center, .kt-card.kt-center .kt-head, .kt-card.kt-center .kt-body { text-align:center; }
+  .kt-head { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+    font-size:11.5px; line-height:15px; letter-spacing:0.2px; color:#676767; }
+  .kt-body { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400;
+    font-size:13px; line-height:16px; letter-spacing:0.1px; color:#231f20; overflow-wrap:break-word; }
+  /* weight-only runs inside the card, same as the runtime does live */
+  .kt-head .helv, .kt-body .helv { font-family:inherit; font-size:inherit; line-height:inherit;
+    letter-spacing:inherit; font-weight:500; }
+  /* v20: the stop's message, shown inside its cue pill */
+  .cue-msg { font-style:italic; opacity:.85; }
+  /* v26: authoring warnings — visible but not alarming; they report, never block */
+  .pv-warn { border:1px solid rgba(246,165,72,.55); background:rgba(251,177,79,.14);
+    border-radius:8px; padding:7px 9px; margin:0 0 8px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-size:12px; line-height:17px;
+    letter-spacing:.1px; color:#231f20; }
+  .pv-warn-row { margin:1px 0; }
+  .pv-warn-row code { font-family:ui-monospace,Menlo,monospace; font-size:11.5px;
+    background:rgba(255,255,255,.75); border-radius:4px; padding:1px 4px; margin-right:4px; }
+  /* a cue the runtime will not understand */
+  .cue.cue-bad { background:rgba(243,128,129,.30); text-decoration:line-through;
+    text-decoration-color:rgba(210,32,38,.55); }
+  /* ad-lib — informal spoken aside, not formal lesson text */
+  .adlib { font-style:italic; color:var(--ink-soft); }
+  /* italic emphasis (_word_ or *word*) — italic Times, normal ink (not a greyed aside) */
+  .ital { font-style:italic; }
+  /* bold emphasis (**word**) — Times bold, weight 700 (e.g. bold vectors) */
+  .bold { font-weight:700; }
+  /* plain Helvetica Neue run (~word~) — weight 500, no colour/underline (unlike a key term);
+     sized like key terms (15px in Times body); matches its context inside a bubble */
+  .helv { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:15px; line-height:21.25px; letter-spacing:0.2px; }
+  /* plain Helvetica Neue run (~~word~~) — weight 400 (the regular face), otherwise
+     identical to ~word~ above. Use for a lighter sans run inside Times prose. */
+  .helv400 { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400; font-size:15px; line-height:21.25px; letter-spacing:0.2px; }
+  /* roman-numeral numbered list (#. lines, or i./ii./iii. lines).
+     Numerals: Helvetica Neue 500, 15px/20px, 0.1 letter-spacing, right-aligned in a
+     25px column (matches the Webflow .number-list + .text-block-26 min-width:25px).
+     Body: Times 400, 17px/20px, 0.05px — same as .render prose. */
+  .rn-list { list-style:none; margin:8px 0; padding:0; }
+  .rn-item { display:flex; align-items:flex-start; margin:2px 0; }
+  .rn-num  { flex:none; min-width:25px; margin-right:13px; text-align:right;
+             font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+             font-size:15px; line-height:21.25px; letter-spacing:0.1px; color:#231f20; }
+  .rn-text { font-family:"Times New Roman",Times,serif; font-weight:400;
+             font-size:17px; line-height:21.25px; letter-spacing:0.05px; color:#231f20; }
+  /* animation cue chip (rendered preview / reading) */
+  .cue { display:inline-block; font-family:-apple-system,BlinkMacSystemFont,sans-serif; font-size:11px; font-weight:600; color:var(--key-orange); background:#fff4e8; border:1px solid #efd4ad; border-radius:5px; padding:0 5px; margin:0 2px; vertical-align:middle; white-space:nowrap; }
+  .src-backdrop .hl-cue { background:#fbeedd; box-shadow:0 0 0 1.5px #fbeedd; }   /* faint orange pill for cues */
+  .src-backdrop .hl-tag { background:#e4eef5; box-shadow:0 0 0 1.5px #e4eef5; }   /* faint blue pill for audio tags */
+  .ob-heading { margin:10px 0; } .ob-heading .oh-num, .ob-heading .oh-title { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:15px; line-height:20px; letter-spacing:0.1px; color:#231f20; } .ob-heading .oh-num { margin-right:16px; } .ob-heading .oh-rule { height:1.5px; background:#231f20; margin-top:10px; }
+  .ob-card { border:1px solid var(--border); border-radius:10px; background:#fafbfb; padding:14px 16px; margin:10px 0; }
+  .ob-card .oc-head { margin-bottom:8px; } .ob-card .oc-label, .ob-card .oc-num { font-weight:700; color:#231f20; }
+  /* Definition / Key-Theory heading — Helvetica Neue house style */
+  .ob-card[data-target="key-theory-wrap"] .oc-head { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-size:15px; letter-spacing:0.1px; color:#231f20; }
+  .ob-card[data-target="key-theory-wrap"] .oc-label, .ob-card[data-target="key-theory-wrap"] .oc-num { font-weight:500; }
+  .ob-card[data-target="key-theory-wrap"] .oc-descript { font-weight:400; }
+  /* Definition statement below the heading — centre-aligned */
+  .ob-card[data-target="key-theory-wrap"] .oc-body { text-align:center; }
+  .ob-card .oc-eq { margin:6px 0 10px; } .ob-card .oc-where { color:var(--ink-soft); margin:8px 0 4px; } .ob-card .oc-varlist { display:flex; flex-direction:column; gap:4px; }
+  .ob-card .oc-var .oc-vu { color:var(--ink-soft); }
+  /* ---- v31: @box preview ---- */
+  .ob-box{ background:#fff; border:1px solid #e0e0e0; border-radius:14px; padding:8px 15px; margin:15px 0; box-sizing:border-box; }
+  .ob-box.obx-hug{ width:fit-content; max-width:100%; margin-left:auto; margin-right:auto; text-align:center; }
+  .ob-box.obx-hug.obx-left{ margin-left:0; }
+  .ob-box.obx-hug.obx-right{ margin-right:0; }
+  .ob-box.obx-full{ width:100%; }
+  .ob-box .obx-gap{ height:10px; }
+  .ob-box.obx-hug mjx-container[display="true"]{ display:inline-block !important; margin:0 !important; }
+  .ob-box.obx-full mjx-container[display="true"]{ margin:0 !important; }
+  /* ---- v30: @mcq preview + chemical scripts ---- */
+  .chem-sub,.chem-sup{ font-size:.583em; line-height:0; position:relative; }
+  .chem-sub{ bottom:-.25em; } .chem-sup{ top:-.45em; }
+  /* v36.2: MCQ on Sophie's InDesign metrics (17/12 web bridge). The question NUMBER
+     sits in a 1p8 (28.33px) left gutter in Helvetica Neue 500; the stem + A.B.C.D.
+     labels align at the content-column left, option text hangs at a further 28.33px
+     (= 3p4). Times 17/21.25. --om-gap = space between options (default 10px). */
+  .ob-mcq .om-qrow{ display:flex; align-items:flex-start; margin-top:6px; }
+  .ob-mcq .om-qnum{ flex:0 0 28.33px; width:28.33px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:17px;
+    letter-spacing:0.1px; line-height:21.25px; color:#231f20; }
+  .ob-mcq .om-content{ flex:1; min-width:0;
+    font-family:"Times New Roman",Times,serif; font-size:17px; line-height:21.25px; letter-spacing:0.05px; color:#231f20; }
+  .ob-mcq .om-stem{ margin:0 0 10px; }
+  /* v59: hanging list rows in the stem — "> (i) text": the (i) keeps its spot,
+     the text sits and wraps in its own column one hang (28.33px) further. */
+  .ob-mcq .om-hrow{ display:flex; align-items:flex-start; }
+  /* v63: labels RIGHT-ALIGNED so their closing paren lands on the same x as
+     the full stop after the option letters ("A." ends at 16.62px in Times 17
+     — A=0.722em + .=0.25em + tracking), giving the list the SAME label-to-text
+     space as the A./B. rows. Text column unmoved (28.33px = option text). */
+  .ob-mcq .om-hrow .om-hlab{ flex:0 0 42.5px; min-width:42.5px; text-align:right;
+    padding-right:11.71px; box-sizing:border-box; }
+  .ob-mcq .om-hrow .om-htxt{ flex:1 1 auto; min-width:0; }
+  /* list */
+  .ob-mcq .om-list{ display:flex; flex-direction:column; }
+  .ob-mcq .om-opt{ display:flex; align-items:flex-start; }
+  .ob-mcq .om-opt + .om-opt{ margin-top:var(--om-gap,10px); }
+  .ob-mcq .om-let{ flex:0 0 28.33px; width:28.33px; }
+  .ob-mcq .om-text{ flex:1; }
+  .ob-mcq .om-correct .om-let{ font-weight:700; }
+  .ob-mcq .om-correct .om-let:after{ content:"\2713"; margin-left:2px; color:#1f8a54; }
+  /* table — 0.5px #231f20 borders, centred cells, no fills; A.B.C.D. outside the grid */
+  .ob-mcq .om-table{ border-collapse:collapse; margin:0; }
+  .ob-mcq .om-table th, .ob-mcq .om-table td{ border:0.5px solid #231f20; text-align:center; padding:5px 10px; font-weight:400; }
+  .ob-mcq .om-table th{ font-style:italic; }
+  .ob-mcq .om-table td.om-rowlabel{ border:0; text-align:left; padding:5px 13px 5px 0; white-space:nowrap; }
+  .ob-mcq .om-table tr.om-correct td.om-rowlabel{ font-weight:700; }
+  .ob-mcq .om-table tr.om-correct td.om-rowlabel:after{ content:"\2713"; margin-left:2px; color:#1f8a54; }
+  /* image options — 2 equal columns, label + SVG top-aligned, 28.33px gap between them */
+  .ob-mcq .om-image{ display:grid; grid-template-columns:1fr 1fr; gap:var(--om-gap,10px) 0; }
+  .ob-mcq .om-icell{ display:flex; align-items:flex-start; }
+  .ob-mcq .om-icell .om-let{ flex:0 0 28.33px; width:28.33px; }
+  .ob-mcq .om-imgwrap{ flex:1; }
+  .ob-mcq .om-img{ display:block; max-width:100%; height:auto; }
+  .ob-mcq .om-imgph{ border:1px dashed var(--border); border-radius:8px; padding:14px 10px; text-align:center;
+    font-family:-apple-system,sans-serif; font-size:11.5px; line-height:15px; color:var(--ink-soft); background:#fbfbfc; }
+  .ob-mcq .om-icell.om-correct .om-let{ font-weight:700; }
+  .ob-mcq .om-icell.om-correct .om-let:after{ content:"\2713"; margin-left:2px; color:#1f8a54; }
+  /* ---- v40: paper blocks (@paper / @section / @erq) — document-style preview
+     on the studio's web metrics (Times 17/21.25, HN 500 15/21.25, hangs at
+     28.33px = 1p8). The Step-2 print stylesheet re-derives every value from
+     print points via --pt; these previews mirror STRUCTURE, not final size. */
+  .ob-paper{ margin:15px 0 21.25px; position:relative; }
+  .ob-paper .opp-logo{ position:absolute; right:0; top:4.66px; width:50px; height:49.75px; }
+  .pp-page .ob-paper .opp-logo{ width:70.83px; height:70.48px; }
+  .ob-paper .opp-course, .ob-paper .opp-title, .ob-paper .opp-time{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .ob-paper .opp-time{ margin-top:21.25px; }
+  .ob-paper .opp-instr{ margin-top:15px; }
+  .ob-paper .opp-rule{ height:1.5px; background:#8f8f8f; margin-top:10px; }   /* v43: web rule 1.5px grey; print = 0.5pt black (PAPER_BAND.rulePrintPt). v57: sits 10px under the instructions, exactly like the @section rule */
+  .ob-paper .of-parts, .ob-psec .of-parts{ font-family:-apple-system,sans-serif;
+    font-size:12px; color:var(--ink-soft); margin-top:6px; }
+  .ob-psec{ margin:21.25px 0; }
+  .ob-psec .ops-line{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:500; font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .ob-psec .ops-rule{ height:1.5px; background:#8f8f8f; margin-top:10px; }   /* v43: matches the masthead rule on the web */
+  /* v42: the question row baseline-aligns its three columns — gutter, body,
+     marks — so an inline fraction in the stem's first line no longer leaves
+     "01 i." and the mark floating high (flex baseline = first baselines).
+     Marks are a 40px flex column right-aligned at the frame edge, as in the
+     PDFs; display equations reclaim that width (and the gutter's) to centre
+     on the FULL text frame. */
+  .ob-erq{ margin:15px 0; position:relative; }
+  .ob-erq .oe-row{ display:flex; align-items:baseline; position:relative; }
+  .ob-erq .oe-gut{ flex:0 0 56.66px; width:56.66px; display:flex;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .ob-erq .oe-gut .oe-g1{ flex:0 0 28.33px; width:28.33px; }
+  /* v61: QUESTION-LEVEL blocks — gutter holds only the bare question number
+     ("11" preamble / "12" partless), so the content column starts one hang
+     earlier, level with the a./i. part labels of sibling blocks. Display
+     equations and the continued label keep their frame maths in step. */
+  .ob-erq.oe-qlevel .oe-gut{ flex:0 0 28.33px; width:28.33px; }
+  .ob-erq.oe-qlevel .oe-stem.oe-eqline{ margin-left:-28.33px; width:calc(100% + 68.33px); }
+  .ob-erq.oe-qlevel .oe-continued .oe-contlabel{ flex:0 0 28.33px; width:28.33px; }
+  .ob-erq .oe-body{ flex:1; min-width:0; }
+  .ob-erq .oe-marks{ flex:0 0 40px; width:40px; text-align:right;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+    font-size:15px; line-height:21.25px; }
+  .ob-erq .oe-stem{ margin:0 0 10px; }
+  .ob-erq .oe-stem.oe-eqline{ margin-left:-56.66px; margin-right:-40px;
+    width:calc(100% + 96.66px); text-align:center; }
+  .ob-erq .oe-stem.oe-eqline mjx-container[display="true"]{ margin:0 !important; }
+  .ob-erq .oe-gap{ height:21.25px; }
+  /* v53: "note:" comment line — grey italic Helvetica Neue 13px, anywhere on
+     the paper (inside @erq bodies or between blocks). Prints as-is. */
+  .oe-note{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:400; font-style:italic; font-size:13px; line-height:17px;
+    letter-spacing:0.1px; color:#6e6e6e; margin:4px 0; }   /* v60: a tiny bit lighter per Sophie (was #666666); prints grey as-is */
+  .ob-erq .oe-contword2{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:400; font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .ob-erq .oe-lines{ margin:0; }
+  /* v44: writing lines are LITERAL full stops, as in InDesign: 160 Times
+     periods, 9pt -> 12.75px, advance 2.475pt -> letter-spacing 0.317px, in a
+     24pt (34px) slot with the baseline 16.2px down (line-height 23.8 puts it
+     there). Grey on the web (--oe-line-ink); the print export uses black. */
+  .ob-erq .oe-line{ height:34px; line-height:23.8px; overflow:hidden;
+    white-space:nowrap; font-family:"Times New Roman",Times,serif;
+    font-size:12.75px; letter-spacing:0.317px;
+    color:var(--oe-line-ink,#a8a8a8); }
+  .ob-erq .oe-fillnote{ font-family:-apple-system,sans-serif; font-size:12px;
+    color:var(--ink-soft); margin-top:4px; }
+  .ob-erq .oe-more{ text-align:center; margin:4.75px 0 0;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; }   /* v45: HN 15/400; gap above = one line pitch, same as between dotted rows */
+  .ob-erq .oe-continued{ display:flex; margin:8px 0 4px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .ob-erq .oe-continued .oe-contlabel{ font-weight:500; flex:0 0 56.66px; width:56.66px; }
+  .ob-erq .oe-continued .oe-contword{ font-weight:400; }
+  .ob-erq .oe-fig{ margin:12px 0; text-align:center; }
+  .ob-erq .oe-figimg{ display:inline-block; max-width:100%; }
+  .ob-erq .oe-figph{ display:flex; align-items:center; justify-content:center;
+    border:1px dashed var(--border); border-radius:8px; background:#fbfbfc;
+    font-family:-apple-system,sans-serif; font-size:11.5px; line-height:15px;
+    color:var(--ink-soft); min-height:60px; }
+  /* ---- v41: A4 PAGE VIEW (.pp-*) — geometry from PAPER_PT via --pt=17/12.
+     Page 843.31 x 1192.68px; frame left 99.31, width 644.98 (= the web 645);
+     content top 96.29; line pitch 34; footer 1103.9. Scaled to pane width. */
+  .pp-vp{ overflow:hidden; }
+  .pp-stack{ transform-origin:top left; width:843.31px; }
+  .pp-page{ position:relative; width:843.31px; height:1192.68px; background:#fff;
+    border:1px solid #d9d9d9; box-shadow:0 2px 10px rgba(0,0,0,.07); margin:0 0 20px;
+    box-sizing:border-box; overflow:hidden; }
+  .pp-content{ position:absolute; left:99.31px; top:96.29px; width:644.98px;
+    font-family:"Times New Roman",Times,serif; font-size:17px; line-height:21.25px; color:#231f20; }
+  /* v42: web footer — 13px Helvetica Neue, GREY (the export restyles bands
+     for print); running heads will take the same grey when they arrive */
+  .pp-foot{ position:absolute; left:99.31px; width:644.98px; top:1103.9px;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400;
+    font-size:13px; line-height:17px; color:#8f8f8f; }
+  .pp-foot .pp-dnl{ font-weight:500; }
+  .pp-foot-r{ text-align:right; }
+  .pp-eot{ margin-top:25px; text-align:center;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
+  .pp-overflow{ position:absolute; top:8px; right:8px; background:#b5384a; color:#fff;
+    font-family:-apple-system,sans-serif; font-size:11.5px; line-height:1;
+    padding:5px 8px; border-radius:6px; }
+  /* page-scoped overrides: print metrics instead of the flow preview's */
+  .pp-page .of-parts, .pp-page .oe-fillnote{ display:none !important; }
+  /* v57: NO default space above/below blocks on paper pages — a blank source
+     line (21.25px each) is the ONLY thing that makes space between blocks. */
+  .pp-page .ob-paper{ margin:0; }
+  .pp-page .ob-psec{ margin:0; }
+  .pp-page .oe-note{ margin:0; }
+  /* v42: Helvetica Neue is 15px EVERYWHERE on paper pages (masthead included);
+     only the footer band differs (13px grey, above) */
+  .pp-page .opp-course, .pp-page .opp-title{ font-size:15px; line-height:21.25px; }
+  .pp-page .opp-time{ font-size:15px; line-height:21.25px; margin-top:31.65px; }
+  .pp-page .opp-instr{ margin-top:22.2px; }
+  .pp-page .opp-rule{ margin-top:10px; }   /* v57: matches the @section rule (was 19.9px — Sophie: it sat too low) */
+  .pp-page .ob-erq{ margin:0; }
+  .pp-page .oe-stem{ margin-bottom:6px; }
+  .pp-page .oe-lines{ margin-top:4.25px; }   /* v45: question->lines gap = one line pitch */
+  .pp-page .oe-line{ width:560.71px; margin-left:-2.83px; }
+  .pp-page .oe-more{ margin:4.75px 0 0 -56.66px; width:calc(100% + 56.66px); text-align:center; }
+  /* v61: question-level @erq (bare-number gutter — a preamble like "11", or a
+     partless question like "12"): lines lengthen by one hang on the LEFT so
+     they start level with the a./i. labels; the right edge (503.88pt) and the
+     gap to the marks column are untouched. */
+  .pp-page .ob-erq.oe-qlevel .oe-line{ width:589.04px; }
+  .pp-page .ob-erq.oe-qlevel .oe-more{ margin-left:-28.33px; width:calc(100% + 28.33px); }
+  /* v61: centre: lines — top-level ones centre on the full frame; inside an
+     @erq body they centre on the same span as the More-note (gutter reclaimed) */
+  .oe-centre{ text-align:center; }
+  .ob-erq .oe-centrep{ text-align:center; }
+  .pp-page .ob-erq .oe-centrep{ margin-left:-56.66px; width:calc(100% + 56.66px); }
+  .pp-page .ob-erq.oe-qlevel .oe-centrep{ margin-left:-28.33px; width:calc(100% + 28.33px); }
+  .pp-page .oe-cont-row{ margin-bottom:0; }
+  /* ---- v51: @mcq on PAPER PAGES — document style, not the lesson callout
+     card. No box; the question number sits in the 28.33px gutter at the
+     frame edge, stem and option letters at the first indent, option text
+     hanging at the second — Sophie's InDesign MCQ metrics. The answer aids
+     (bold letter + green tick) are hidden here and therefore in the export;
+     they remain visible in the flow preview for authoring. */
+  .pp-page .ob-mcq{ background:transparent !important; border:0 !important;
+    border-radius:0; padding:0; margin:0; box-shadow:none; }
+  .pp-page .ob-mcq .om-qnum{ font-size:15px; }   /* v52: paper standard HN 500 15/21.25 (the 17px is the lesson-context size) */
+  /* v57: no default inter-block gaps (was 21.25px mcq↔mcq/erq and 4.25px erq↔erq) — blank source lines control ALL space between blocks */
+  .pp-page .ob-mcq .om-qrow{ margin-top:0; }   /* v57: the flow preview's 6px would leak in as a phantom gap above every question */
+  .pp-page .ob-mcq .om-stem{ margin-bottom:10px; }
+  .pp-page .ob-mcq .om-correct .om-let{ font-weight:400; }
+  .pp-page .ob-mcq .om-correct .om-let::after{ content:none; }
+  .pp-page .ob-mcq .om-table tr.om-correct td.om-rowlabel{ font-weight:400; }
+  .pp-page .ob-mcq .om-table tr.om-correct td.om-rowlabel::after{ content:none; }
+  .pp-page .ob-mcq .om-icell.om-correct .om-let{ font-weight:400; }
+  .pp-page .ob-mcq .om-icell.om-correct .om-let::after{ content:none; }
+  .ob-figure { border:1px dashed var(--border); border-radius:10px; background:#fbfbfc; padding:12px 14px; margin:10px 0; }
+  /* v33: @center preview - centred block of text */
+  .ob-center { text-align:center; margin:10px 0; }
+  .ob-center .obc-gap { height:10px; }
+  .ob-figure .of-key, .ob-figure .of-parts { font-family:-apple-system,sans-serif; font-size:12px; color:var(--ink-soft); } .ob-figure .of-label { margin-top:4px; }
+  .coded .tok-cue { color:var(--key-orange); }
+  /* code (mirrors the faint grey code box) */
+  code.inline-code, pre.block-code {
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    background:var(--code-bg); border:1px solid var(--border); border-radius:6px;
+  }
+  code.inline-code { font-size:0.9em; padding:1px 5px; color:var(--code-ink); }
+  pre.block-code { display:block; padding:10px 12px; margin:10px 0; font-size:13px; overflow:auto; white-space:pre; }
+
+  /* ---- Coded view tokens ---- */
+  .coded { white-space:pre-wrap; }
+  .coded .tok { font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:0.92em; background:var(--code-bg); color:var(--code-ink); border-radius:5px; padding:1px 4px; }
+  .coded .tok-eq { color:var(--math-ink); }              /* mathematical input in ruby red */
+  .coded .tok-key, .coded .tok-code { color:var(--code-ink); }
+  .coded .tok-adlib { color:var(--code-ink); font-style:italic; }
+  .coded .speaker-tag { display:block; margin:16px 0 4px; font-family:-apple-system,sans-serif; font-size:12px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.05em; }
+
+  /* ---- ElevenLabs view ---- */
+  textarea.tts-out {
+    width:100%; min-height:340px; font-family:"Times New Roman",Times,serif;
+    font-size:15px; line-height:1.6; padding:14px; border:1px solid var(--border);
+    border-radius:10px; background:#fff; color:var(--ink); resize:vertical;
+  }
+
+  /* ---- Reading view ---- */
+  .reading .r-speaker { font-family:-apple-system,sans-serif; font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; margin:18px 0 4px; }
+  .reading .r-trigger { font-family:-apple-system,sans-serif; font-size:12px; color:var(--key-orange); margin:4px 0 0; }
+
+  /* ---- Grammar view ---- */
+  .gr-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+  input.lt-key, select.lt-lang { padding:6px 9px; border:1px solid var(--border); border-radius:7px; font-size:13px; font-family:inherit; }
+  input.lt-key { min-width:220px; }
+  .issue { border:1px solid var(--border); border-left:4px solid var(--key-red); border-radius:8px; padding:10px 12px; margin-bottom:10px; }
+  .issue .msg { font-size:13.5px; margin:0 0 6px; }
+  .issue .ctx { font-family:ui-monospace,monospace; font-size:12.5px; background:var(--bg-soft); padding:6px 8px; border-radius:6px; }
+  .issue .ctx .hit { background:#ffe1e1; color:#b5384a; font-weight:700; }
+  .issue .fix { font-size:12.5px; color:var(--ink-soft); margin:6px 0 0; }
+  .issue .fix b { color:var(--key-green); }
+
+  /* faces, character stage, callout bubbles + expression pickers removed —
+     single narrator, notes-only preview. */
+
+  /* cloud (Supabase) bar */
+  .cloud-bar { background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:14px; }
+  .cloud-in { padding:6px 9px; border:1px solid var(--border); border-radius:7px; font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
+
+  /* v38: persistent save-state badge */
+  .sb-savestate { font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px; border:1px solid var(--border); white-space:nowrap; }
+  .sb-savestate.is-saved   { color:var(--key-green); background:#eef7f1; border-color:#bfe0cd; }
+  .sb-savestate.is-dirty   { color:var(--key-orange); background:#fff4e8; border-color:#efd4ad; }
+  .sb-savestate.is-saving  { color:var(--ink-soft); background:#fff; }
+  .sb-savestate.is-nocloud { color:var(--ink-soft); background:#fff; }
+  .sb-savestate.is-error   { color:var(--key-red); background:#fbeaec; border-color:#e6b8c0; }
+
+  /* v38: folder-tree library */
+  .sb-lib { border-top:1px solid var(--border); padding-top:10px; }
+  .sb-libhead { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .sb-tree { max-height:340px; overflow:auto; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px; }
+  .sb-node { }
+  .sb-fold-row, .sb-lesson { display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:6px; font-size:13px; }
+  .sb-fold-row:hover, .sb-lesson:hover { background:var(--bg-soft); }
+  .sb-fold-row .sb-twist { width:14px; cursor:pointer; color:var(--ink-soft); font-size:11px; text-align:center; user-select:none; }
+  .sb-fold-row .sb-fname { font-weight:600; cursor:pointer; }
+  .sb-count { color:var(--ink-soft); font-size:11px; }
+  .sb-acts { margin-left:auto; display:flex; gap:2px; opacity:0; transition:opacity .1s; }
+  .sb-fold-row:hover .sb-acts, .sb-lesson:hover .sb-acts { opacity:1; }
+  .sb-act { cursor:pointer; border:1px solid transparent; border-radius:5px; padding:1px 6px; font-size:11px; color:var(--ink-soft); background:none; }
+  .sb-act:hover { border-color:var(--border); background:#fff; color:var(--ink); }
+  .sb-act.danger:hover { color:var(--key-red); border-color:#e6b8c0; }
+  .sb-lesson .sb-lname { cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sb-lesson .sb-when { color:var(--ink-soft); font-size:11px; }
+  .sb-lesson.active { background:#eef2fb; }
+  .sb-lesson.active .sb-lname { color:var(--key-blue); font-weight:600; }
+  .sb-children { margin-left:16px; border-left:1px solid var(--border); padding-left:6px; }
+  .sb-unfiled-label { color:var(--ink-soft); font-style:italic; }
+  .sb-empty { color:var(--ink-soft); font-size:12px; padding:6px; }
+  /* v39: drag-and-drop feedback */
+  .sb-lesson[draggable="true"], .sb-fold-row[draggable="true"] { cursor:grab; }
+  .sb-lesson[draggable="true"]:active, .sb-fold-row[draggable="true"]:active { cursor:grabbing; }
+  .sb-drag-ghost { opacity:.4; }
+  .sb-fold-row.sb-drop-into { box-shadow:inset 0 0 0 2px var(--key-blue); background:#eef2fb; }
+  .sb-fold-row.sb-drop-into .sb-fname { color:var(--key-blue); }
+
+  .view { display:none; }
+  .view.active { display:block; }
+  .hidden { display:none !important; }
+
+  /* builder */
+  .builder { border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:18px; background:var(--bg-soft); }
+  math-field { font-size:1.3rem; padding:10px; border:1px solid var(--border); border-radius:8px; width:100%; min-height:52px; background:#fff; }
+  .builder-out { display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+  code.eq-code { font-family:ui-monospace,monospace; font-size:13px; background:#fff; border:1px solid var(--border); border-radius:6px; padding:6px 9px; flex:1; min-width:200px; word-break:break-all; }
+  details.legend { margin-bottom:18px; }
+  details.legend summary { cursor:pointer; font-size:13px; color:var(--ink-soft); }
+  .legend table { border-collapse:collapse; margin-top:10px; font-size:13px; }
+  .legend td { border:1px solid var(--border); padding:6px 10px; vertical-align:top; }
+  .legend code { font-family:ui-monospace,monospace; background:var(--bg-soft); padding:1px 5px; border-radius:4px; }
+  /* ---- Rehearse view ---- */
+  .rh-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:10px 0 14px; }
+  iframe.rh-graph { width:100%; max-width:720px; height:420px; max-height:none; border:1px solid var(--border); border-radius:10px; background:#fff; display:block; margin:0 auto 12px; }
+  .rh-script { border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-top:14px;
+    font-family:"Times New Roman",Times,serif; font-size:17px; line-height:1.95; color:#231f20; }
+  .rh-beat { margin:0 0 6px; }
+  .rh-speaker { font-family:-apple-system,sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-right:6px; }
+  .rh-w { border-radius:3px; transition:background .12s; padding:0 1px; }
+  .rh-w.rh-now { background:#fff3bf; }
+  .rh-cue { display:inline-block; font-family:-apple-system,sans-serif; font-size:11px; font-weight:600; color:var(--ink-soft); background:#f0f1f2; border:1px solid var(--border); border-radius:5px; padding:0 5px; vertical-align:middle; }
+  .rh-cue-graph { color:var(--key-orange); background:#fff4e8; border-color:#efd4ad; }
+  .rh-cue.rh-now { box-shadow:0 0 0 2px var(--key-orange); }
+  /* ================= PREVIEW view =================================
+     Everything here is scoped to #view-preview so it cannot leak into
+     the Studio's own styling. The page-shell rules are COPIED from
+     Webflow's stem-notes.css (.content-wrap 208|675|208, total 1091;
+     .content-with-notes padding 15px, gap 10px) so the preview has the
+     lesson's real geometry. If Webflow changes, re-copy — the readout
+     prints live numbers so a drift is visible.                       */
+  @font-face{font-family:"HelveticaNeueSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/helvetica-neue-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+  @font-face{font-family:"HelveticaNeueSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/helvetica-neue-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap;}
+  @font-face{font-family:"TimesSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+  @font-face{font-family:"TimesSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap;}
+
+  #view-preview .pv-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  #view-preview .pv-controls input[type=text]{font-family:ui-monospace,Menlo,monospace;font-size:12px;
+    padding:6px 9px;border:1px solid var(--border);border-radius:7px;min-width:330px;}
+  #view-preview .pv-readout{font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.6;
+    background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:0 0 12px;white-space:pre;}
+  #view-preview .pv-readout b{color:var(--key-orange);font-weight:400;}
+  /* v17: the LIVE stage — an iframe showing the real published page. Everything
+     inside it is the real stylesheet, the real heads, the real embeds. */
+  /* v24: the frame lays out at a FIXED logical width and is then scaled down to
+     fit the panel. Scrolling could never reach the left margin — a scrollbar
+     cannot go below zero — so left-margin callouts and overlay art were simply
+     unreachable in a narrow panel. At a fixed width nothing overflows, so both
+     margins are always visible. Measurements are unaffected: the frame's own
+     layout viewport is still pvFrameW CSS pixels, and getBoundingClientRect
+     inside it reports in that space, not the scaled one. */
+  /* v25: at 100% the WRAPPER scrolls horizontally, not the page inside the
+     frame. That is the whole trick: .main's own scrollbar can never reach
+     content to the left of its origin, but the wrapper's can, because at this
+     level both margins lie to the RIGHT of the wrapper's zero. */
+  #view-preview .pv-frame-wrap{border:1px solid var(--border);border-radius:10px;
+    overflow:auto;background:#fff;position:relative;}
+  #view-preview #pvFrame{display:block;border:0;background:#fff;
+    transform-origin:0 0;will-change:transform;}
+  #view-preview.pv-is-local .pv-frame-wrap{display:none;}
+  #view-preview:not(.pv-is-local) .pv-stage,
+  #view-preview:not(.pv-is-local) .pv-captions,
+  #view-preview:not(.pv-is-local) .audiovisual-control-toolbar{display:none;}
+  /* DEPRECATED from v17: the local stage and every #view-preview rule that dresses
+     it are a hand-copied approximation of the real page, kept only as a fallback
+     for when the live page can't load. Delete once the iframe route has proven
+     itself in daily use — do not add to it. */
+  #view-preview .pv-stage{display:flex;justify-content:center;padding:10px 0 90px;background:#fbfbfb;
+    border:1px solid var(--border);border-radius:10px;}
+  #view-preview .content-wrap{grid-column-gap:0;grid-row-gap:0;flex-flow:column;flex:none;
+    grid-template-rows:auto;grid-template-columns:208px 675px 208px;grid-auto-columns:1fr;
+    width:1091px;height:auto;display:grid;position:relative;overflow:visible;}
+  #view-preview .left-annotation-area,#view-preview .right-annotation-area{border:1px dashed #e0e0e0;position:relative;}
+  #view-preview .content-with-notes{grid-column-gap:10px;grid-row-gap:10px;border:1px dashed #e0e0e0;
+    flex-flow:column;padding:15px;display:flex;position:relative;background:#fff;}
+  #view-preview .add-space-or-note-wrap{min-height:22px;border:1px dashed #ededed;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;color:#c9c9c9;font-size:10px;}
+  #view-preview .add-space-or-note-wrap:after{content:"add-space-or-note-wrap (gate inserts above this)";}
+  #view-preview .content-with-notes .paragraph-style{font-family:"TimesSTEM",Times,"Times New Roman",serif;
+    font-weight:400;font-size:17px;line-height:20px;letter-spacing:.05px;margin:0;}
+  /* v14: key terms — ported VERBATIM from the live keyterm system embed so Preview
+     matches what students see. The runtime emits
+     <span class="keyterm-highlight" data-keyterm="..." style="--keyterm-colour:#hex">
+     and injects no CSS of its own, so without this the term rendered as bare Times.
+     Callouts and connectors are NOT here: the runtime never emits .keyterm-callout,
+     so there is nothing for the embed's script to position (see the callout build). */
+  #view-preview .keyterm-highlight{
+    letter-spacing:.25px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:15px;
+    font-weight:500;
+    position:relative;
+    display:inline;
+    color:inherit;
+    cursor:pointer;
+    text-decoration-line:underline;
+    text-decoration-color:var(--keyterm-colour,#f6f7f7);
+    text-decoration-thickness:2px;
+    text-underline-offset:4px;
+    text-decoration-skip-ink:none;}
+  #view-preview .keyterm-highlight:hover{text-decoration-thickness:2.5px;}
+  #view-preview .keyterm-anchor{position:absolute;left:0;right:0;bottom:-3px;height:2px;
+    opacity:0;pointer-events:none;}
+  /* v15: callout VISUALS — copied from Webflow's stem-notes.css (.keyterm-callout,
+     -box, -header, -body). The embed below owns behaviour only, so without these
+     a generated callout renders as unstyled text. Re-copy if Webflow changes. */
+  #view-preview .keyterm-callout{z-index:auto;grid-column-gap:0px;grid-row-gap:0px;flex-flow:column;
+    flex:none;align-self:center;width:auto;padding:0;display:inline-flex;position:relative;}
+  #view-preview .keyterm-callout-box{grid-column-gap:0px;grid-row-gap:0px;background-color:#dfdfdfbf;
+    border:1px #e0e0e0;border-radius:10px;flex-flow:column;align-items:stretch;width:125px;
+    min-width:125px;max-width:125px;margin-left:0;margin-right:0;padding:10px;display:flex;position:relative;}
+  #view-preview .keyterm-callout-header{color:#676767;letter-spacing:.2px;width:100%;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:500;line-height:15px;}
+  #view-preview .keyterm-callout-body{letter-spacing:.1px;white-space:normal;overflow-wrap:break-word;
+    background-color:#fff0;width:100%;max-width:100%;color:#231f20;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;font-weight:400;line-height:16px;}
+  #view-preview .callout-anchor{width:4px;height:4px;position:absolute;}
+  /* weight-only runs — the runtime injects the same rules for the live page */
+  #view-preview .keyterm-callout-header .stem-helv,#view-preview .keyterm-callout-body .stem-helv,
+  #view-preview .keyterm-callout-header .stem-helv400,#view-preview .keyterm-callout-body .stem-helv400{
+    font-family:inherit;font-size:inherit;line-height:inherit;letter-spacing:inherit;}
+  #view-preview .keyterm-callout-header .stem-helv,#view-preview .keyterm-callout-body .stem-helv{font-weight:500;}
+  #view-preview .keyterm-callout-header .stem-helv400,#view-preview .keyterm-callout-body .stem-helv400{font-weight:400;}
+  #view-preview .audiovisual-control-toolbar{position:sticky;bottom:10px;margin:0 auto;width:max-content;
+    background:#fff;border:1px solid var(--border);border-radius:12px;padding:7px 10px;display:flex;gap:6px;
+    align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.06);z-index:5;}
+  #view-preview .audiovisual-control-toolbar button{height:28px;padding:0 10px;border-radius:8px;
+    border:1px solid var(--border);background:#fff;cursor:pointer;font-size:11px;font-weight:500;}
+  #view-preview .audiovisual-control-toolbar .play-or-continue{background:#231f20;border-color:#231f20;color:#fff;min-width:60px;}
+  #view-preview .pause-icon{display:none;}
+  #view-preview .pv-captions{min-height:22px;max-width:820px;margin:6px auto 4px;padding:6px 12px;text-align:center;color:#5a5a5a;font:14px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;}
+  #view-preview.pv-guides .pv-captions{outline:1px dashed rgba(200,114,28,.55);border-radius:6px;}
+  #view-preview.pv-guides .pv-captions:empty:after{content:"captions — spoken-only ‘Narration’ beats appear here";color:#c8721c;opacity:.7;font-size:11px;}
+  /* measurement guides */
+  #view-preview.pv-guides .content-with-notes{outline:1px solid rgba(200,114,28,.55);}
+  #view-preview.pv-guides .content-with-notes:before{content:"";position:absolute;inset:15px;
+    border:1px dashed rgba(37,99,168,.5);pointer-events:none;z-index:1;}
+  #view-preview .pv-graph-guide{position:absolute;left:50%;transform:translateX(-50%);top:0;height:100%;
+    width:1061px;border-left:1px dashed rgba(31,138,84,.55);border-right:1px dashed rgba(31,138,84,.55);
+    pointer-events:none;display:none;z-index:0;}
+  #view-preview.pv-guides .pv-graph-guide{display:block;}
+  #view-preview .pv-graph-guide:after{content:"graph canvas 1061px — graphs break out of the column";
+    position:absolute;left:0;top:-13px;font-family:ui-monospace,monospace;font-size:9px;
+    color:rgba(31,138,84,.9);white-space:nowrap;}
+</style>
+<style>
+html,body{margin:0;padding:0;background:#fff;}
+.pp-vp{overflow:visible;height:auto !important;}
+.pp-stack{transform:none !important;width:auto;zoom:0.9411765;}
+.pp-page{border:0;box-shadow:none;margin:0;height:1192px;page-break-after:always;}
+.pp-page:last-child{page-break-after:auto;}
+.pp-overflow{display:none !important;}
+.pp-foot{color:#231f20;font-size:14.88px;line-height:16.62px;}
+.ob-erq{--oe-line-ink:#231f20;}
+.ob-paper .opp-rule,.ob-psec .ops-rule{background:transparent !important;height:0;border-top:0.71px solid #231f20;}
+@page{size:A4;margin:0;}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},
+  options:{enableSpeech:false,enableBraille:false},
+  output:{font:"mathjax-termes",mtextInheritFont:true},
+  chtml:{matchFontHeight:false}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml-nofont.js"></script>
+</head><body>
+<div class="pp-vp"><div class="pp-stack"><div class="pp-page"><div class="pp-content"><div class="ob-paper" data-pref="PROBE"><img class="opp-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzNi4yNiAzNiI+CiAgPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDIuMS4xIEJ1aWxkIDEyMykgIC0tPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuc3QwIHsKICAgICAgICBmaWxsOiAjMjMxZjIwOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjkuNjgsMTIuMzdsLTUuOTMsMi42NmMxLjc0LDEuNjEsMi43OCwzLjk3LDIuNzgsNi41NnYuMDhjMCw0Ljc3LTMuNDIsOC42Ny04LjM2LDguNjdzLTguNDQtMy45OC04LjQ0LTguNzV2LS4wOGMwLTIuNTksMS4wMS00LjkyLDIuNzItNi41MWwtNS4xNS0yLjMxdjcuNzdsMS4wNSwyLjUzYy4wNy4xNywwLC4zNi0uMTguNDQtLjA0LjAyLS4wOS4wMy0uMTMuMDMtLjEzLDAtLjI1LS4wOC0uMzEtLjIxbC0uMzEtLjc0LjA3LjcyYy4wMi4xOC0uMTIuMzUtLjMuMzYtLjAxLDAtLjAyLDAtLjAzLDAtLjE3LDAtLjMxLS4xMy0uMzMtLjNsLS4wNy0uNzktLjA4Ljc5Yy0uMDIuMTctLjE2LjMtLjMzLjMtLjAxLDAtLjAyLDAtLjAzLDAtLjE4LS4wMi0uMzItLjE4LS4zLS4zNmwuMDctLjcxLS4zMS43M2MtLjA1LjEzLS4xOC4yLS4zMS4yLS4wNCwwLS4wOSwwLS4xMy0uMDMtLjE3LS4wNy0uMjUtLjI3LS4xOC0uNDRsMS4wNS0yLjUxdi03LjU1Yy0xLjg0LDIuNDItMi45LDUuNDItMi45LDguNjd2LjA4YzAsNy45Miw2LjE3LDE0LjMyLDE0Ljc2LDE0LjMyczE0Ljg0LTYuNDksMTQuODQtMTQuNHYtLjA4YzAtMy40OC0xLjE5LTYuNjYtMy4yNS05LjE0Ii8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTYuMjMsMTIuOTNjLjEzLS4xOC4yNi0uMzYuNDEtLjUzbC42Ny4zdi0xLjI4bDguNTctMy4yOC02LjQzLDQuMjQsOC42OSwzLjksMTguMTMtOC4xNEwxOC4xMywwLDAsOC4xNGw2LjIzLDIuOHYxLjk5WiIvPgo8L3N2Zz4=" alt="logo"><div class="opp-course">Y12 HSC Biology</div><div class="opp-title">Safari Geometry Probe <span class="helv400">self-measuring</span></div><div class="opp-time">Time Allowed: 1 hour</div><div class="opp-instr">This page measures itself when it loads — you don’t need to do anything except copy the results.</div><div class="opp-rule"></div><div class="of-parts">paper &middot; kind: diagnostic &middot; SKU <b>PROBE-1</b> &middot; © Scholaris Group for Educational Research &mdash; footer/header bands are drawn by the page view &amp; export, not authored</div></div><div style="height:21.25px"></div><div class="formula-card ob-card ob-mcq" data-target="mcq-callout" data-pref="q01"><div class="om-qrow"><div class="om-qnum">01</div><div class="om-content"><div class="om-stem" style="margin-bottom:0;">The stem paragraph, with \( x^2 \) as usual and more text after it.</div><div class="om-sp" style="height:21.25px"></div><div class="om-stem om-hrow" style="margin-left:-14.160000000000004px;"><span class="om-hlab">(i)</span><span class="om-htxt">The male and female gametes are formed and released simultaneously.</span></div><div class="om-stem om-hrow" style="margin-left:-14.160000000000004px;"><span class="om-hlab">(ii)</span><span class="om-htxt">Many gametes must be released into the medium.</span></div><div class="om-stem om-hrow" style="margin-left:-14.160000000000004px;"><span class="om-hlab">(iii)</span><span class="om-htxt">Offspring formed because of external fertilisation have a better chance of survival than those formed inside an organism.</span></div><div class="om-stem om-hrow" style="margin-bottom:0;margin-left:-14.160000000000004px;"><span class="om-hlab">(iv)</span><span class="om-htxt">Large numbers of offspring are produced.</span></div><div class="om-sp" style="height:21.25px"></div><div class="om-list" style="--om-gap:10px"><div class="om-opt"><span class="om-let">A.</span><span class="om-text">(iii) and (iv)</span></div><div class="om-opt"><span class="om-let">B.</span><span class="om-text">(ii) and (iv)</span></div><div class="om-opt"><span class="om-let">C.</span><span class="om-text">(i) and (ii)</span></div><div class="om-opt"><span class="om-let">D.</span><span class="om-text">(i) and (iii)</span></div></div></div></div><div class="of-parts">answer: <b>(none set)</b> &middot; not spoken &middot; number + answer are authoring aids &mdash; on the live page only the number shows</div></div><div style="height:21.25px"></div><div class="oe-note">A grey italic note for colour and metrics.</div><div style="height:21.25px"></div><div class="ob-erq oe-qlevel" data-pref="11"><div class="oe-row"><span class="oe-gut"><span class="oe-g1">11</span><span class="oe-g2">&#8203;</span></span><div class="oe-body"><div class="oe-stem">A question-level preamble with an inline \( r&lt;n \) equation in its stem.</div><div class="oe-stem oe-eqline">\[ \sum_{k=0}^{n} \binom{n}{k} = 2^{n} \]</div></div><span class="oe-marks">&#8203;</span></div></div><div style="height:21.25px"></div><div class="ob-erq" data-pref="11.a"><div class="oe-row"><span class="oe-gut"><span class="oe-g1">&#8203;</span><span class="oe-g2">a.</span></span><div class="oe-body"><div class="oe-stem">Identify the widths: part text sits one hang deeper than the preamble.</div><div class="oe-lines"><div class="oe-line">................................................................................................................................................................................</div><div class="oe-line">................................................................................................................................................................................</div><div class="oe-line">................................................................................................................................................................................</div></div></div><span class="oe-marks">2</span></div></div><div style="height:21.25px"></div><div class="ob-erq oe-qlevel" data-pref="12"><div class="oe-row"><span class="oe-gut"><span class="oe-g1">12</span><span class="oe-g2">&#8203;</span></span><div class="oe-body"><div class="oe-stem">A partless question whose lines start on the a. column.</div><div class="oe-lines"><div class="oe-line">................................................................................................................................................................................</div><div class="oe-line">................................................................................................................................................................................</div><div class="oe-line">................................................................................................................................................................................</div></div></div><span class="oe-marks">3</span></div></div><div class="pp-eot">End of Test</div></div><div class="pp-foot"><div class="pp-foot-l"><div>© Scholaris Group for Educational Research</div><div><span class="pp-dnl">SKU</span> PROBE-1</div></div><div class="pp-foot-r">Page 1 of 1</div></div></div></div></div>
+<script>
+(function(){
+var DOT=new Array(177).join(".");
+function fills(){
+  document.querySelectorAll(".pp-page").forEach(function(pg){
+    var content=pg.querySelector(".pp-content");
+    var cTop=content.getBoundingClientRect().top;
+    content.querySelectorAll("[data-fill]").forEach(function(f){
+      var top=f.getBoundingClientRect().top-cTop;
+      var n=Math.floor((854.35-top)/34)+1;
+      if(n<0)n=0; if(n>60)n=60;
+      var ls=""; for(var i=0;i<n;i++) ls+='<div class="oe-line">'+DOT+'</div>';
+      f.innerHTML=ls;
+    });
+  });
+}
+function go(){
+  var mj=(window.MathJax&&MathJax.startup&&MathJax.startup.promise)?MathJax.startup.promise:Promise.resolve();
+  var to=new Promise(function(r){setTimeout(r,15000);});
+  Promise.race([mj,to]).then(function(){return document.fonts.ready;}).then(function(){
+    setTimeout(function(){ fills(); setTimeout(function(){ window.__probeGo && window.__probeGo(); },300); },200);
+  });
+}
+if(document.readyState==="complete") go(); else window.addEventListener("load",go);
+})();
+</script>
+<script>
+/* STEM Notes — Safari geometry probe: measures the rendered page and reports
+   pass/fail against reference values captured in Chromium. */
+window.__probeGo = function(){
+  function rnd(x){ return Math.round(x*100)/100; }
+  var page1 = document.querySelectorAll('.pp-page')[0];
+  var content = page1.querySelector('.pp-content');
+  var cb = content.getBoundingClientRect();
+  function X(el){ return rnd(el.getBoundingClientRect().left - cb.left); }
+  function R(el){ return rnd(el.getBoundingClientRect().right - cb.left); }
+  function inkR(el){ var r=document.createRange(); r.selectNodeContents(el);
+    return rnd(r.getBoundingClientRect().right - cb.left); }
+
+  var v = {};
+  var pr = page1.getBoundingClientRect();
+  v.pageW = rnd(pr.width); v.pageH = rnd(pr.height);
+
+  var mcq = content.querySelector('.ob-mcq');
+  var stems = mcq.querySelectorAll('.om-stem');
+  v.mcqStemX = X(stems[0]);
+  v.optLetX = X(mcq.querySelector('.om-let'));
+  v.optLetInkR = inkR(mcq.querySelector('.om-let'));
+  v.optTextX = X(mcq.querySelector('.om-text'));
+  var rows = mcq.querySelectorAll('.om-hrow');
+  v.hang1LabInkR = inkR(rows[0].querySelector('.om-hlab'));
+  v.hang1TxtX = X(rows[0].querySelector('.om-htxt'));
+  v.hang3LabInkR = inkR(rows[2].querySelector('.om-hlab'));
+  v.hang3TxtX = X(rows[2].querySelector('.om-htxt'));
+
+  /* the v52 question: inline equation vertical position vs its own line's text */
+  var mjx = stems[0].querySelector('mjx-container');
+  if (mjx && mjx.previousSibling && mjx.previousSibling.nodeType === 3) {
+    var t = mjx.previousSibling;
+    var rr = document.createRange();
+    rr.setStart(t, Math.max(0, t.length - 6)); rr.setEnd(t, t.length);
+    v.inlineEqBottomDelta = rnd(mjx.getBoundingClientRect().bottom - rr.getBoundingClientRect().bottom);
+  } else v.inlineEqBottomDelta = null;
+
+  var note = content.querySelector('.oe-note');
+  v.noteX = X(note); v.noteColor = getComputedStyle(note).color;
+
+  var e11 = content.querySelector('[data-pref="11"]');
+  var e11a = content.querySelector('[data-pref="11.a"]');
+  var e12 = content.querySelector('[data-pref="12"]');
+  v.erq11StemX = X(e11.querySelector('.oe-stem'));
+  v.erq11aLabX = X(e11a.querySelector('.oe-g2'));
+  v.erq11aStemX = X(e11a.querySelector('.oe-stem'));
+  var L11a = e11a.querySelectorAll('.oe-line');
+  v.erq11aLineL = X(L11a[0]); v.erq11aLineR = R(L11a[0]);
+  var L12 = e12.querySelectorAll('.oe-line');
+  v.erq12LineL = X(L12[0]); v.erq12LineR = R(L12[0]);
+  v.linePitch = rnd(L12[1].getBoundingClientRect().top - L12[0].getBoundingClientRect().top);
+
+  var eqline = e11.querySelector('.oe-eqline');
+  if (eqline) {
+    var er = eqline.querySelector('mjx-container').getBoundingClientRect();
+    v.dispEqCenterOffset = rnd((er.left + er.right)/2 - (cb.left + cb.width/2));
+  }
+
+  var faces = [];
+  try { document.fonts.forEach(function(f){ faces.push(f.family.replace(/['"]/g,'')+' '+f.weight+' '+f.style+' — '+f.status); }); } catch(e){}
+  v.mjVersion = (window.MathJax && MathJax.version) || 'none';
+
+  var EXPECTED = {"pageW": 793.7, "pageH": 1121.88, "mcqStemX": 26.66, "optLetX": 26.66, "optLetInkR": 42.31, "optTextX": 53.31, "hang1LabInkR": 42.33, "hang1TxtX": 53.34, "hang3LabInkR": 42.33, "hang3TxtX": 53.34, "inlineEqBottomDelta": 0, "noteX": 0, "noteColor": "rgb(110, 110, 110)", "erq11StemX": 26.66, "erq11aLabX": 26.66, "erq11aStemX": 53.31, "erq11aLineL": 50.66, "erq11aLineR": 578.38, "erq12LineL": 24, "erq12LineR": 578.38, "linePitch": 32, "dispEqCenterOffset": 0, "mjVersion": "4.1.3"};
+  var TOL = { default: 1.2, inlineEqBottomDelta: 1.0, linePitch: 0.6 };
+
+  var out = { ua: navigator.userAgent, when: new Date().toISOString(), values: v, faces: faces };
+  window.__probeResults = out;
+
+  /* ---- report panel ---- */
+  var panel = document.createElement('div');
+  panel.style.cssText = 'font:13px/1.5 -apple-system,system-ui,sans-serif;padding:14px 16px;background:#f7f7f8;border-bottom:1px solid #ddd;';
+  var rowsHtml = '', pass = 0, fail = 0;
+  Object.keys(v).forEach(function(k){
+    var got = v[k], exp = (EXPECTED && typeof EXPECTED === 'object') ? EXPECTED[k] : undefined;
+    var ok, detail;
+    if (exp === undefined) { ok = null; detail = ''; }
+    else if (typeof got === 'number' && typeof exp === 'number') {
+      var tol = TOL[k] || TOL.default;
+      ok = Math.abs(got - exp) <= tol;
+      detail = 'expected ' + exp + ' (±' + tol + ')';
+    } else { ok = String(got) === String(exp); detail = 'expected ' + exp; }
+    if (ok === true) pass++; if (ok === false) fail++;
+    rowsHtml += '<div style="display:flex;gap:10px;align-items:baseline;'+(ok===false?'background:#fde8e8;border-radius:4px;padding:1px 6px;margin:0 -6px;':'')+'">'
+      + '<span style="width:170px;color:#555;">'+k+'</span>'
+      + '<span style="width:200px;font-family:ui-monospace,Menlo,monospace;">'+got+'</span>'
+      + '<span style="color:#888;font-size:12px;">'+detail+'</span>'
+      + '<span style="margin-left:auto;font-weight:600;color:'+(ok===true?'#1f8a54':(ok===false?'#c0392b':'#888'))+'">'+(ok===true?'PASS':(ok===false?'FAIL':'—'))+'</span>'
+      + '</div>';
+  });
+  var summary = (fail === 0)
+    ? '<b style="color:#1f8a54;">All ' + pass + ' checks passed</b> — this browser lays the paper out exactly like the reference.'
+    : '<b style="color:#c0392b;">' + fail + ' of ' + (pass+fail) + ' checks differ</b> — copy the results below and send them to Claude.';
+  panel.innerHTML =
+    '<div style="font-weight:700;font-size:15px;margin-bottom:2px;">STEM Notes — geometry probe</div>'
+    + '<div style="margin-bottom:8px;">' + summary + '</div>'
+    + rowsHtml
+    + '<div style="margin:10px 0 4px;"><button id="probe-copy" style="font:13px -apple-system,sans-serif;padding:6px 14px;border:1px solid #bbb;border-radius:8px;background:#fff;">Copy results</button> <span id="probe-copied" style="color:#1f8a54;display:none;">Copied ✓</span></div>'
+    + '<details style="margin-top:6px;"><summary style="color:#888;">fonts &amp; raw JSON</summary><pre style="font:11px ui-monospace,Menlo,monospace;white-space:pre-wrap;">'
+    + faces.join('\n') + '\n\n' + JSON.stringify(out, null, 1).replace(/</g,'&lt;') + '</pre></details>';
+  document.body.insertBefore(panel, document.body.firstChild);
+  document.getElementById('probe-copy').addEventListener('click', function(){
+    var txt = JSON.stringify(window.__probeResults, null, 1);
+    function done(){ document.getElementById('probe-copied').style.display = 'inline'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function(){ fallback(); });
+    else fallback();
+    function fallback(){ var ta = document.createElement('textarea'); ta.value = txt;
+      document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} ta.remove(); }
+  });
+};
+
+</script></body></html>
