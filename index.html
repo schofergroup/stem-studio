@@ -21,6 +21,221 @@
    - Grammar check via LanguageTool (British English; free API, optional key).
    - Autosaves to your browser. Save/Load a project file to back up or move it.
 
+  v77 (outline a smidge darker)
+   - The lesson pages' dashed outline is #d6d6d6 (was #e0e0e0) — still
+     lighter than the column's #c9c9c9 dots. (stempaper-v1.js's v77 change,
+     the transparent wrap, shipped separately.)
+
+  v76 (page outline + corner marks on the lesson surface)
+   - Lesson-bundle pages wear a 1px dashed #e0e0e0 outline (the flat,
+     drafting-table look) and stempaper-v1.js draws a small plus mark
+     straddling each corner of every page (9x9, #767676) as an overlay —
+     outside the page's own clipping, so nothing is sliced off.
+
+  v75 (flat pages on the lesson surface)
+   - Lesson bundles drop the page card's border and shadow — the overhang
+     into the annotation areas is white-on-white, so margin callouts and
+     student notes sit on the paper itself. Footer bands still delineate
+     pages. (Page view in the studio and the PDF are unchanged.)
+
+  v74 (lesson bundles are FULL PAGES with overhanging margins)
+   - The Lesson bundle now compiles the complete A4 page card — side
+     margins included. On the site, stempaper-v1.js overhangs those
+     margins into the empty annotation areas flanking content-with-notes
+     (bundle.frameOffset = 99.31px tells it how far), so the text frame
+     still lands exactly on the lesson column at 1:1 — and lesson anchor
+     coordinates now EQUAL PDF page coordinates. Scales down only when
+     the viewport is narrower than the page.
+
+  v73 (lesson bundles are TRIMMED PAGES)
+   - The Lesson bundle now compiles the paper as trimmed pages: real page
+     structure — page breaks, footer bands (© / SKU, Page X of Y), fixed
+     page height, top/bottom page edges — with the side margins cut so the
+     644.98px text frame fills the lesson column at 1:1. Vertical geometry
+     is untouched, so the bands sit exactly where the PDF puts them.
+     lines: fill fills to the true page bottom on the site too.
+
+  v72 (bundle fixes from the first live Webflow render)
+   - The bundle CSS now carries the inline-run classes (~word~ / ~~word~~ /
+     *word* / **word**, roman lists) — the masthead's regular-weight run
+     rendered Medium on the site because the filter dropped .helv400.
+   - stempaper-v1.js: the stage wrap paints its own white background, and
+     init takes insert: "start" | "end" | selector — so the paper can sit
+     above the page's action buttons instead of after them.
+
+  v71 (Lesson bundle button)
+   - Paper beats have a third button next to Export PDF: "Lesson bundle"
+     downloads the compiled {html, css, frameW} JSON (named from the SKU,
+     e.g. 12C-DT-1-NSW-C5-1-bundle.json). Upload it to Supabase and the
+     site's stempaper-v1.js renders it inside content-with-notes.
+
+  v70 (runtime paper renderer — slice 1)
+   - buildPaperLessonBundle(text) compiles a paper for the LESSON surface:
+     {html, css, frameW}. html = the blocks in document flow (no pages or
+     footer bands) with data-pref anchors; css = the paper skin (the page
+     view's .pp-page rules rewritten to .pp-flow — no @font-face, no global
+     element rules, the site owns those); frameW = 644.98.
+   - Pairs with stempaper-v1.js: renders a bundle inside a lesson column
+     (e.g. .content-with-notes), auto-scales to the container (643px column
+     → 0.9969, invisible), typesets MathJax, and exposes the question
+     anchor API — question(ref) / box(ref) in paper coordinates /
+     onQuestionTap — the hooks the annotated explainers will clip onto.
+
+  v69 (-- becomes an em dash)
+   - Typing "--" (exactly two hyphens) anywhere in text renders as a true
+     em dash (—): "Reading time -- 5 minutes" → "Reading time — 5 minutes".
+     Hyphens inside equations and code are never converted, a single "-"
+     stays a hyphen, and "---" on its own line is still the pagebreak.
+
+  v68 (equal dotpoint gaps)
+   - The level-1 label column narrowed to 60.2px (one average capital-suffix
+     width less than level 2's 70.83px), so "B5.1.1 → text" and
+     "B5.1.1A → text" now show the SAME space. Level 2 starts on the new
+     level-1 text column (60.2px) and its text sits at 131.03px.
+
+  v67 (syllabus dotpoints)
+   - dp: P5.1.1 | analyse the motion of projectiles…  — a top-level paper
+     line renders as a syllabus dotpoint: the label in Helvetica Neue 500,
+     the description in HN 400, both 15/21.25, with the description hanging
+     in its own column (label column 70.83px = 2.5 hangs).
+   - > dp: P5.1.1A | a constant vertical acceleration…  — level 2: the label
+     starts on the level-1 text column and its description indents the same
+     amount again (141.66px), wrapping under itself.
+   - Two levels only; the pipe separates label from text (it is not the
+     marks column on dp lines). Blank lines between dotpoints are the usual
+     21.25px each.
+
+  v66 (question-level lines reach the right edge)
+   - The dotted lines are literal full stops, and there were exactly 160 —
+     counted for the part-level width — so a question-level line (one hang
+     wider since v61) ran out of dots ~21px before its right edge, making its
+     gap to the marks column look bigger. Lines now carry 176 dots and the
+     box clips at the exact width, so BOTH kinds end on the same right edge
+     with the same gap to the marks. Part-level lines are visually unchanged.
+
+  v65 (click-to-sync + two polish fixes)
+   - CLICK-TO-SYNC in page view: click any block on a page (question, masthead,
+     section header) and the Source scrolls to the lines that made it, with a
+     brief pink flash. Click into the Source and the page view scrolls to the
+     page holding the block your caret is in. No syntax, nothing to configure.
+   - The Source / preview boxes top-align again in page view (v64's flex
+     columns let the preview's label row grow to its buttons' height).
+   - Export PDF now sits at the row's right edge, directly below the beat's
+     Delete button, so it doesn't read as part of the view toggle.
+
+  v64 (paper beats scroll sanely)
+   - A beat in PAGE VIEW is now one screenful: the Source pane and the page
+     preview are each capped to the window height and scroll on their own,
+     so long papers no longer drag the two columns apart. Scrolling the page
+     moves between beats; scrolling inside a pane keeps the other one put.
+     Lesson (non-paper) beats are unchanged.
+
+  v63 (hanging-list labels align to the option full stops)
+   - The right-aligned (i)/(a)/(1) labels now END on the same x as the full
+     stop after the option letters ("A." → 16.62px), so the space between a
+     label and its item is exactly the space between "A." and its option.
+     Text column unmoved (28.33px, level with the option text).
+
+  v62 (hanging lists moved onto the option columns)
+   - "> (i) text" hanging rows now sit one hang LEFT: the TEXT is on the
+     option-text column (28.33px, level with "(iii) and (iv)") and the
+     right-aligned (i)/(a)/(1) label lives in the A./B./C. letter column,
+     still ending a constant 5.66px before its text. ">> (…)" is one hang
+     deeper. Plain "> text" indents are unchanged.
+
+  v61 (question-level alignment + centre: lines)
+   - QUESTION-LEVEL @erq blocks — gutter is a bare question number: a preamble
+     ("@erq 11 | 11 |") or a partless question ("@erq 12 | 12 | 3") — now start
+     their content one hang EARLIER, level with the a./i. labels of part
+     blocks. Their writing lines lengthen by the same hang on the left; the
+     lines' right edge (503.88pt) and the gap to the marks column are
+     unchanged. Display equations, the More-note and continued labels keep
+     their frame maths in step. Part blocks are untouched.
+   - centre: some words — centres the line. Top level: centred on the full
+     text frame (e.g. centre: ~Question 11~ ~~continues on the next page.~~).
+     Inside an @erq body: centred on the same span as the More-note. Runs
+     (~...~, ~~...~~), maths and marks-free lines only; "center:" accepted.
+
+  v60 (hanging-list polish + lighter notes)
+   - Hanging-list labels are now RIGHT-ALIGNED with a constant 5.66px (4pt)
+     gap to the text — "(i)" and "(iii)" both clear their text identically;
+     the ragged edge moves to the left where the eye doesn't track. The text
+     column is unmoved (still on the 28.33px grid).
+   - note: grey is a tiny bit lighter — #6e6e6e (was #666666). Unchanged on
+     export: nothing in the print doc recolours notes, so they print grey.
+
+  v59 (hanging lists inside @mcq stems)
+   - "> (i) text" — when an indented stem line begins with a (label), the label
+     keeps its position and the words after it sit in their own column one hang
+     (28.33px) further, wrapping under themselves, exam-paper style. Works for
+     (i)…(iv), (a)…(z), (1)…(99) — any short (label). ">> (a) text" starts one
+     hang deeper. A label wider than the hang (e.g. "(viii)") nudges its own
+     text right rather than clipping.
+   - "> text" without a (label) is unchanged: a plain indented line (v58).
+
+  v58 (indents inside @mcq stems)
+   - "> text" and ">> text" in an @mcq STEM indent that line to the first /
+     second hang (28.33 / 56.66px) — so a (i)…(iv) list can sit level with
+     the option text: "> (i) The male and female gametes…". Same markers as
+     @erq bodies and paper top level. (Stem lines only — before the options.)
+
+  v57 (you own ALL the space on papers)
+   - Paper pages have NO default gaps between blocks any more (the old 21.25px
+     between questions and 29.7px under the masthead are gone). A blank source
+     line = 21.25px, and that is the ONLY way space appears between blocks —
+     no blank lines in the source, no space on the page.
+   - Blank lines INSIDE an @mcq body now render too: a blank between the stem
+     and the options (or between two options) = exactly 21.25px each.
+   - The masthead rule (under the instructions) now sits 10px below its text,
+     exactly like the @section rule — it was 19.9px, which read as "too low".
+
+  v56 (indented notes)
+   - "> note: text" and ">> note: text" put a note at the first / second hang
+     (28.33 / 56.66px) — inside @erq bodies and at top level on paper pages.
+
+  v55 (blank lines 1:1 on papers · paper indents · darker notes)
+   - PAPER PAGES: every blank line = exactly one 21.25px line of space — one
+     return, one line, no surprises. (Lessons keep the old convention: first
+     blank = the block gap, extras 10px each — the live runtime's flow and
+     annotation anchors are untouched: the new single-blank token is skipped
+     by the lesson JSON and the flow preview.)
+   - INDENTS on papers: "> text" sits at the first hang (28.33px) and
+     ">> text" at the second (56.66px) — top level and inside @erq bodies.
+     Lesson indent behaviour (">" 38px block, ">>" first-line indent) is
+     unchanged.
+   - "note:" darkened to #666666.
+
+  v54 (note colour)
+   - "note:" comments darkened a step: #7a7a7a (the footer band keeps #8f8f8f).
+
+  v53 ("note:" — grey italic comments anywhere on a paper)
+   - A line starting  note: your comment here  renders as a COMMENT: grey
+     (#8f8f8f) italic Helvetica Neue 13px/17px. Works INSIDE an @erq body
+     (positioned in that part's flow, e.g. between the stem and the lines)
+     and at TOP LEVEL between blocks on paper pages. Inline markup (~runs~,
+     equations) works within it. It prints exactly as it looks — grey —
+     so use it for guidance meant to reach the page; ## still hides a line
+     entirely. Lesson beats are untouched (prose starting "Note:" in a
+     lesson stays ordinary prose).
+
+  v52 (MCQ question number at paper size)
+   - On paper pages the @mcq question number prints at the paper standard —
+     Helvetica Neue 500, 15px/21.25px — instead of the lesson-context 17px.
+   - Known issue under investigation: inline equations sitting slightly below
+     the text baseline on one of Sophie's surfaces (suspected Safari's layout
+     of MathJax v4 CHTML); reproduces at delta 0.0px in Chromium, so the fix
+     waits on identifying the exact surface rather than a blind nudge.
+
+  v51 (@mcq becomes a document on paper pages)
+   - On PAPER PAGES the @mcq block sheds its lesson-callout card (grey box,
+     border, padding): the question number sits in the 28.33px gutter at the
+     frame edge, the stem and the A./B./C./D. letters at the first indent,
+     option text hanging at the second — the InDesign MCQ metrics. Adjacent
+     question blocks get the usual one-line gap.
+   - The answer aids (bold letter + green tick) are HIDDEN on paper pages —
+     and therefore in the Export PDF, where they must never reach students.
+     They still show in the flow preview, which is the authoring aid's home.
+
   v50 (marks lines on paper pages + the "Marks" header word)
    - A line ending "|3" or "|Marks" (the existing v33 marks-column feature)
      now renders on PAPER PAGES too, same flex structure as the flow preview;
@@ -803,6 +1018,25 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
      whole A4 page (right edge included) is visible */
   .beat.paper-pages .beat-body{ grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); }
   .beat.paper-pages .preview.render{ width:100%; max-width:880px; }
+  /* v64: a paper beat is ONE SCREENFUL — Source and the page preview are each
+     capped to the window and scroll independently, so a 15-page paper no
+     longer drags the two columns out of alignment. The outer page scroll
+     moves between beats; inside a beat, each pane keeps its own place. */
+  .beat.paper-pages .beat-body > div{ display:flex; flex-direction:column; min-height:0;
+    max-height:calc(100vh - 90px); }
+  .beat.paper-pages .src-wrap{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+  .beat.paper-pages .preview.render{ flex:1 1 auto; min-height:0; overflow-y:auto; }
+  /* v65: in the flex columns above, a label row's automatic minimum size let a
+     22px-high row grow to its buttons' height on one side only — pin BOTH
+     label rows to exactly 22px so the two boxes top-align again. */
+  .beat.paper-pages .beat-body > div > .field-label{ flex:0 0 22px; min-height:0; height:22px; }
+  /* v65: Export PDF sits at the ROW'S RIGHT EDGE — directly below the beat's
+     Delete button — so it reads as a beat action, not part of the view toggle. */
+  .beat-body .field-label .pv-export{ margin-left:auto; }
+  /* v65: click-to-sync flash — marks the Source lines a clicked block came from */
+  .src-sync-flash{ position:absolute; left:2px; right:2px; height:22px;
+    background:#f6e5e9; border-radius:4px; opacity:.9; pointer-events:none;
+    transition:opacity .9s ease; z-index:2; }
   @media (max-width:760px){ .beat-body { grid-template-columns:1fr; } .beat-body .preview.render{width:100%;} }
 
   .field-label { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin:0 0 5px; }
@@ -1015,6 +1249,16 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-mcq .om-content{ flex:1; min-width:0;
     font-family:"Times New Roman",Times,serif; font-size:17px; line-height:21.25px; letter-spacing:0.05px; color:#231f20; }
   .ob-mcq .om-stem{ margin:0 0 10px; }
+  /* v59: hanging list rows in the stem — "> (i) text": the (i) keeps its spot,
+     the text sits and wraps in its own column one hang (28.33px) further. */
+  .ob-mcq .om-hrow{ display:flex; align-items:flex-start; }
+  /* v63: labels RIGHT-ALIGNED so their closing paren lands on the same x as
+     the full stop after the option letters ("A." ends at 16.62px in Times 17
+     — A=0.722em + .=0.25em + tracking), giving the list the SAME label-to-text
+     space as the A./B. rows. Text column unmoved (28.33px = option text). */
+  .ob-mcq .om-hrow .om-hlab{ flex:0 0 42.5px; min-width:42.5px; text-align:right;
+    padding-right:11.71px; box-sizing:border-box; }
+  .ob-mcq .om-hrow .om-htxt{ flex:1 1 auto; min-width:0; }
   /* list */
   .ob-mcq .om-list{ display:flex; flex-direction:column; }
   .ob-mcq .om-opt{ display:flex; align-items:flex-start; }
@@ -1052,7 +1296,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
   .ob-paper .opp-time{ margin-top:21.25px; }
   .ob-paper .opp-instr{ margin-top:15px; }
-  .ob-paper .opp-rule{ height:1.5px; background:#8f8f8f; margin-top:15px; }   /* v43: web rule 1.5px grey; print = 0.5pt black (PAPER_BAND.rulePrintPt) */
+  .ob-paper .opp-rule{ height:1.5px; background:#8f8f8f; margin-top:10px; }   /* v43: web rule 1.5px grey; print = 0.5pt black (PAPER_BAND.rulePrintPt). v57: sits 10px under the instructions, exactly like the @section rule */
   .ob-paper .of-parts, .ob-psec .of-parts{ font-family:-apple-system,sans-serif;
     font-size:12px; color:var(--ink-soft); margin-top:6px; }
   .ob-psec{ margin:21.25px 0; }
@@ -1071,6 +1315,13 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
     font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
   .ob-erq .oe-gut .oe-g1{ flex:0 0 28.33px; width:28.33px; }
+  /* v61: QUESTION-LEVEL blocks — gutter holds only the bare question number
+     ("11" preamble / "12" partless), so the content column starts one hang
+     earlier, level with the a./i. part labels of sibling blocks. Display
+     equations and the continued label keep their frame maths in step. */
+  .ob-erq.oe-qlevel .oe-gut{ flex:0 0 28.33px; width:28.33px; }
+  .ob-erq.oe-qlevel .oe-stem.oe-eqline{ margin-left:-28.33px; width:calc(100% + 68.33px); }
+  .ob-erq.oe-qlevel .oe-continued .oe-contlabel{ flex:0 0 28.33px; width:28.33px; }
   .ob-erq .oe-body{ flex:1; min-width:0; }
   .ob-erq .oe-marks{ flex:0 0 40px; width:40px; text-align:right;
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
@@ -1080,6 +1331,27 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     width:calc(100% + 96.66px); text-align:center; }
   .ob-erq .oe-stem.oe-eqline mjx-container[display="true"]{ margin:0 !important; }
   .ob-erq .oe-gap{ height:21.25px; }
+  /* v53: "note:" comment line — grey italic Helvetica Neue 13px, anywhere on
+     the paper (inside @erq bodies or between blocks). Prints as-is. */
+  /* v67: syllabus dotpoints (paper top level) — "dp: P5.1.1 | text" and
+     "> dp: P5.1.1A | text". HN 15/21.25: label 500, description 400. Each
+     level's label column is 70.83px (2.5 hangs = 50pt); level 2 starts on the
+     level-1 text column and indents the same amount again. Text wraps in its
+     own column, exam-front-page style. */
+  .oe-dp{ display:flex; align-items:baseline; margin:0;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400;
+    font-size:15px; line-height:21.25px; letter-spacing:0.1px; color:#231f20; }
+  /* v68: the LEVEL-1 label column is one capital letter narrower (60.2px =
+     70.83 − 10.63, the average A–G suffix width in her HN 500), so the space
+     between "B5.1.1" and its text equals the space between "B5.1.1A" and
+     its text — a level-2 label is always its parent plus one capital. */
+  .oe-dp .oe-dplab{ flex:0 0 60.2px; min-width:60.2px; font-weight:500; }
+  .oe-dp .oe-dptxt{ flex:1 1 auto; min-width:0; }
+  .oe-dp.oe-dp2{ padding-left:60.2px; }
+  .oe-dp.oe-dp2 .oe-dplab{ flex:0 0 70.83px; min-width:70.83px; }
+  .oe-note{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:400; font-style:italic; font-size:13px; line-height:17px;
+    letter-spacing:0.1px; color:#6e6e6e; margin:4px 0; }   /* v60: a tiny bit lighter per Sophie (was #666666); prints grey as-is */
   .ob-erq .oe-contword2{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
     font-weight:400; font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
   .ob-erq .oe-lines{ margin:0; }
@@ -1133,20 +1405,53 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     padding:5px 8px; border-radius:6px; }
   /* page-scoped overrides: print metrics instead of the flow preview's */
   .pp-page .of-parts, .pp-page .oe-fillnote{ display:none !important; }
-  .pp-page .ob-paper{ margin:0 0 29.7px; }
+  /* v57: NO default space above/below blocks on paper pages — a blank source
+     line (21.25px each) is the ONLY thing that makes space between blocks. */
+  .pp-page .ob-paper{ margin:0; }
+  .pp-page .ob-psec{ margin:0; }
+  .pp-page .oe-note{ margin:0; }
   /* v42: Helvetica Neue is 15px EVERYWHERE on paper pages (masthead included);
      only the footer band differs (13px grey, above) */
   .pp-page .opp-course, .pp-page .opp-title{ font-size:15px; line-height:21.25px; }
   .pp-page .opp-time{ font-size:15px; line-height:21.25px; margin-top:31.65px; }
   .pp-page .opp-instr{ margin-top:22.2px; }
-  .pp-page .opp-rule{ margin-top:19.9px; }
+  .pp-page .opp-rule{ margin-top:10px; }   /* v57: matches the @section rule (was 19.9px — Sophie: it sat too low) */
   .pp-page .ob-erq{ margin:0; }
-  .pp-page .ob-erq + .ob-erq{ margin-top:4.25px; }   /* v45: same one-pitch rhythm between blocks */
   .pp-page .oe-stem{ margin-bottom:6px; }
   .pp-page .oe-lines{ margin-top:4.25px; }   /* v45: question->lines gap = one line pitch */
   .pp-page .oe-line{ width:560.71px; margin-left:-2.83px; }
   .pp-page .oe-more{ margin:4.75px 0 0 -56.66px; width:calc(100% + 56.66px); text-align:center; }
+  /* v61: question-level @erq (bare-number gutter — a preamble like "11", or a
+     partless question like "12"): lines lengthen by one hang on the LEFT so
+     they start level with the a./i. labels; the right edge (503.88pt) and the
+     gap to the marks column are untouched. */
+  .pp-page .ob-erq.oe-qlevel .oe-line{ width:589.04px; }
+  .pp-page .ob-erq.oe-qlevel .oe-more{ margin-left:-28.33px; width:calc(100% + 28.33px); }
+  /* v61: centre: lines — top-level ones centre on the full frame; inside an
+     @erq body they centre on the same span as the More-note (gutter reclaimed) */
+  .oe-centre{ text-align:center; }
+  .ob-erq .oe-centrep{ text-align:center; }
+  .pp-page .ob-erq .oe-centrep{ margin-left:-56.66px; width:calc(100% + 56.66px); }
+  .pp-page .ob-erq.oe-qlevel .oe-centrep{ margin-left:-28.33px; width:calc(100% + 28.33px); }
   .pp-page .oe-cont-row{ margin-bottom:0; }
+  /* ---- v51: @mcq on PAPER PAGES — document style, not the lesson callout
+     card. No box; the question number sits in the 28.33px gutter at the
+     frame edge, stem and option letters at the first indent, option text
+     hanging at the second — Sophie's InDesign MCQ metrics. The answer aids
+     (bold letter + green tick) are hidden here and therefore in the export;
+     they remain visible in the flow preview for authoring. */
+  .pp-page .ob-mcq{ background:transparent !important; border:0 !important;
+    border-radius:0; padding:0; margin:0; box-shadow:none; }
+  .pp-page .ob-mcq .om-qnum{ font-size:15px; }   /* v52: paper standard HN 500 15/21.25 (the 17px is the lesson-context size) */
+  /* v57: no default inter-block gaps (was 21.25px mcq↔mcq/erq and 4.25px erq↔erq) — blank source lines control ALL space between blocks */
+  .pp-page .ob-mcq .om-qrow{ margin-top:0; }   /* v57: the flow preview's 6px would leak in as a phantom gap above every question */
+  .pp-page .ob-mcq .om-stem{ margin-bottom:10px; }
+  .pp-page .ob-mcq .om-correct .om-let{ font-weight:400; }
+  .pp-page .ob-mcq .om-correct .om-let::after{ content:none; }
+  .pp-page .ob-mcq .om-table tr.om-correct td.om-rowlabel{ font-weight:400; }
+  .pp-page .ob-mcq .om-table tr.om-correct td.om-rowlabel::after{ content:none; }
+  .pp-page .ob-mcq .om-icell.om-correct .om-let{ font-weight:400; }
+  .pp-page .ob-mcq .om-icell.om-correct .om-let::after{ content:none; }
   .ob-figure { border:1px dashed var(--border); border-radius:10px; background:#fbfbfc; padding:12px 14px; margin:10px 0; }
   /* v33: @center preview - centred block of text */
   .ob-center { text-align:center; margin:10px 0; }
@@ -1420,10 +1725,10 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
         <tr><td><code>1. item</code> on each line<br>(<code>2.</code>, <code>3.</code>&hellip;)</td><td>Arabic numbered list &mdash; figures 1. 2. 3. 4. Consecutive lines opening with a number and dot become a list; the numerals auto-generate by position (so a mistyped number self-corrects) in Helvetica Neue 500 (15px, 25px column) &mdash; same style as the roman list, just Arabic figures. Item text stays Times and is spoken (numerals aren&rsquo;t). Needs runtime v40+.</td></tr>
         <tr><td><code>[laughs]</code></td><td>ElevenLabs audio tag; hidden in preview, kept in the ElevenLabs export</td></tr>
         <tr><td><code>@heading | @formula | @definition | @figure | @mcq | @box &hellip; @end</code></td><td>Orchestration blocks. See the Lesson JSON tab for the emitted contract; store SVGs in the Figures tab.</td></tr>
-        <tr><td><code>@mcq id | num | label</code> &hellip; <code>@end</code></td><td>Multiple-choice question. Three layouts, all on your InDesign metrics (labels at the block left, text hanging at 28.33px = 3p4, Times 17/21.25):<br>&bull; <b>list</b> (default) &mdash; <code>A. text</code> lines. <code>gap: 10</code> sets the px between options (default 10; use <code>21.25</code> for a full line).<br>&bull; <b>table</b> &mdash; <code>layout: table</code>, <code>cols: Combustion | Photosynthesis | &hellip;</code>, options <code>A. cell | cell | &hellip;</code>. Add <code>group: Entropy change | Enthalpy change</code> for a two-tier header (each group spans cols&divide;groups columns). Cells are bordered (0.5px #231f20) and centred, no fills; the A.B.C.D. labels sit <em>outside</em> the border.<br>&bull; <b>image</b> &mdash; <code>layout: image</code>, options <code>A. figure-key</code> (a Supabase <em>figures</em> key) or <code>A. https://&hellip;svg</code>. Two equal columns, SVG top-aligned to the label, 28.33px gap.<br>The <code>num</code> in the opener (<code>@mcq id | 05 | Question</code>) renders as the question number in a left gutter (Helvetica Neue 500, 0.1px, 21.25px). Also <code>answer: C</code> (or a leading <code>*</code>), <code>why: &hellip;</code>, <code>gate: yes</code>, <code>source: &hellip;</code>. The correct-answer tick shows only in this Studio preview, not on the live page. Never spoken. Needs runtime v40+.</td></tr>
+        <tr><td><code>@mcq id | num | label</code> &hellip; <code>@end</code></td><td>Multiple-choice question. Three layouts, all on your InDesign metrics (labels at the block left, text hanging at 28.33px = 3p4, Times 17/21.25):<br>&bull; <b>list</b> (default) &mdash; <code>A. text</code> lines. <code>gap: 10</code> sets the px between options (default 10; use <code>21.25</code> for a full line).<br>&bull; <b>table</b> &mdash; <code>layout: table</code>, <code>cols: Combustion | Photosynthesis | &hellip;</code>, options <code>A. cell | cell | &hellip;</code>. Add <code>group: Entropy change | Enthalpy change</code> for a two-tier header (each group spans cols&divide;groups columns). Cells are bordered (0.5px #231f20) and centred, no fills; the A.B.C.D. labels sit <em>outside</em> the border.<br>&bull; <b>image</b> &mdash; <code>layout: image</code>, options <code>A. figure-key</code> (a Supabase <em>figures</em> key) or <code>A. https://&hellip;svg</code>. Two equal columns, SVG top-aligned to the label, 28.33px gap.<br>The <code>num</code> in the opener (<code>@mcq id | 05 | Question</code>) renders as the question number in a left gutter (Helvetica Neue 500, 0.1px, 21.25px). Also <code>answer: C</code> (or a leading <code>*</code>), <code>why: &hellip;</code>, <code>gate: yes</code>, <code>source: &hellip;</code>. The correct-answer tick shows only in this Studio preview, not on the live page. Never spoken. Needs runtime v40+.<br><b>v58/v59 &mdash; stem indents &amp; hanging lists.</b> In the STEM (above the options), <code>&gt; text</code> indents one hang (28.33px, level with option text) and <code>&gt;&gt; text</code> two. When the indented line begins with a short <code>(label)</code> &mdash; <code>&gt; (i) The male and female&hellip;</code>, also <code>(a)</code>, <code>(1)</code> &mdash; it becomes a <em>hanging</em> row: the label keeps its spot and the words sit &amp; wrap in their own column one further hang in.</td></tr>
         <tr><td><code>@paper id | Diagnostic Test 1</code> &hellip; <code>@end</code></td><td><b>v40 — exam-paper masthead + identity.</b> Keys: <code>kind: diagnostic</code> (espq/booklet cover later), <code>course:</code>, <code>title:</code>, <code>sku:</code> (<code>dn:</code> accepted as an alias), <code>time:</code> (renders as "Time Allowed: &hellip;"), <code>instructions:</code> (extra bare lines append as further paragraphs), <code>copyright:</code>. Course &amp; title are Helvetica&nbsp;Neue&nbsp;500; use <code>~~words~~</code> for the regular-weight run &mdash; <code>title: Diagnostic Test 1: ME-P1 ~~Proof By Mathematical Induction~~</code>. The footer/header bands (&copy; + SKU left, Page X of Y right) are drawn by the page view &amp; export from the shared band config, never authored. Not spoken.</td></tr>
         <tr><td><code>@section 1 | Section I &ndash; Multiple-Choice Questions</code> &hellip; <code>@end</code></td><td><b>v40 — section header.</b> <code>marks: 20</code>, <code>attempt: Question 01&ndash;20</code>, <code>time: about 1 hour</code> render as the "20 marks / Attempt &hellip; / Allow &hellip; for this section" lines + rule; extra bare lines append. The opener title feeds the running head in the page view. Not spoken.</td></tr>
-        <tr><td><code>@erq 01.ii | ii. | 3</code> &hellip; <code>@end</code></td><td><b>v40 — one extended-response PART per block, including all its pages.</b> Opener is <code>id | gutter | marks</code>: the gutter prints <em>verbatim</em> ("01 i." for a question's first part, bare "ii." after, bare "14" for a multi-part question's preamble block holding the shared stem/figure); marks sit in the right-hand column. Body = stem lines (Times + MathJax, in order) plus the page-flow words: <code>lines: 8</code> / <code>lines: fill</code> (dotted writing lines; fill runs to the page bottom in the page view), <code>more</code> (the centred "More writing space is provided on the next page."), <code>pagebreak</code> (or <code>---</code>), <code>continued</code> (label derived from the id: <code>01.ii</code> &rarr; "01 ii. (continued)") or <code>continued: 01 i.</code> to override (the shared-space convention), and <code>figure: key-or-url | h: 320</code> (declared Illustrator height &rarr; deterministic pagination). Not spoken; ElevenLabs/Rehearse ignore the whole block.</td></tr>
+        <tr><td><code>@erq 01.ii | ii. | 3</code> &hellip; <code>@end</code></td><td><b>v40 — one extended-response PART per block, including all its pages.</b> Opener is <code>id | gutter | marks</code>: the gutter prints <em>verbatim</em> ("01 i." for a question's first part, bare "ii." after, bare "14" for a multi-part question's preamble block holding the shared stem/figure); marks sit in the right-hand column. Body = stem lines (Times + MathJax, in order) plus the page-flow words: <code>lines: 8</code> / <code>lines: fill</code> (dotted writing lines; fill runs to the page bottom in the page view), <code>more</code> (the centred "More writing space is provided on the next page."), <code>pagebreak</code> (or <code>---</code>), <code>continued</code> (label derived from the id: <code>01.ii</code> &rarr; "01 ii. (continued)") or <code>continued: 01 i.</code> to override (the shared-space convention), and <code>figure: key-or-url | h: 320</code> (declared Illustrator height &rarr; deterministic pagination). <b>v61:</b> when the gutter is a <em>bare question number</em> (a preamble "11" or a partless question "12"), the content column starts one hang earlier &mdash; level with the a./i. labels &mdash; and the writing lines lengthen to match (right edge unchanged). <code>centre: words</code> centres a line (top level: on the full frame; in a body: on the More-note span). Not spoken; ElevenLabs/Rehearse ignore the whole block.</td></tr>
         <tr><td><code>@box</code> &hellip; <code>@end</code></td><td>Bordered container &mdash; white, 14px radius, 1px #e0e0e0, 8px/15px padding. Shrink-wraps its content and centres it; add <code>fit: full</code> for column width, <code>align: left|right</code>, or <code>fill: #hex</code>. Not spoken. Needs runtime v37+.</td></tr>
         <tr><td><code>@rule</code> &hellip; <code>@end</code></td><td>Horizontal line. Optional body: <code>style: solid|dashed|dotted</code>, <code>colour: ink|purple|blue|green|red|orange|#hex</code>, <code>thickness: 1.5</code>. Default 1.5px solid ink. Not spoken. Needs runtime v38+.</td></tr>
         <tr><td><code>@center</code> &hellip; <code>@end</code></td><td>Centre-aligns the lines inside it (display only, not narrated); a blank line becomes a 10px gap. <code>@centre</code> also works. Needs runtime v39+.</td></tr>
@@ -1895,11 +2200,21 @@ function parseBoxBody(body){
 }
 function parseMcqBody(body){
   var layout="plain",answer="",why="",gate=false,cols=[],group=[],gap=null,stem=[],options=[],source="";
+  /* v57: blank lines inside the body are AUTHORED SPACE — each one renders as
+     a 21.25px gap on papers, attached to the next visible thing (a stem line
+     or an option). key: lines and ## comments are invisible, so a blank
+     before "layout:" still lands between the stem and the options/table.
+     A trailing blank with nothing after it is dropped. */
+  var pendGap=0, stemGaps={}, preOptGap=0;
+  /* v58: "> text" / ">> text" in the STEM indents to the first / second hang
+     (28.33 / 56.66px) — e.g. a (i)…(iv) numbered list sitting level with the
+     option text. Same markers as @erq bodies and paper top level. */
+  var stemInds={};
   var OPT=/^\*?\s*([A-Za-z])[.)]\s*(.*)$/;
   /* v36: + group (two-tier table headers), gap (px between options), + image layout */
   var KEY=/^(layout|answer|why|gate|cols|group|gap|source)\s*:\s*(.*)$/i;
   (body||"").split(/\n/).forEach(function(ln){
-    var t=ln.trim(); if(!t) return;
+    var t=ln.trim(); if(!t){ pendGap++; return; }
     if(t.indexOf("##")===0) return;   /* v30: "##" comment — used by the PDF importer for TODO markers */
     var k=t.match(KEY);
     if(k){
@@ -1921,16 +2236,30 @@ function parseMcqBody(body){
       var op={letter:letter,text:rest};
       if(/^\*/.test(t)) answer=answer||letter;
       if(rest.indexOf("|")>=0){ op.cells=rest.split("|").map(function(x){return x.trim();}); layout="table"; }
+      if(pendGap){ if(!options.length) preOptGap=pendGap; else op.gapBefore=pendGap; pendGap=0; }   /* v57 */
       options.push(op); return;
+    }
+    var indm=(!options.length)&&t.match(/^(>{1,2})\s+(.*)$/);   /* v58: stem indent marker */
+    if(indm){
+      if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }
+      /* v59: "> (i) text" / "> (a) text" / "> (1) text" — a leading (label) on an
+         indented stem line makes a HANGING list row: the label keeps its spot and
+         the text after it sits (and wraps) in its own column one hang further. */
+      var lm=indm[2].match(/^\(([^()\s|]{1,6})\)\s+(.*)$/);
+      if(lm){ stemInds[stem.length]={ind:indm[1].length,lab:"("+lm[1]+")"}; stem.push(lm[2]); }
+      else { stemInds[stem.length]=indm[1].length; stem.push(indm[2]); }
+      return;
     }
     if(options.length){ /* a wrapped option line */
       var last=options[options.length-1];
       if(last.cells) last.cells[last.cells.length-1]+=" "+t; else last.text+=" "+t;
       return;
     }
+    if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }   /* v57: gap before this stem line */
     stem.push(t);
   });
-  return {layout:layout,answer:answer,why:why,gate:gate,cols:cols,group:group,gap:gap,stem:stem,options:options,source:source};
+  return {layout:layout,answer:answer,why:why,gate:gate,cols:cols,group:group,gap:gap,stem:stem,options:options,source:source,
+    stemGaps:stemGaps,preOptGap:preOptGap,stemInds:stemInds};
 }
 function parseFigureBody(body){ var svgKey="",side="",parts=[],html="",height="",place="",nudge="";
   /* Accept "key: value" on ONE line OR "key:" on its own line with the value on
@@ -2036,6 +2365,10 @@ function parseErqBody(body){
     if(/^(pagebreak|-{3,})\s*$/i.test(t)){ flow.push({t:"pagebreak"}); return; }
     if((m=t.match(/^continued(?:\s*:\s*(.+))?$/i))){
       flow.push({t:"continued", label:(m[1]||"").trim()}); return; }
+    if((m=t.match(/^cent(?:re|er)\s*:\s*(.+)$/i))){ flow.push({t:"p", text:m[1].trim(), centre:true}); return; }   /* v61: centred line */
+    if((m=t.match(/^(>{1,2})\s+note\s*:\s*(.+)$/i))){ flow.push({t:"note", text:m[2].trim(), ind:m[1].length}); return; }   /* v56: indented note */
+    if((m=t.match(/^note\s*:\s*(.+)$/i))){ flow.push({t:"note", text:m[1].trim()}); return; }   /* v53: grey italic comment */
+    if((m=t.match(/^(>{1,2})\s+(.*)$/))){ flow.push({t:"p", text:m[2], ind:m[1].length}); return; }   /* v55: > / >> = first / second hang */
     if((m=t.match(/^figure\s*:\s*(.+)$/i))){
       var fp=splitPipes(m[1]), fkey=fp[0]||"", fh="";
       for(var fi=1;fi<fp.length;fi++){
@@ -2130,6 +2463,13 @@ function makeBlockInner(kind,headline,body){ kind=kind.toLowerCase(); var info=K
     if(q.why) mb.why=q.why;
     if(q.source) mb.source=q.source;
     if(q.gate) mb.gate=true;
+    /* v57: authored blank lines inside the body — only present when used */
+    var _hasSG=false; for(var _sg in q.stemGaps){ _hasSG=true; break; }
+    if(_hasSG) mb.stemGaps=q.stemGaps;
+    if(q.preOptGap) mb.preOptGap=q.preOptGap;
+    /* v58: "> " / ">> " stem indents — only present when used */
+    var _hasSI=false; for(var _si in q.stemInds){ _hasSI=true; break; }
+    if(_hasSI) mb.stemInds=q.stemInds;
     return mb;
   }
   /* v40: paper blocks. Never spoken; emitted in the Lesson JSON for the paper
@@ -2276,7 +2616,12 @@ function splitBeat(text){
   /* v26: derived from BLOCK_KINDS, so this can no longer drift from BLOCK_RE. */
   var OPEN=new RegExp("^[ \\t]*@(" + BLOCK_ALT + ")\\b(.*)$", "i");
   var CLOSE=/^[ \t]*@end[ \t]*$/i;
-  function flushBlank(){ if(sawContent && pendingBlank>1) toks.push({k:"space",n:pendingBlank-1}); pendingBlank=0; }
+  function flushBlank(){
+    if(sawContent && pendingBlank>0){
+      if(pendingBlank>1) toks.push({k:"space",n:pendingBlank-1,blanks:pendingBlank});
+      else toks.push({k:"blank1"});   /* v55: papers count EVERY blank line; lessons skip this token */
+    }
+    pendingBlank=0; }
   /* v27: walk ONE run of consecutive non-blank lines and emit its blocks.
      Before v27 the whole run took its kind from para[0], so a ">" or "#." line
      sitting under a plain line was swallowed as a soft wrap and its marker
@@ -2360,6 +2705,7 @@ function parseBeatFlow(text){
   splitBeat(text).forEach(function(t){
     if(t.k==="block") flow.push(makeBlock(t.m[0],t.m[1],t.m[2]));
     else if(t.k==="space") flow.push({type:"space", n:t.n, ref:autoId("sp")});
+    else if(t.k==="blank1"){ /* v55: lessons unchanged — a single blank is just the block gap */ }
     else if(t.k==="pagebreak") flow.push({type:"pagebreak", ref:autoId("pb")});
     else if(t.k==="item"){ var say=makeSay(t.raw); say.listNum=toRoman(t.num); if(t.tight)say.tight=true; flow.push(say); }
     else if(t.k==="aitem"){ var asay=makeSay(t.raw); asay.listNum=String(t.num); asay.listArabic=true; if(t.tight)asay.tight=true; flow.push(asay); }   /* v36: bold arabic list */
@@ -2547,7 +2893,7 @@ function buildPaperPrintDoc(text, o){
   L.push(pages);
   L.push('<scr'+'ipt>');
   L.push('(function(){');
-  L.push('var DOT=new Array(161).join(".");');
+  L.push('var DOT=new Array(177).join(".");');   /* v66: covers question-level width; box clips */
   L.push('function fills(){');
   L.push('  document.querySelectorAll(".pp-page").forEach(function(pg){');
   L.push('    var content=pg.querySelector(".pp-content");');
@@ -2575,8 +2921,64 @@ function buildPaperPrintDoc(text, o){
   return L.join('\n');
 }
 window.STEM = window.STEM || {}; window.STEM.buildPaperPrintDoc = buildPaperPrintDoc;
+/* ================================================================
+   v70: buildPaperLessonBundle(text) — compile a paper for the LESSON
+   surface (the runtime paper renderer). Returns {html, css, frameW}:
+   · html — the paper's blocks in document flow (no pages, no footer
+     bands; pagebreaks ignored, lines:fill rendered as 5 lines), inside
+     <div class="pp-flow">…</div>, with data-pref anchors on every block.
+   · css  — the paper skin: every studio rule for paper classes, with
+     the .pp-page selectors REWRITTEN to .pp-flow so the flow container
+     wears the exact page styling (no grey mcq cards, paper metrics).
+     No @font-face and no global element rules — the site owns those.
+   · frameW — 644.98 (the text frame at web px); the runtime scales the
+     stage by containerWidth/frameW (her 643px column → 0.9969).
+   ================================================================ */
+function buildPaperLessonBundle(text){
+  /* v73: TRIMMED PAGES (Sophie's pick) — the REAL page structure: page
+     breaks, footer bands (© / SKU left, Page X of Y right), fixed page
+     height — with the side margins cut so the 644.98px text frame fills
+     the lesson column at 1:1. Vertical geometry untouched, so the bands
+     sit exactly where the page view and the PDF put them. */
+  var html = paperPagesHtml(text);
+  var KEEP=/\.(pp-|ob-paper|ob-psec|ob-erq|ob-mcq|oe-|om-|opp-|ops-|pv-para|pv-mark|helv|ital|bold|rn-)/;
+  var css=[];
+  Array.prototype.forEach.call(document.styleSheets, function(sh){
+    var rules; try{ rules=sh.cssRules; }catch(e){ return; }
+    if(!rules) return;
+    Array.prototype.forEach.call(rules, function(r){
+      if(!r.selectorText || !r.cssText) return;
+      if(KEEP.test(r.selectorText)) css.push(r.cssText);
+    });
+  });
+  /* v74: FULL pages — the true A4 card including its side margins. On the
+     site the module OVERHANGS those margins into the empty annotation areas
+     flanking content-with-notes (frameOffset tells it how far), so the text
+     frame still lands exactly on the lesson column at 1:1 and lesson
+     coordinates equal PDF page coordinates. */
+  css.push('.pp-vp{overflow:visible;width:843.31px;}');
+  css.push('.pp-stack{transform:none !important;width:843.31px;}');
+  css.push('.pp-overflow{display:none !important;}');
+  /* v75: FLAT pages on the lesson surface (Sophie's two-dimensional look) —
+     no card border, no shadow. The overhanging margins read as white-on-white,
+     so keyterm callouts and student notes sit ON the paper's margin; the
+     footer bands still mark where each page ends. */
+  css.push('.pp-page{border:1px dashed #d6d6d6;box-shadow:none;}');   /* v76 outline; v77: a smidge darker per Sophie (was #e0e0e0) */
+  return { html:html, css:css.join("\n"),
+    frameW:843.31, frameOffset:ppx(PAPER_PT.frameL),
+    fill:{ limit:ppx(PAPER_PT.fillLastTop-PAPER_PT.top), pitch:ppx(PAPER_PT.linePitch) } };
+}
+window.STEM.buildPaperLessonBundle = buildPaperLessonBundle;
 var STEM_LOGO_URI = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzNi4yNiAzNiI+CiAgPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDIuMS4xIEJ1aWxkIDEyMykgIC0tPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuc3QwIHsKICAgICAgICBmaWxsOiAjMjMxZjIwOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjkuNjgsMTIuMzdsLTUuOTMsMi42NmMxLjc0LDEuNjEsMi43OCwzLjk3LDIuNzgsNi41NnYuMDhjMCw0Ljc3LTMuNDIsOC42Ny04LjM2LDguNjdzLTguNDQtMy45OC04LjQ0LTguNzV2LS4wOGMwLTIuNTksMS4wMS00LjkyLDIuNzItNi41MWwtNS4xNS0yLjMxdjcuNzdsMS4wNSwyLjUzYy4wNy4xNywwLC4zNi0uMTguNDQtLjA0LjAyLS4wOS4wMy0uMTMuMDMtLjEzLDAtLjI1LS4wOC0uMzEtLjIxbC0uMzEtLjc0LjA3LjcyYy4wMi4xOC0uMTIuMzUtLjMuMzYtLjAxLDAtLjAyLDAtLjAzLDAtLjE3LDAtLjMxLS4xMy0uMzMtLjNsLS4wNy0uNzktLjA4Ljc5Yy0uMDIuMTctLjE2LjMtLjMzLjMtLjAxLDAtLjAyLDAtLjAzLDAtLjE4LS4wMi0uMzItLjE4LS4zLS4zNmwuMDctLjcxLS4zMS43M2MtLjA1LjEzLS4xOC4yLS4zMS4yLS4wNCwwLS4wOSwwLS4xMy0uMDMtLjE3LS4wNy0uMjUtLjI3LS4xOC0uNDRsMS4wNS0yLjUxdi03LjU1Yy0xLjg0LDIuNDItMi45LDUuNDItMi45LDguNjd2LjA4YzAsNy45Miw2LjE3LDE0LjMyLDE0Ljc2LDE0LjMyczE0Ljg0LTYuNDksMTQuODQtMTQuNHYtLjA4YzAtMy40OC0xLjE5LTYuNjYtMy4yNS05LjE0Ii8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTYuMjMsMTIuOTNjLjEzLS4xOC4yNi0uMzYuNDEtLjUzbC42Ny4zdi0xLjI4bDguNTctMy4yOC02LjQzLDQuMjQsOC42OSwzLjksMTguMTMtOC4xNEwxOC4xMywwLDAsOC4xNGw2LjIzLDIuOHYxLjk5WiIvPgo8L3N2Zz4=";
 
+/* v61: a QUESTION-LEVEL @erq is one whose gutter is a bare question number —
+   a preamble block ("11") or a partless question ("12"). Its content column
+   starts one hang earlier (level with sibling blocks' a./i. labels) and its
+   writing lines lengthen to match. Part blocks ("a.", "01 i.") are untouched. */
+function erqIsQLevel(bl){
+  var g=String(bl.gutter||"").trim();
+  return /^\d+$/.test(g) && String(bl.ref||"").indexOf(".")<0;
+}
 /* gutter spans shared by flow preview and page view */
 function erqGutterHtml(bl){
   var g=String(bl.gutter||"").trim(), g1="", g2="";
@@ -2593,13 +2995,19 @@ function erqGutterHtml(bl){
    placeholder that paperPostLayout() fills to the page bottom. A stem line
    that IS a display equation gets .oe-eqline — centred on the full text
    frame (it may overhang the content hang on both sides, like the PDFs). */
-var DOT_LINE = new Array(161).join(".");   /* v44: 160 full stops per line, as measured from the InDesign PDF */
+var DOT_LINE = new Array(177).join(".");   /* v44: dots at the InDesign pitch (2.475pt advance).
+   v66: 176 of them, not 160 — a question-level line is one hang wider than the
+   part-level width the original 160 were counted for, so the dots ran out
+   ~21px before its right edge. The line BOX clips at the exact width either
+   way (overflow:hidden), so extra dots are invisible on part-level lines and
+   both line kinds now reach their shared right edge. */
 function erqItemsHtml(bl, items, paged){
   var out="";
   (items||[]).forEach(function(it){
     if(it.t==="p"){
       var isEq=/^\\\[[\s\S]*\\\]$/.test(it.text.trim());
-      out+='<div class="oe-stem'+(isEq?' oe-eqline':'')+'">'+parseMarkup(it.text)+'</div>'; return; }
+      var ind=it.ind?(' style="padding-left:'+(it.ind*28.33)+'px"'):'';
+      out+='<div class="oe-stem'+(isEq?' oe-eqline':'')+(it.centre?' oe-centrep':'')+'"'+ind+'>'+parseMarkup(it.text)+'</div>'; return; }
     if(it.t==="lines"){
       if(it.n==="fill"){
         if(paged){ out+='<div class="oe-lines oe-fill" data-fill="1"></div>'; }
@@ -2616,6 +3024,9 @@ function erqItemsHtml(bl, items, paged){
     if(it.t==="continued"){
       out+='<div class="oe-continued"><span class="oe-contlabel">'+escapeHtml(erqContinuedLabel(bl,it))+'</span><span class="oe-contword">(continued)</span></div>'; return; }
     if(it.t==="gap"){ out+='<div class="oe-gap"></div>'; return; }
+    if(it.t==="note"){
+      var nind=it.ind?(' style="padding-left:'+(it.ind*28.33)+'px"'):'';
+      out+='<div class="oe-note"'+nind+'>'+parseMarkup(it.text)+'</div>'; return; }
     if(it.t==="figure"){
       var fk=(it.key||"").trim(), fh=(it.h?parseFloat(it.h):0), fin;
       if(/^https?:\/\//i.test(fk)) fin='<img class="oe-figimg" src="'+escapeHtml(fk)+'"'+(fh?' style="height:'+fh+'px"':'')+' alt="figure">';
@@ -2651,9 +3062,56 @@ function buildPaperModel(text){
       }
       cur.push({kind:"block",bl:bl}); return;
     }
-    if(pageFull && t.k!=="space"){ pushPage(); }
-    if(t.k==="space"){ cur.push({kind:"html",html:'<div style="height:'+(t.n*21.25)+'px"></div>'}); return; }   /* v42: on PAPER PAGES an extra blank line = one 21.25px line of space (lessons keep SPACE_UNIT_PX) */
+    if(pageFull && t.k!=="space" && t.k!=="blank1"){ pushPage(); }
+    /* v55: on PAPER PAGES every blank line = one 21.25px line — no surprises.
+       (Lessons keep the old rule: first blank = block gap, extras 10px.) */
+    if(t.k==="blank1"){ cur.push({kind:"html",html:'<div style="height:21.25px"></div>'}); return; }
+    if(t.k==="space"){ cur.push({kind:"html",html:'<div style="height:'+((t.blanks||t.n+1)*21.25)+'px"></div>'}); return; }
+    /* v55: top-level indents on papers — ">" = first hang (28.33px), ">>" = second (56.66px) */
+    if(t.k==="indent"){ var iw=splitMarks(t.raw||"");
+      /* v67: "> dp: LABEL | text" — LEVEL-2 syllabus dotpoint: label starts on
+         the level-1 text column, its text hangs one dp-column further. Checked
+         on the RAW line (before splitMarks) — the pipe belongs to dp, not marks. */
+      var dp2=(t.raw||"").match(/^dp\s*:\s*([^|]+?)\s*\|\s*(.*)$/i);
+      if(dp2){ cur.push({kind:"html",html:'<div class="oe-dp oe-dp2"><span class="oe-dplab">'+parseMarkup(dp2[1])+'</span><span class="oe-dptxt">'+parseMarkup(dp2[2])+'</span></div>'}); return; }
+      if(/^note\s*:/i.test(iw.text.trim())){ cur.push({kind:"html",html:'<div class="oe-note" style="padding-left:28.33px">'+parseMarkup(iw.text.replace(/^note\s*:\s*/i,""))+'</div>'}); return; }   /* v56 */
+      cur.push({kind:"html",html:'<div class="pv-para" style="padding-left:28.33px">'+parseMarkup(iw.text)+(iw.marks?'<span class="pv-marks">'+escapeHtml(iw.marks)+'</span>':'')+'</div>'}); return; }
+    if(t.k==="para" && t.firstIndent){ var iw2=splitMarks(t.raw||"");
+      if(/^note\s*:/i.test(iw2.text.trim())){ cur.push({kind:"html",html:'<div class="oe-note" style="padding-left:56.66px">'+parseMarkup(iw2.text.replace(/^note\s*:\s*/i,""))+'</div>'}); return; }   /* v56 */
+      cur.push({kind:"html",html:'<div class="pv-para" style="padding-left:56.66px">'+parseMarkup(iw2.text)+(iw2.marks?'<span class="pv-marks">'+escapeHtml(iw2.marks)+'</span>':'')+'</div>'}); return; }
+    /* v67: "dp: LABEL | text" — LEVEL-1 syllabus dotpoint: HN 500 label in a
+       70.83px (2.5-hang) column, HN 400 text hanging beside it. Checked on the
+       RAW lines — the pipe belongs to dp, not to the marks column. Adjacent
+       source lines arrive merged into one para token, so each line is handled
+       on its own ("> dp:" lines inside the run become level 2). */
+    if(/(^|\n)[ \t]*(>+\s*)?dp\s*:/i.test((t.raw||""))){
+      /* the dp line may sit mid-token — a dp: directly under a text line (no
+         blank between) merges into that line's para token, so every line is
+         handled on its own: dp lines as dotpoints, the rest as normal lines. */
+      var _out=[];
+      (t.raw||"").split("\n").forEach(function(_ln){
+        if(!_ln.trim()) return;
+        var m=_ln.match(/^[ \t]*(>+\s*)?dp\s*:\s*([^|]+?)\s*\|\s*(.*)$/i);
+        if(m){ _out.push('<div class="oe-dp'+(m[1]?' oe-dp2':'')+'"><span class="oe-dplab">'+parseMarkup(m[2])+'</span><span class="oe-dptxt">'+parseMarkup(m[3])+'</span></div>'); return; }
+        var _lm=splitMarks(_ln);
+        if(_lm.marks) _out.push('<div class="pv-para pv-marked"><span class="pv-marked-text">'+parseMarkup(_lm.text)+'</span><span class="pv-marks">'+escapeHtml(_lm.marks)+'</span></div>');
+        else _out.push('<div class="pv-para">'+parseMarkup(_ln)+'</div>');
+      });
+      cur.push({kind:"html",html:_out.join("")}); return;
+    }
     var im=splitMarks(t.raw||"");
+    /* v61: a top-level line starting "centre:" (or "center:") is centred on
+       the full text frame — e.g. centre: ~Question 11~ ~~continues on the next page.~~ */
+    if(/^cent(re|er)\s*:/i.test((im.text||"").trim())){
+      cur.push({kind:"html",html:'<div class="pv-para oe-centre">'+parseMarkup(im.text.trim().replace(/^cent(re|er)\s*:\s*/i,""))+'</div>'});
+      return;
+    }
+    /* v53: a top-level line starting "note:" is a grey italic comment on
+       the paper (HN 13px). Detected here so LESSON beats are untouched. */
+    if(/^note\s*:/i.test((im.text||"").trim())){
+      cur.push({kind:"html",html:'<div class="oe-note">'+parseMarkup(im.text.replace(/^note\s*:\s*/i,""))+'</div>'});
+      return;
+    }
     /* v50: marks lines reach the PAGE VIEW too — same structure as the flow
        preview (flex row, .pv-marks right-aligned). A line that is ONLY
        "|Marks" renders as the right-aligned column header word. */
@@ -2683,7 +3141,7 @@ function paperPagesHtml(text){
   model.pages.forEach(function(pg,pi){
     out+='<div class="pp-page"><div class="pp-content">';
     pg.forEach(function(item){
-      if(item.kind==="erq"){ out+='<div class="ob-erq">'+erqSegHtml(item.bl,item)+'</div>'; return; }
+      if(item.kind==="erq"){ out+='<div class="ob-erq'+(erqIsQLevel(item.bl)?' oe-qlevel':'')+'" data-pref="'+escapeHtml(item.bl.ref||"")+'">'+erqSegHtml(item.bl,item)+'</div>'; return; }
       if(item.kind==="html"){ out+=item.html; return; }
       out+=blockHtml(item.bl);
     });
@@ -2792,7 +3250,25 @@ function blockHtmlInner(bl){
       (bl.fill?' style="background:'+escapeHtml(bl.fill)+'"':'')+'>'+bl_body+'</div>';
   }
   if(bl.kind==="mcq"){
-    var ms=(bl.stem||[]).map(function(p){ return '<div class="om-stem">'+parseMarkup(p)+'</div>'; }).join("");
+    /* v57: authored blank lines — each blank is EXACTLY 21.25px (it replaces
+       the default 10px stem gap rather than adding to it: no surprises). */
+    var _nstem=(bl.stem||[]).length;
+    var ms=(bl.stem||[]).map(function(p,pi){
+      var g=(bl.stemGaps&&bl.stemGaps[pi])?'<div class="om-sp" style="height:'+(bl.stemGaps[pi]*21.25)+'px"></div>':'';
+      var gapAfter=(bl.stemGaps&&bl.stemGaps[pi+1])||(pi===_nstem-1&&bl.preOptGap);
+      var st="";   /* v58: "> " / ">> " indents the stem line to the first / second hang */
+      if(gapAfter) st+="margin-bottom:0;";
+      var si=bl.stemInds&&bl.stemInds[pi], ind=si&&(si.ind||si), lab=si&&si.lab;
+      /* v62: hanging rows sit one hang LEFT of v60 — "> (i) text" puts the TEXT
+         on the option-text column (28.33px) and the right-aligned label in the
+         A./B./C. letter column, ending 5.66px before the text. (The 42.5px
+         label cell starts 14.16px into the question-number gutter, hence the
+         negative margin; ">>" shifts everything one hang deeper.) */
+      if(ind) st+=lab?("margin-left:"+(ind*28.33-42.49)+"px;"):("padding-left:"+(ind*28.33)+"px;");
+      if(lab)   /* v59: hanging list row — label cell + text column */
+        return g+'<div class="om-stem om-hrow"'+(st?' style="'+st+'"':'')+
+          '><span class="om-hlab">'+escapeHtml(lab)+'</span><span class="om-htxt">'+parseMarkup(p)+'</span></div>';
+      return g+'<div class="om-stem"'+(st?' style="'+st+'"':'')+'>'+parseMarkup(p)+'</div>'; }).join("");
     var mo="", ogap=(bl.gap!=null?bl.gap:10);
     if(bl.layout==="table"){
       /* v36.2: a real bordered <table> — 0.5px #231f20, centred cells, NO grey fills.
@@ -2825,14 +3301,16 @@ function blockHtmlInner(bl){
         return '<div class="om-icell'+(o.letter===bl.answer?' om-correct':'')+'"><span class="om-let">'+escapeHtml(o.letter)+'.</span><div class="om-imgwrap">'+inner+'</div></div>';
       }).join("")+'</div>';
     } else {
-      mo='<div class="om-list" style="--om-gap:'+ogap+'px">'+(bl.options||[]).map(function(o){
-        return '<div class="om-opt'+(o.letter===bl.answer?' om-correct':'')+'"><span class="om-let">'+escapeHtml(o.letter)+'.</span><span class="om-text">'+parseMarkup(o.text||"")+'</span></div>';
+      mo='<div class="om-list" style="--om-gap:'+ogap+'px">'+(bl.options||[]).map(function(o,oi){
+        var gb=(o.gapBefore&&oi>0)?(' style="margin-top:'+(o.gapBefore*21.25)+'px"'):'';   /* v57: blank between options = exactly 21.25px each */
+        return '<div class="om-opt'+(o.letter===bl.answer?' om-correct':'')+'"'+gb+'><span class="om-let">'+escapeHtml(o.letter)+'.</span><span class="om-text">'+parseMarkup(o.text||"")+'</span></div>';
       }).join("")+'</div>';
     }
+    if(bl.preOptGap) mo='<div class="om-sp" style="height:'+(bl.preOptGap*21.25)+'px"></div>'+mo;   /* v57: blank between stem and options */
     var mf='<div class="of-parts">answer: <b>'+escapeHtml(bl.answer||"(none set)")+'</b>'+(bl.gate?' &middot; gates the lesson until answered':'')+(bl.why?' &middot; has a "why"':'')+(bl.source?' &middot; '+escapeHtml(bl.source):'')+' &middot; not spoken &middot; number + answer are authoring aids &mdash; on the live page only the number shows</div>';
     /* v36.2: question number in a left gutter (HN 500), stem + options in the content column */
     var mqnum=(bl.number?'<div class="om-qnum">'+escapeHtml(bl.number)+'</div>':'');
-    return '<div class="formula-card ob-card ob-mcq" data-target="mcq-callout"><div class="om-qrow">'+mqnum+'<div class="om-content">'+ms+mo+'</div></div>'+mf+'</div>';
+    return '<div class="formula-card ob-card ob-mcq" data-target="mcq-callout" data-pref="'+escapeHtml(bl.ref||"")+'"><div class="om-qrow">'+mqnum+'<div class="om-content">'+ms+mo+'</div></div>'+mf+'</div>';
   }
   /* v40: paper blocks — document-style preview. Print-exact metrics arrive
      with the Step-2 stylesheet + Step-3 page view; this preview mirrors the
@@ -2840,7 +3318,7 @@ function blockHtmlInner(bl){
   if(bl.kind==="paper"){
     var _pi=(bl.instructions||[]).map(function(x){
       return '<div class="opp-instr">'+parseMarkup(x)+'</div>'; }).join("");
-    return '<div class="ob-paper">'+
+    return '<div class="ob-paper" data-pref="'+escapeHtml(bl.ref||"")+'">'+
       '<img class="opp-logo" src="'+STEM_LOGO_URI+'" alt="logo">'+
       (bl.course?'<div class="opp-course">'+parseMarkup(bl.course)+'</div>':'')+
       (bl.title?'<div class="opp-title">'+parseMarkup(bl.title)+'</div>':'')+
@@ -2857,12 +3335,12 @@ function blockHtmlInner(bl){
     if(bl.attempt) _sl+='<div class="ops-line">Attempt '+escapeHtml(bl.attempt)+'</div>';
     if(bl.time)    _sl+='<div class="ops-line">Allow '+escapeHtml(bl.time)+' for this section</div>';
     _sl+=(bl.notes||[]).map(function(n){ return '<div class="ops-line">'+parseMarkup(n)+'</div>'; }).join("");
-    return '<div class="ob-psec">'+_sl+'<div class="ops-rule"></div>'+
+    return '<div class="ob-psec" data-pref="'+escapeHtml(bl.ref||"")+'">'+_sl+'<div class="ops-rule"></div>'+
       '<div class="of-parts">section'+(bl.num?' '+escapeHtml(bl.num):'')+
       (bl.title?' &middot; running head: <b>'+parseMarkup(bl.title)+'</b> (drawn by the page view &amp; export)':'')+'</div></div>';
   }
   if(bl.kind==="erq"){
-    return '<div class="ob-erq"><div class="oe-row"><span class="oe-gut">'+erqGutterHtml(bl)+'</span>'+
+    return '<div class="ob-erq'+(erqIsQLevel(bl)?' oe-qlevel':'')+'" data-pref="'+escapeHtml(bl.ref||"")+'"><div class="oe-row"><span class="oe-gut">'+erqGutterHtml(bl)+'</span>'+
       '<div class="oe-body">'+erqItemsHtml(bl, bl.flow||[], false)+'</div>'+
       '<span class="oe-marks">'+(escapeHtml(bl.marks||"")||"&#8203;")+'</span></div></div>';
   }
@@ -2915,6 +3393,10 @@ function parseMarkup(text){
     var i = tokens.length; tokens.push({ type:"inl", eq:eq });
     return " T"+i+" ";
   });
+  // 4b) v69: "--" (exactly two hyphens) -> em dash (—). Sits AFTER code and
+  //     equations are tokenised away, so TeX/code hyphens are never touched;
+  //     "---" and longer runs stay literal (line-level --- is the pagebreak).
+  s = s.replace(/(^|[^-])--(?!-)/g, "$1—");
   // 5) key terms [[term|colour]]
   /* v22: the colour parameter now accepts a palette family ("ocean-blue"), a
      family with a level ("ocean-blue-04"), a legacy name ("blue"), or a raw
@@ -3158,7 +3640,7 @@ function renderBeats(){
             '<div class="src-backdrop" aria-hidden="true"></div>'+
             '<textarea class="src" spellcheck="true">'+escapeHtml(b.text)+'</textarea>'+
           '</div></div>'+
-        '<div><p class="field-label">Live preview <button class="btn mini pv-mode" style="display:none" title="Toggle between the flowing preview and the A4 page view (paper blocks only)">Page view</button><button class="btn mini pv-export" style="display:none" title="Open the print document — save as PDF from the print dialog. Fonts from Supabase, math in Termes, print treatment (black lines, 0.5pt rule, true 12pt on A4)">Export PDF</button></p>'+
+        '<div><p class="field-label">Live preview <button class="btn mini pv-mode" style="display:none" title="Toggle between the flowing preview and the A4 page view (paper blocks only)">Page view</button><button class="btn mini pv-bundle" style="display:none" title="Download this paper compiled for the LESSON surface — a .json bundle that stempaper-v1.js renders inside content-with-notes on the site. Upload it to Supabase next to your lessons.">Lesson bundle</button><button class="btn mini pv-export" style="display:none" title="Open the print document — save as PDF from the print dialog. Fonts from Supabase, math in Termes, print treatment (black lines, 0.5pt rule, true 12pt on A4)">Export PDF</button></p>'+
           '<div class="preview render"></div></div>'+
       '</div>'+
       '<div class="beat-meta">'+
@@ -3177,12 +3659,14 @@ function renderBeats(){
     /* v41: flow/page toggle — shown only when the beat holds paper blocks */
     var pvBtn = el.querySelector(".pv-mode");
     var pvExp = el.querySelector(".pv-export");   /* v47 */
+    var pvBun = el.querySelector(".pv-bundle");   /* v71 */
     function syncPvBtn(){
       if(paperHasBlocks(srcEl.value)){
         pvBtn.style.display="inline-block";
         pvBtn.textContent = paperViewOn() ? "Flow view" : "Page view";
         pvExp.style.display="inline-block";
-      } else { pvBtn.style.display="none"; pvExp.style.display="none"; }
+        pvBun.style.display="inline-block";
+      } else { pvBtn.style.display="none"; pvExp.style.display="none"; pvBun.style.display="none"; }
     }
     pvBtn.addEventListener("click", function(){
       try{ localStorage.setItem("stemPaperView", paperViewOn() ? "0" : "1"); }catch(e){}
@@ -3196,6 +3680,74 @@ function renderBeats(){
       w.document.open();
       w.document.write(buildPaperPrintDoc(srcEl.value));
       w.document.close();
+    });
+    /* v71: Lesson bundle — download the compiled {html, css, frameW} JSON
+       that stempaper-v1.js renders on the site. Named from the paper's SKU. */
+    pvBun.addEventListener("click", function(){
+      try{
+        var bundle = buildPaperLessonBundle(srcEl.value);
+        var sku=""; try{ sku=(buildPaperModel(srcEl.value).meta||{}).sku||""; }catch(e){}
+        var name=(sku||"paper").replace(/[^A-Za-z0-9_-]+/g,"-")+"-bundle.json";
+        var blob=new Blob([JSON.stringify(bundle)],{type:"application/json"});
+        var a=document.createElement("a");
+        a.href=URL.createObjectURL(blob); a.download=name;
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+      }catch(e){ alert("Bundle failed: "+(e&&e.message||e)); }
+    });
+    /* v65: click-to-sync — click a block in the page view and the Source
+       scrolls to (and flashes) the lines that made it; click in the Source
+       and the page view scrolls to the page holding that block. */
+    function _escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
+    function _refOffset(ref){
+      if(!ref) return -1;
+      var re=new RegExp("^@\\w+[ \\t]+"+_escRe(ref)+"[ \\t]*(\\||$)","m");
+      var m=re.exec(srcEl.value); return m?m.index:-1;
+    }
+    function _offsetY(off){
+      /* y of a source char offset, measured on the backdrop (identical metrics) */
+      var walker=document.createTreeWalker(backEl,NodeFilter.SHOW_TEXT,null), n, acc=0;
+      while((n=walker.nextNode())){
+        var L=n.nodeValue.length;
+        if(acc+L>=off){
+          var r=document.createRange(); r.setStart(n,Math.max(0,off-acc)); r.collapse(true);
+          var rb=r.getBoundingClientRect(), wb=srcEl.parentNode.getBoundingClientRect();
+          return rb.top-wb.top+srcEl.parentNode.scrollTop;
+        }
+        acc+=L;
+      }
+      /* backdrop empty (not yet highlighted) — estimate from the line count */
+      return (srcEl.value.slice(0,off).split("\n").length-1)*19.5+10;
+    }
+    prevEl.addEventListener("click", function(e){
+      if(!paperViewOn()||!paperHasBlocks(srcEl.value)) return;
+      var t=e.target.closest?e.target.closest("[data-pref]"):null;
+      if(!t||!prevEl.contains(t)) return;
+      var off=_refOffset(t.getAttribute("data-pref")); if(off<0) return;
+      var wrap=srcEl.parentNode, y=_offsetY(off);
+      if(wrap.scrollTo) wrap.scrollTo({top:Math.max(0,y-40), behavior:"smooth"});
+      else wrap.scrollTop=Math.max(0,y-40);
+      var f=document.createElement("div"); f.className="src-sync-flash";
+      f.style.top=(y-2)+"px"; wrap.appendChild(f);
+      setTimeout(function(){ f.style.opacity="0"; },400);
+      setTimeout(function(){ if(f.parentNode) f.parentNode.removeChild(f); },1400);
+    });
+    srcEl.addEventListener("mouseup", function(){
+      if(!paperViewOn()||!paperHasBlocks(srcEl.value)) return;
+      var pos=srcEl.selectionStart||0, txt=srcEl.value;
+      var re=/^@\w+[ \t]+([^|\n]+?)[ \t]*(\||$)/gm, m, ref=null;
+      while((m=re.exec(txt))){ if(m.index>pos) break; ref=m[1].trim(); }
+      if(!ref) return;
+      var model; try{ model=buildPaperModel(txt); }catch(e){ return; }
+      var pi=-1;
+      model.pages.some(function(pg,i){
+        return pg.some(function(it){ return it.bl&&String(it.bl.ref)===ref; })&&((pi=i),true); });
+      if(pi<0) return;
+      var pgEl=prevEl.querySelectorAll(".pp-page")[pi]; if(!pgEl) return;
+      var pr=prevEl.getBoundingClientRect(), gr=pgEl.getBoundingClientRect();
+      var top=prevEl.scrollTop+(gr.top-pr.top)-8;
+      if(prevEl.scrollTo) prevEl.scrollTo({top:Math.max(0,top), behavior:"smooth"});
+      else prevEl.scrollTop=Math.max(0,top);
     });
     syncPvBtn();
     renderBeatPreview(prevEl, b);
@@ -3368,6 +3920,7 @@ function beatFlowHtml(text){
     if(t.k==="block") return blockHtml(makeBlock(t.m[0],t.m[1],t.m[2]));
     if(t.k==="space") return '<div class="pv-space" style="height:'+(t.n*SPACE_UNIT_PX)+'px"></div>';
     if(t.k==="pagebreak") return '<div class="pv-pagebreak"></div>';
+    if(t.k==="blank1") return '';   /* v55: lesson preview unchanged */
     var tc = t.tight ? " pv-tight" : "";   /* v27: flush against the block above */
     if(t.firstIndent) tc += " pv-first-indent";
     var im = splitMarks(t.raw);
