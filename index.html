@@ -21,6 +21,27 @@
    - Grammar check via LanguageTool (British English; free API, optional key).
    - Autosaves to your browser. Save/Load a project file to back up or move it.
 
+  v100 (true-zero writing-lines block)
+   - the lines: block no longer carries hidden edge space: the first
+     dotted rule sits immediately below whatever precedes it, and content
+     after starts immediately below the last rule (was 18.5px hidden above
+     + 18.7px below). Blanks and space: N author all the air; the 34px
+     answer-grid pitch between rules is untouched. fills and | flow
+     measure live, so they adapt automatically.
+
+  v99 (WYSIWYG spacing + space: N) — Sophie's model
+   - ZERO invisible gaps anywhere on papers: stem rows, erq rows, figures
+     and standalone tables stack at pure 21.25px pitch (was 10px/6px/12px
+     naturals). What the Source shows is what prints: each blank line is
+     exactly one ruled line (21.25px) — count the blanks, know the space.
+   - space: N — a visible exact-px gap wherever you write it: top level,
+     @mcq bodies (between stem rows, before/among options) and @erq
+     bodies. space: 10 is the InDesign half-gap. In @mcq it rides the
+     blank-line plumbing (N/21.25 of a line), so page-splitting carries it.
+   - mcq OPTIONS keep their own gap: system (default 10px), untouched.
+   - Existing papers authored against the old naturals will tighten —
+     re-check pagination and add blanks / space: lines where wanted.
+
   v98 (corrector: per-equation scale detection)
    - Sophie's Safari probe (26.5) measured 0.00px error on an UNSCALED page
      — so the sink lives in the scaled contexts: the 16/17 print zoom and
@@ -1481,7 +1502,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     letter-spacing:0.1px; line-height:21.25px; color:#231f20; }
   .ob-mcq .om-content{ flex:1; min-width:0;
     font-family:"Times New Roman",Times,serif; font-size:17px; line-height:21.25px; letter-spacing:0.05px; color:#231f20; }
-  .ob-mcq .om-stem{ margin:0 0 10px; }
+  .ob-mcq .om-stem{ margin:0; }   /* v99 WYSIWYG: no invisible gaps — blanks and space: own ALL vertical space */
   /* v59: hanging list rows in the stem — "> (i) text": the (i) keeps its spot,
      the text sits and wraps in its own column one hang (28.33px) further. */
   .ob-mcq .om-hrow{ display:flex; align-items:flex-start; }
@@ -1504,7 +1525,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   /* v93: standalone tables — @table blocks and head:/row: lines in @erq
      bodies / @mcq stems. Same NESA skin as the @mcq table; the wrap centres
      the shrink-wrapped table in whatever column it sits in. */
-  .om-tblwrap{ text-align:center; margin:12px 0; }
+  .om-tblwrap{ text-align:center; margin:0; }   /* v99 WYSIWYG */
   .om-tblwrap .om-stable{ display:inline-table; }
   .om-stable{ border-collapse:collapse; }
   .om-stable th,.om-stable td{ border:0.5px solid #231f20; text-align:center; padding:5px 10px; font-weight:400; }
@@ -1568,7 +1589,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-erq .oe-marks{ flex:0 0 40px; width:40px; text-align:right;
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500;
     font-size:15px; line-height:21.25px; }
-  .ob-erq .oe-stem{ margin:0 0 10px; }
+  .ob-erq .oe-stem{ margin:0; }   /* v99 WYSIWYG */
   .ob-erq .oe-stem.oe-eqline{ margin-left:-56.66px; margin-right:-40px;
     width:calc(100% + 96.66px); text-align:center; }
   .ob-erq .oe-stem.oe-eqline mjx-container[display="true"]{ margin:0 !important; }
@@ -1615,10 +1636,10 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
     font-size:15px; line-height:21.25px; letter-spacing:0.1px; }
   .ob-erq .oe-continued .oe-contlabel{ font-weight:500; flex:0 0 56.66px; width:56.66px; }
   .ob-erq .oe-continued .oe-contword{ font-weight:400; }
-  .ob-erq .oe-fig{ margin:12px 0; text-align:center; }
+  .ob-erq .oe-fig{ margin:0; text-align:center; }   /* v99 WYSIWYG */
   .ob-erq .oe-figimg{ display:inline-block; max-width:100%; }
   /* v79: figures inside @mcq stems — same centred treatment */
-  .ob-mcq .oe-fig{ margin:12px 0; text-align:center; }
+  .ob-mcq .oe-fig{ margin:0; text-align:center; }   /* v99 WYSIWYG */
   .ob-mcq .oe-figimg{ display:inline-block; max-width:100%; }
   .ob-erq .oe-figph{ display:flex; align-items:center; justify-content:center;
     border:1px dashed var(--border); border-radius:8px; background:#fbfbfc;
@@ -1662,8 +1683,14 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .pp-page .opp-instr{ margin-top:22.2px; }
   .pp-page .opp-rule{ margin-top:10px; }   /* v57: matches the @section rule (was 19.9px — Sophie: it sat too low) */
   .pp-page .ob-erq{ margin:0; }
-  .pp-page .oe-stem{ margin-bottom:6px; }
-  .pp-page .oe-lines{ margin-top:4.25px; }   /* v45: question->lines gap = one line pitch */
+  .pp-page .oe-stem{ margin-bottom:0; }   /* v99 WYSIWYG */
+  /* v100 TRUE-ZERO lines block (Sophie's pick): the block hugs its INK on
+     both edges — the dotted rule sits 14.3px inside the top of its 34px
+     slot and 18.7px above the slot's bottom, so those hidden offsets (plus
+     the old 4.25 v45 margin) are pulled out. No invisible space above or
+     below; blanks (21.25) and space: N author all air. The 34px pitch
+     BETWEEN lines is the answer grid and stays. */
+  .pp-page .oe-lines{ margin-top:-14.3px; margin-bottom:-18.7px; }
   .pp-page .oe-line{ width:560.71px; margin-left:-2.83px; }
   /* v94: |> rows reach the SAME right edge as the writing lines — the line
      boxes overhang the body column by 9.56px (their -2.83 left start +
@@ -1713,7 +1740,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .pp-page .ob-mcq .om-qnum{ font-size:15px; }   /* v52: paper standard HN 500 15/21.25 (the 17px is the lesson-context size) */
   /* v57: no default inter-block gaps (was 21.25px mcq↔mcq/erq and 4.25px erq↔erq) — blank source lines control ALL space between blocks */
   .pp-page .ob-mcq .om-qrow{ margin-top:0; }   /* v57: the flow preview's 6px would leak in as a phantom gap above every question */
-  .pp-page .ob-mcq .om-stem{ margin-bottom:10px; }
+  .pp-page .ob-mcq .om-stem{ margin-bottom:0; }   /* v99 WYSIWYG */
   .pp-page .ob-mcq .om-correct .om-let{ font-weight:400; }
   .pp-page .ob-mcq .om-correct .om-let::after{ content:none; }
   .pp-page .ob-mcq .om-table tr.om-correct td.om-rowlabel{ font-weight:400; }
@@ -2504,6 +2531,12 @@ function parseMcqBody(body){
   (body||"").split(/\n/).forEach(function(ln){
     var t=ln.trim(); if(!t){ pendGap++; _openTbl=null; return; }
     if(t.indexOf("##")===0) return;   /* v30: "##" comment — used by the PDF importer for TODO markers */
+    /* v99: space: N — an exact-px gap, written where you want it. Rides the
+       blank-line plumbing as a fractional line (N/21.25), so it lands
+       everywhere blanks do: between stem rows, before options, between
+       options — and the v92 page-split slicing carries it unchanged. */
+    var spm=t.match(/^space\s*:\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*$/i);
+    if(spm){ pendGap+=parseFloat(spm[1])/21.25; _openTbl=null; return; }
     /* v93: head:/row: lines in the STEM — consecutive ones build one table */
     var tbm=(!options.length)&&t.match(/^(head|row)\s*:\s*(.+)$/i);
     if(tbm){
@@ -2688,6 +2721,7 @@ function parseErqBody(body){
       var v=m[1].toLowerCase();
       flow.push({t:"lines", n:(v==="fill"?"fill":parseFloat(v)), flow:!!m[2]&&v!=="fill"}); return; }
     if(/^more(\s*:\s*(y|yes|true|1|on))?\s*$/i.test(t)){ flow.push({t:"more"}); return; }
+    if((m=t.match(/^space\s*:\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*$/i))){ flow.push({t:"space", px:parseFloat(m[1])}); return; }   /* v99: exact-px gap */
     if(/^(pagebreak|-{3,})\s*$/i.test(t)){ flow.push({t:"pagebreak"}); return; }
     /* v93: standalone table rows — consecutive head:/row: lines merge into
        one table at render (a blank or any other line ends the table) */
@@ -3555,6 +3589,7 @@ function erqItemsHtml(bl, items, paged){
     if(it.t==="continued"){
       out+='<div class="oe-continued"><span class="oe-contlabel">'+escapeHtml(erqContinuedLabel(bl,it))+'</span><span class="oe-contword">(continued)</span></div>'; return; }
     if(it.t==="gap"){ out+='<div class="oe-gap"></div>'; return; }
+    if(it.t==="space"){ out+='<div class="oe-sp" style="height:'+it.px+'px"></div>'; return; }   /* v99 */
     if(it.t==="note"){
       var nind=it.ind?(' style="padding-left:'+(it.ind*28.33)+'px"'):'';
       out+='<div class="oe-note"'+nind+'>'+parseMarkup(it.text)+'</div>'; return; }
@@ -3659,6 +3694,9 @@ function buildPaperModel(text){
       cur.push({kind:"html",html:_out.join("")}); return;
     }
     var im=splitMarks(t.raw||"");
+    /* v99: space: N at top level — an exact-px gap between blocks/lines */
+    var _spm=(im.text||"").trim().match(/^space\s*:\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*$/i);
+    if(_spm){ cur.push({kind:"html",html:'<div style="height:'+parseFloat(_spm[1])+'px"></div>'}); return; }
     /* v61: a top-level line starting "centre:" (or "center:") is centred on
        the full text frame — e.g. centre: ~Question 11~ ~~continues on the next page.~~ */
     if(/^cent(re|er)\s*:/i.test((im.text||"").trim())){
