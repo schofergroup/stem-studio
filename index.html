@@ -21,6 +21,206 @@
    - Grammar check via LanguageTool (British English; free API, optional key).
    - Autosaves to your browser. Save/Load a project file to back up or move it.
 
+  v98 (corrector: per-equation scale detection)
+   - Sophie's Safari probe (26.5) measured 0.00px error on an UNSCALED page
+     — so the sink lives in the scaled contexts: the 16/17 print zoom and
+     the fit-to-panel preview scale. The corrector now detects each
+     equation's local visual scale (rect/offset ratio) instead of assuming
+     one, so its lift is exact wherever the equation renders.
+
+  v97 (the sinking inline equation — self-calibrating baseline corrector)
+   - Safari draws an inline \( \) equation's baseline below the text's
+     (the Cl₂ that sinks); Chrome doesn't, and no CSS mechanism swap fixed
+     it. v97 stops guessing: after every typeset, a pair of zero-width
+     inline-block probes MEASURES each equation's true baseline error in
+     the live layout (one inside mjx-math, one beside the container — an
+     inline-block's bottom sits on its line's baseline), and the container
+     is lifted by exactly the measured error. Paint-only; engines that
+     already align (Chrome: 0.00px) are untouched. Runs in the page view,
+     the PDF export (zoom-aware) and stempaper. The companion probe page
+     stem-mjx-baseline-probe.html shows the numbers in any browser.
+
+  v96 (|> tail can pull left by hangs)
+   - "equation |> < ΔH = -57.2 kJ/mol" right-aligns the tail ONE hang
+     (28.33px) left of the writing lines' right edge; "|> <<" pulls it two.
+     Bare "|>" stays flush with the lines, as in v94.
+
+  v95 (true minus signs + equations inside scripts)
+   - inside ^{ } and _{ } every hyphen is a TRUE MINUS (U+2212): mol^{-1}
+     → mol⁻¹, S^{2-} → S²⁻ — scripts are maths, no hyphens there.
+   - in prose, a hyphen straight before a digit (after a space, bracket,
+     pipe or line start) becomes a minus: "= -57.2" → −57.2. Word hyphens
+     (non-equilibrium) and ranges (11-18) are untouched; -- is still the
+     em dash; TeX and code are tokenised away first, never touched.
+   - an inline \( \) equation inside ^{ }/_{ } now renders properly (the
+     token resolver recurses into script braces — it used to emit the raw
+     escaped placeholder, "the mess").
+
+  v94 (|> right-aligned tail on @erq body lines)
+   - "equation |> ΔH = −57.2 kJ/mol": inside an @erq body, everything after
+     |> on a line right-aligns flush with the right edge of the writing
+     lines; everything before keeps its position (including > / >> hangs).
+     The chemistry convention: reaction at the double hang, its enthalpy
+     on the same line at the far right. Both parts take full markup.
+
+  v93 (standalone tables)
+   - @table … @end at top level: head: a | b | c (italic centred header,
+     optional), then one line per row (row: prefix optional), cells on |;
+     align: left switches body cells left-aligned. NESA skin — 0.5px
+     #231f20 borders, centred shrink-wrapped table. Never spoken.
+   - the same tables INSIDE questions: consecutive head:/row: lines in an
+     @erq body or an @mcq stem build one table, centred on that question's
+     content column (a blank or any other line ends the table). Cells take
+     full markup — maths, scripts, italics. Rides into the export and the
+     lesson bundle (om- classes pass the KEEP filter).
+
+  v92 (pagebreak inside @mcq)
+   - pagebreak (or ---) on its own line inside an @mcq body splits the
+     question across pages, exactly like @erq: everything above the break
+     closes the current page, the rest continues at the top of the next
+     with the content column aligned (empty number gutter, number not
+     repeated). Works mid-stem or between options; index-mapped stem
+     features (gaps, indents, figures, centre:) ride with their lines.
+     In the lesson flow preview the break is simply ignored.
+
+  v91 (Safari sink fixed + superscripts calibrated)
+   - SAFARI: the whole \(\mathrm{Cl}_2\) sank by the sub nudge — Safari
+     folds a transformed mjx-script into the inline baseline. All script
+     nudges are now position:relative (layout-inert in every engine; the
+     _{ } scripts already used it and sit perfectly). Same values.
+   - Superscripts, per Sophie's 2Fe³⁺/S₂O₃²⁻ guide: same size as the
+     subscripts (^{ } now .707em), and the sup baseline exactly .333em
+     ABOVE the text baseline — the mirror image of the subscript drop.
+     MathJax sups get a matching +.035em settle (ink-measured).
+
+  v90 (_{ } subscripts sized like the equation ones)
+   - .chem-sub font-size .583em → .707em, matching MathJax's script size,
+     so Cl_{2} in prose and \(\mathrm{Cl}_2\) in maths are the same size.
+     The baseline drop stays exactly .333em of the text (bottom rescaled
+     to -.471em in the new size). Superscripts untouched.
+
+  v89 (subscripts calibrated to the InDesign reference + bigger harpoons)
+   - _{n} subscripts: v86's -.35em overshot. Now calibrated to Sophie's
+     CoCl₂·6H₂O reference — 58.3% size, baseline exactly .333em below the
+     text baseline (InDesign's own defaults), with the browser's built-in
+     sub shift replaced so the number is exact.
+   - \( \) equation subscripts: raised nudge .1em → .19em, ink-measured to
+     land the same .333em drop. Superscripts untouched — never moved, still
+     exactly where MathJax and v30's chem-sup put them.
+   - ⇌ harpoons now .743em tall (nearly cap height, per the AgSCN
+     reference), bottom on the baseline, em-sized so they scale with text.
+
+  v88 (centre: inside @mcq stems + Sophie's equilibrium harpoons)
+   - centre: words now works in an @mcq STEM (same word as @erq bodies and
+     the paper top level) — the line centres on the stem column. e.g.
+     centre: \(\mathrm{Cl}_2\)(g) + CO(g) ⇌ COCl\(_2\)(g)
+   - the ⇌ character (U+21CC) everywhere in prose now renders as Sophie's
+     own Illustrator harpoons — a 13.67×8.9 inline vector glyph that takes
+     its ink from the surrounding text and prints identically on screen,
+     PDF export and the lesson surface (no font involved). Inside \( \)
+     maths, MathJax's \rightleftharpoons still applies — the glyph swap is
+     for plain text. .oe-eqm's vertical-align is the height knob.
+
+  v87 (MathJax equation subscripts a bit lower too)
+   - \(H_2O\)-style subscripts inside equations now drop .1em of the script
+     font (~1.2px on the paper), matching the v86 chem-script feel. Applied
+     as a transform, so nothing reflows — pagination and anchors untouched.
+     Superscripts stay exactly where MathJax puts them, including the sup
+     half of an x_i^2 stack. Carried into the lesson bundle css (scoped to
+     .pp-flow); the knob is the .1em in the two mjx- rules.
+
+  v86 (subscripts sit a bit lower + _{ }/^{ } markup repaired)
+   - _{n} subscripts drop -.35em (was -.25em); superscripts untouched. The
+     one number to tune is in .chem-sub.
+   - REPAIR: the _{ } and ^{ } placeholder delimiters (invisible NUL bytes)
+     had been stripped from their two return lines at some point, so
+     H_{2}O rendered literally as "HT0O" — restored; chem scripts work
+     again everywhere parseMarkup runs (lessons, papers, exports).
+   - .chem-sub/.chem-sup are now carried into the lesson bundle's css (the
+     KEEP filter missed them — on the site, subscripts fell back to the
+     browser's default rendering; same latent bug as the ~~word~~ loss).
+
+  v85 (figure fonts: the full Illustrator family map + export waits for figures)
+   - Sophie's real figures showed v84 only half-fixed the export: her
+     Illustrator SVGs name fonts by POSTSCRIPT name, and different figures
+     use different names — 01 used TimesNewRomanPSMT (aliased in v84,
+     fixed), but 02/03 use Times-Roman and Times-Bold, which weren't
+     covered. Both are now aliased to the Supabase Times (400/700) in the
+     studio css, the export doc and the lesson bundle.
+   - The export no longer prints until every figure is fetched and inlined
+     (up to 45s, was a blunt 10s race): her figures are 1-2MB each, so on
+     a slow connection the old race could fire mid-download and leave a
+     figure on the broken <img> path. A figure that still fails logs a
+     console warning naming its URL and falls back to the <img> as before.
+   - Embedded SVG <font>/<glyph> blocks (Illustrator legacy font data —
+     ~1MB per figure, unsupported by every modern browser) are stripped
+     when inlining: the paper's DOM stays light and nothing ever tries to
+     match those dead fonts.
+
+  v84 (SVG figure text survives the PDF export)
+   - figure: SVGs are now FETCHED AND INLINED into the document (page view,
+     PDF export, lesson bundle runtime) instead of loading via <img>. An
+     <img>'s SVG renders in an isolated context: on screen macOS resolved
+     the Illustrator font names, but Safari's PDF serialisation wrote those
+     glyph runs against an empty font subset — every label vanished (her
+     B5.1 export: TimesNewRomanPSMT runs present but glyphless, while the
+     curves and the Times/Symbol-resolved marks survived). Inlined, the SVG
+     <text> is ordinary document text: it uses the page's real web fonts
+     and prints exactly like every other line on the paper.
+   - @font-face alias: "TimesNewRomanPSMT" (Illustrator's PostScript name
+     for Times New Roman, confirmed in the exported PDF) now maps to the
+     Supabase times-400.woff2 in the studio, the export doc (via the studio
+     css) and the lesson bundle — so SVG labels use HER Times everywhere,
+     including student devices that don't own the Mac system font.
+   - If a fetch fails (offline, bad URL) the <img> stays — nothing is worse
+     than before. The declared h: still sets the box, so pagination and
+     question anchors are untouched.
+
+  v83 (Marks canonical + right: lines)
+   - "| mark", "| Mark", "| marks", "| MARKS" all render the marks-column
+     header as the standard word "Marks" — digits stay verbatim.
+   - right: some words — the mirror of centre:. Top level: right-aligned on
+     the text frame. Inside an @erq body: right-aligned on the body column
+     (ends just left of the marks column). Runs and maths work inside it.
+
+  v82 (click-to-sync is deliberate)
+   - Source -> preview: the page view scrolls only when your click lands ON
+     an @section / @erq / @mcq opener line — clicking around inside a
+     block's body no longer moves the preview.
+   - Preview -> Source: only the parts those openers draw are handles — a
+     section header, a question number, an @erq gutter or its marks.
+     Clicking stems, options or writing lines does nothing.
+
+  v81 (cutting text no longer jumps the Source box to the top)
+   - The autosize remeasure briefly collapsed the box to height:auto,
+     letting the scrolling pane clamp to the top — cutting a chunk of text
+     tripped it where single-char deletes usually didn't. The pane's and
+     the window's scroll positions are now preserved across the remeasure.
+
+  v80 (blank lines count EVERYWHERE in @erq bodies)
+   - Leading and trailing blank lines inside an @erq body are no longer
+     dropped: every blank = one 21.25px line, same as between-content
+     blanks, top level, and @mcq bodies. NOTE: if an existing paper has
+     stray blanks after an @erq opener or before its @end, those now add
+     real space — check long papers in Page view after upgrading.
+
+  v79 (figures in @mcq stems)
+   - figure: url | h: 320 now works INSIDE an @mcq stem (before the
+     options), exactly like @erq bodies: full Supabase URL renders the
+     image centred at the declared height; a bare key shows a placeholder.
+     Converted papers' q05-style figure lines render properly now.
+
+  v78 (lines: N | flow)
+   - lines: 9 | flow — the lines overflow NATURALLY onto the next page:
+     the page view / export / lesson page measure the real page, keep the
+     lines that fit (reserving room for the note), show the centred
+     "More writing space is provided on the next page." (HN 400, the
+     standard More-note), and continue on the next page under an automatic
+     "01 i. (continued)" row with the remaining lines. Plain lines: 9 is
+     unchanged — flow is opt-in, no surprises. If the block sits on the
+     paper's LAST page the leftovers stay and the overflow badge flags it
+     (add --- or more content after). lines: fill doesn't take | flow.
+
   v77 (outline a smidge darker)
    - The lesson pages' dashed outline is #d6d6d6 (was #e0e0e0) — still
      lighter than the column's #c9c9c9 dots. (stempaper-v1.js's v77 change,
@@ -1237,7 +1437,40 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-box.obx-full mjx-container[display="true"]{ margin:0 !important; }
   /* ---- v30: @mcq preview + chemical scripts ---- */
   .chem-sub,.chem-sup{ font-size:.583em; line-height:0; position:relative; }
-  .chem-sub{ bottom:-.25em; } .chem-sup{ top:-.45em; }
+  /* v90: _{ } subscripts sized to MATCH MathJax's equation scripts (70.7%
+     vs InDesign's 58.3%) so a Cl_{2} in prose and a \(\mathrm{Cl}_2\) in
+     maths read identically. The drop stays exactly .333em of the text:
+     bottom rescales with the font (-.333/.707 = -.471em). Superscripts
+     stay at 58.3%/-.45em — untouched, as asked. */
+  .chem-sub,.chem-sup{ font-size:.707em; }   /* v91: sup sized like the sub (and MathJax) */
+  /* v89: subscripts CALIBRATED to Sophie's InDesign reference (CoCl₂·6H₂O
+     screenshot): size 58.3%, baseline dropped exactly 33.3% of the font
+     size — InDesign's own subscript defaults. vertical-align:baseline
+     replaces the browser's built-in sub shift so the drop is exactly the
+     bottom value: -.571em (of the sub's own font) = .333em of the text.
+     Superscripts untouched, as they were. */
+  .chem-sub{ bottom:-.471em; vertical-align:baseline; }   /* -.333em of the TEXT, in the .707em size */
+  .chem-sup{ top:-.471em; vertical-align:baseline; }       /* v91: mirror image — sup baseline .333em ABOVE the text baseline (2Fe³⁺ reference) */
+  /* v87: MathJax equation subscripts a bit lower too — \(H_2O\), \(K_{eq}\).
+     MathJax positions scripts with inline vertical-align, so the nudge is a
+     transform (visual only, no layout shift — pagination untouched). The
+     mjx-msub rule is a plain subscript; the msubsup rule targets only the
+     SUB half of an x_i^2 stack (its last child), leaving superscripts
+     exactly where MathJax puts them. .1em of the script's font ≈ 1.2px at
+     paper size — this number is the knob, same feel as .chem-sub. */
+  /* v91: the nudges are POSITION:RELATIVE, not transform — Safari folds a
+     transformed script into the equation's inline baseline, sinking the
+     whole \(\mathrm{Cl}_2\) by exactly the nudge (Sophie's screenshot,
+     measured 0.131em ≈ .19em × the 0.7 script scale). Relative positioning
+     never affects layout in any engine — the _{ } scripts already use it
+     and sit perfectly in the same screenshot. Same calibrated values:
+     subscripts +.19em down (33.3% drop), superscripts +.035em down so the
+     sup's baseline lands exactly .333em above the text baseline (the
+     2Fe³⁺/S₂O₃²⁻ reference — a mirror image of the subscript drop). */
+  mjx-msub > mjx-script{ position:relative; top:.19em; }
+  mjx-msubsup > mjx-script > :last-child{ position:relative; top:.19em; }
+  mjx-msup > mjx-script{ position:relative; top:.035em; }
+  mjx-msubsup > mjx-script > :first-child{ position:relative; top:.035em; }
   /* v36.2: MCQ on Sophie's InDesign metrics (17/12 web bridge). The question NUMBER
      sits in a 1p8 (28.33px) left gutter in Helvetica Neue 500; the stem + A.B.C.D.
      labels align at the content-column left, option text hangs at a further 28.33px
@@ -1268,6 +1501,15 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-mcq .om-correct .om-let{ font-weight:700; }
   .ob-mcq .om-correct .om-let:after{ content:"\2713"; margin-left:2px; color:#1f8a54; }
   /* table — 0.5px #231f20 borders, centred cells, no fills; A.B.C.D. outside the grid */
+  /* v93: standalone tables — @table blocks and head:/row: lines in @erq
+     bodies / @mcq stems. Same NESA skin as the @mcq table; the wrap centres
+     the shrink-wrapped table in whatever column it sits in. */
+  .om-tblwrap{ text-align:center; margin:12px 0; }
+  .om-tblwrap .om-stable{ display:inline-table; }
+  .om-stable{ border-collapse:collapse; }
+  .om-stable th,.om-stable td{ border:0.5px solid #231f20; text-align:center; padding:5px 10px; font-weight:400; }
+  .om-stable th{ font-style:italic; }
+  .om-tleft .om-stable td{ text-align:left; }
   .ob-mcq .om-table{ border-collapse:collapse; margin:0; }
   .ob-mcq .om-table th, .ob-mcq .om-table td{ border:0.5px solid #231f20; text-align:center; padding:5px 10px; font-weight:400; }
   .ob-mcq .om-table th{ font-style:italic; }
@@ -1375,6 +1617,9 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-erq .oe-continued .oe-contword{ font-weight:400; }
   .ob-erq .oe-fig{ margin:12px 0; text-align:center; }
   .ob-erq .oe-figimg{ display:inline-block; max-width:100%; }
+  /* v79: figures inside @mcq stems — same centred treatment */
+  .ob-mcq .oe-fig{ margin:12px 0; text-align:center; }
+  .ob-mcq .oe-figimg{ display:inline-block; max-width:100%; }
   .ob-erq .oe-figph{ display:flex; align-items:center; justify-content:center;
     border:1px dashed var(--border); border-radius:8px; background:#fbfbfc;
     font-family:-apple-system,sans-serif; font-size:11.5px; line-height:15px;
@@ -1420,6 +1665,11 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .pp-page .oe-stem{ margin-bottom:6px; }
   .pp-page .oe-lines{ margin-top:4.25px; }   /* v45: question->lines gap = one line pitch */
   .pp-page .oe-line{ width:560.71px; margin-left:-2.83px; }
+  /* v94: |> rows reach the SAME right edge as the writing lines — the line
+     boxes overhang the body column by 9.56px (their -2.83 left start +
+     560.71 width vs the 548.32 body column; identical 9.56 at question
+     level), so the row extends by exactly that. */
+  .pp-page .ob-erq .oe-rrow{ margin-right:-9.56px; }
   .pp-page .oe-more{ margin:4.75px 0 0 -56.66px; width:calc(100% + 56.66px); text-align:center; }
   /* v61: question-level @erq (bare-number gutter — a preamble like "11", or a
      partless question like "12"): lines lengthen by one hang on the LEFT so
@@ -1430,6 +1680,24 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   /* v61: centre: lines — top-level ones centre on the full frame; inside an
      @erq body they centre on the same span as the More-note (gutter reclaimed) */
   .oe-centre{ text-align:center; }
+  /* v88: centre: inside an @mcq stem — centred on the stem column */
+  .ob-mcq .om-centrep{ text-align:center; }
+  /* v88: Sophie's equilibrium harpoons — the ⇌ character renders as her
+     Illustrator glyph (13.67×8.9 vector, ink from the surrounding text).
+     vertical-align centres it on the maths axis (≈ the bar height of =);
+     that number is the knob. */
+  .oe-eqm{ display:inline-block; width:1.141em; height:.743em; vertical-align:0px; margin:0 2px; }
+  /* v89: sized from Sophie's reference (Ag⁺ + SCN⁻ ⇌ AgSCN) — the harpoons
+     stand .743em tall (a touch above cap height), bottom on the baseline,
+     width from the glyph's own 13.67:8.9 aspect. em-based, so it scales
+     with the surrounding text. */
+  .oe-right{ text-align:right; }
+  .ob-erq .oe-rightp{ text-align:right; }
+  /* v94: |> rows — left part at its indent, right part flush right on the
+     body column (the writing lines' right edge) */
+  .oe-rrow{ display:flex; align-items:baseline; }
+  .oe-rrow .oe-rl{ flex:0 1 auto; }
+  .oe-rrow .oe-rr{ flex:1 0 auto; text-align:right; padding-left:14px; }
   .ob-erq .oe-centrep{ text-align:center; }
   .pp-page .ob-erq .oe-centrep{ margin-left:-56.66px; width:calc(100% + 56.66px); }
   .pp-page .ob-erq.oe-qlevel .oe-centrep{ margin-left:-28.33px; width:calc(100% + 28.33px); }
@@ -1577,6 +1845,16 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   @font-face{font-family:"HelveticaNeueSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/helvetica-neue-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap;}
   @font-face{font-family:"TimesSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
   @font-face{font-family:"TimesSTEM";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap;}
+  /* v84: Illustrator writes font-family="TimesNewRomanPSMT" (the PostScript
+     name) into exported SVGs. Now that figures are INLINED, this alias makes
+     that name resolve to the real Supabase Times everywhere — studio, export
+     doc (collectStudioCss carries it) — instead of depending on a Mac system
+     font. Confirmed name from the B5.1 exported PDF's embedded font list. */
+  @font-face{font-family:"TimesNewRomanPSMT";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+  /* v85: her other figures use the Times-Roman / Times-Bold PostScript
+     names (confirmed in 02/03-hormone-graph.svg) — same alias treatment */
+  @font-face{font-family:"Times-Roman";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+  @font-face{font-family:"Times-Bold";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/Times-Bold.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
 
   #view-preview .pv-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
   #view-preview .pv-controls input[type=text]{font-family:ui-monospace,Menlo,monospace;font-size:12px;
@@ -1725,7 +2003,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
         <tr><td><code>1. item</code> on each line<br>(<code>2.</code>, <code>3.</code>&hellip;)</td><td>Arabic numbered list &mdash; figures 1. 2. 3. 4. Consecutive lines opening with a number and dot become a list; the numerals auto-generate by position (so a mistyped number self-corrects) in Helvetica Neue 500 (15px, 25px column) &mdash; same style as the roman list, just Arabic figures. Item text stays Times and is spoken (numerals aren&rsquo;t). Needs runtime v40+.</td></tr>
         <tr><td><code>[laughs]</code></td><td>ElevenLabs audio tag; hidden in preview, kept in the ElevenLabs export</td></tr>
         <tr><td><code>@heading | @formula | @definition | @figure | @mcq | @box &hellip; @end</code></td><td>Orchestration blocks. See the Lesson JSON tab for the emitted contract; store SVGs in the Figures tab.</td></tr>
-        <tr><td><code>@mcq id | num | label</code> &hellip; <code>@end</code></td><td>Multiple-choice question. Three layouts, all on your InDesign metrics (labels at the block left, text hanging at 28.33px = 3p4, Times 17/21.25):<br>&bull; <b>list</b> (default) &mdash; <code>A. text</code> lines. <code>gap: 10</code> sets the px between options (default 10; use <code>21.25</code> for a full line).<br>&bull; <b>table</b> &mdash; <code>layout: table</code>, <code>cols: Combustion | Photosynthesis | &hellip;</code>, options <code>A. cell | cell | &hellip;</code>. Add <code>group: Entropy change | Enthalpy change</code> for a two-tier header (each group spans cols&divide;groups columns). Cells are bordered (0.5px #231f20) and centred, no fills; the A.B.C.D. labels sit <em>outside</em> the border.<br>&bull; <b>image</b> &mdash; <code>layout: image</code>, options <code>A. figure-key</code> (a Supabase <em>figures</em> key) or <code>A. https://&hellip;svg</code>. Two equal columns, SVG top-aligned to the label, 28.33px gap.<br>The <code>num</code> in the opener (<code>@mcq id | 05 | Question</code>) renders as the question number in a left gutter (Helvetica Neue 500, 0.1px, 21.25px). Also <code>answer: C</code> (or a leading <code>*</code>), <code>why: &hellip;</code>, <code>gate: yes</code>, <code>source: &hellip;</code>. The correct-answer tick shows only in this Studio preview, not on the live page. Never spoken. Needs runtime v40+.<br><b>v58/v59 &mdash; stem indents &amp; hanging lists.</b> In the STEM (above the options), <code>&gt; text</code> indents one hang (28.33px, level with option text) and <code>&gt;&gt; text</code> two. When the indented line begins with a short <code>(label)</code> &mdash; <code>&gt; (i) The male and female&hellip;</code>, also <code>(a)</code>, <code>(1)</code> &mdash; it becomes a <em>hanging</em> row: the label keeps its spot and the words sit &amp; wrap in their own column one further hang in.</td></tr>
+        <tr><td><code>@mcq id | num | label</code> &hellip; <code>@end</code></td><td>Multiple-choice question. Three layouts, all on your InDesign metrics (labels at the block left, text hanging at 28.33px = 3p4, Times 17/21.25):<br>&bull; <b>list</b> (default) &mdash; <code>A. text</code> lines. <code>gap: 10</code> sets the px between options (default 10; use <code>21.25</code> for a full line).<br>&bull; <b>table</b> &mdash; <code>layout: table</code>, <code>cols: Combustion | Photosynthesis | &hellip;</code>, options <code>A. cell | cell | &hellip;</code>. Add <code>group: Entropy change | Enthalpy change</code> for a two-tier header (each group spans cols&divide;groups columns). Cells are bordered (0.5px #231f20) and centred, no fills; the A.B.C.D. labels sit <em>outside</em> the border.<br>&bull; <b>image</b> &mdash; <code>layout: image</code>, options <code>A. figure-key</code> (a Supabase <em>figures</em> key) or <code>A. https://&hellip;svg</code>. Two equal columns, SVG top-aligned to the label, 28.33px gap.<br>The <code>num</code> in the opener (<code>@mcq id | 05 | Question</code>) renders as the question number in a left gutter (Helvetica Neue 500, 0.1px, 21.25px). Also <code>answer: C</code> (or a leading <code>*</code>), <code>why: &hellip;</code>, <code>gate: yes</code>, <code>source: &hellip;</code>. The correct-answer tick shows only in this Studio preview, not on the live page. Never spoken. Needs runtime v40+.<br><b>v58/v59 &mdash; stem indents &amp; hanging lists.</b> In the STEM (above the options), <code>&gt; text</code> indents one hang (28.33px, level with option text) and <code>&gt;&gt; text</code> two. When the indented line begins with a short <code>(label)</code> &mdash; <code>&gt; (i) The male and female&hellip;</code>, also <code>(a)</code>, <code>(1)</code> &mdash; it becomes a <em>hanging</em> row: the label keeps its spot and the words sit &amp; wrap in their own column one further hang in.<br><b>v88:</b> <code>centre: words</code> in the stem centres that line (e.g. a reaction equation); the <code>&#8652;</code> character anywhere in prose renders as the STEM Notes harpoon glyph.</td></tr>
         <tr><td><code>@paper id | Diagnostic Test 1</code> &hellip; <code>@end</code></td><td><b>v40 — exam-paper masthead + identity.</b> Keys: <code>kind: diagnostic</code> (espq/booklet cover later), <code>course:</code>, <code>title:</code>, <code>sku:</code> (<code>dn:</code> accepted as an alias), <code>time:</code> (renders as "Time Allowed: &hellip;"), <code>instructions:</code> (extra bare lines append as further paragraphs), <code>copyright:</code>. Course &amp; title are Helvetica&nbsp;Neue&nbsp;500; use <code>~~words~~</code> for the regular-weight run &mdash; <code>title: Diagnostic Test 1: ME-P1 ~~Proof By Mathematical Induction~~</code>. The footer/header bands (&copy; + SKU left, Page X of Y right) are drawn by the page view &amp; export from the shared band config, never authored. Not spoken.</td></tr>
         <tr><td><code>@section 1 | Section I &ndash; Multiple-Choice Questions</code> &hellip; <code>@end</code></td><td><b>v40 — section header.</b> <code>marks: 20</code>, <code>attempt: Question 01&ndash;20</code>, <code>time: about 1 hour</code> render as the "20 marks / Attempt &hellip; / Allow &hellip; for this section" lines + rule; extra bare lines append. The opener title feeds the running head in the page view. Not spoken.</td></tr>
         <tr><td><code>@erq 01.ii | ii. | 3</code> &hellip; <code>@end</code></td><td><b>v40 — one extended-response PART per block, including all its pages.</b> Opener is <code>id | gutter | marks</code>: the gutter prints <em>verbatim</em> ("01 i." for a question's first part, bare "ii." after, bare "14" for a multi-part question's preamble block holding the shared stem/figure); marks sit in the right-hand column. Body = stem lines (Times + MathJax, in order) plus the page-flow words: <code>lines: 8</code> / <code>lines: fill</code> (dotted writing lines; fill runs to the page bottom in the page view), <code>more</code> (the centred "More writing space is provided on the next page."), <code>pagebreak</code> (or <code>---</code>), <code>continued</code> (label derived from the id: <code>01.ii</code> &rarr; "01 ii. (continued)") or <code>continued: 01 i.</code> to override (the shared-space convention), and <code>figure: key-or-url | h: 320</code> (declared Illustrator height &rarr; deterministic pagination). <b>v61:</b> when the gutter is a <em>bare question number</em> (a preamble "11" or a partless question "12"), the content column starts one hang earlier &mdash; level with the a./i. labels &mdash; and the writing lines lengthen to match (right edge unchanged). <code>centre: words</code> centres a line (top level: on the full frame; in a body: on the More-note span). Not spoken; ElevenLabs/Rehearse ignore the whole block.</td></tr>
@@ -2126,7 +2404,7 @@ function stripListMarkers(s){
    to OPEN, so the Edit preview rendered callout cards correctly while buildLesson
    silently swallowed the whole block as prose. Deriving both from BLOCK_KINDS
    makes that class of bug impossible. ADD NEW BLOCK KINDS HERE AND NOWHERE ELSE. */
-var BLOCK_KINDS = ["heading","formula","definition","theory","key-theory","keyterm","figure","mcq","box","rule","center","centre","paper","section","erq"];
+var BLOCK_KINDS = ["heading","formula","definition","theory","key-theory","keyterm","figure","mcq","box","rule","center","centre","paper","section","erq","table"];
 var BLOCK_ALT = BLOCK_KINDS.join("|");
 var BLOCK_RE = new RegExp("^@(" + BLOCK_ALT + ")\\b([^\\n]*)\\n?([\\s\\S]*?)\\n?@end[ \\t]*$", "gim");
 var KIND_INFO = {
@@ -2155,7 +2433,12 @@ var KIND_INFO = {
   /* v40: paper blocks — exam papers authored in the studio. Never spoken. */
   paper:{block:"paper"},
   section:{block:"section"},
-  erq:{block:"erq"}
+  erq:{block:"erq"},
+  /* v93: a standalone data table — NESA skin (0.5px #231f20 borders, italic
+     centred header, centred cells). head: a | b | c for the header row;
+     every other line (row: prefix optional) is a body row, cells on |.
+     align: left switches the body cells left-aligned. Never spoken. */
+  table:{block:"table"}
 };
 var _idc=0; function autoId(p){ return p+(++_idc); }
 function splitPipes(s){ return (s||"").split("|").map(function(x){return x.trim();}); }
@@ -2210,12 +2493,29 @@ function parseMcqBody(body){
      (28.33 / 56.66px) — e.g. a (i)…(iv) numbered list sitting level with the
      option text. Same markers as @erq bodies and paper top level. */
   var stemInds={};
+  var stemFigs={};   /* v79: figure rows in the stem */
+  var stemCents={};  /* v88: centre: rows in the stem */
+  var stemTbls={};   /* v93: standalone tables in the stem (head:/row: lines) */
+  var _openTbl=null; /* the table consecutive head:/row: lines feed into */
+  var rawCuts=[];    /* v92: pagebreak lines — positions resolved at return */
   var OPT=/^\*?\s*([A-Za-z])[.)]\s*(.*)$/;
   /* v36: + group (two-tier table headers), gap (px between options), + image layout */
   var KEY=/^(layout|answer|why|gate|cols|group|gap|source)\s*:\s*(.*)$/i;
   (body||"").split(/\n/).forEach(function(ln){
-    var t=ln.trim(); if(!t){ pendGap++; return; }
+    var t=ln.trim(); if(!t){ pendGap++; _openTbl=null; return; }
     if(t.indexOf("##")===0) return;   /* v30: "##" comment — used by the PDF importer for TODO markers */
+    /* v93: head:/row: lines in the STEM — consecutive ones build one table */
+    var tbm=(!options.length)&&t.match(/^(head|row)\s*:\s*(.+)$/i);
+    if(tbm){
+      if(!_openTbl){
+        if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }
+        _openTbl={head:[],rows:[]}; stemTbls[stem.length]=_openTbl; stem.push("");
+      }
+      if(tbm[1].toLowerCase()==="head") _openTbl.head=splitPipes(tbm[2]);
+      else _openTbl.rows.push(splitPipes(tbm[2]));
+      return;
+    }
+    _openTbl=null;
     var k=t.match(KEY);
     if(k){
       var key=k[1].toLowerCase(), val=k[2].trim();
@@ -2239,6 +2539,30 @@ function parseMcqBody(body){
       if(pendGap){ if(!options.length) preOptGap=pendGap; else op.gapBefore=pendGap; pendGap=0; }   /* v57 */
       options.push(op); return;
     }
+    /* v79: figure: url | h: px — inside the STEM (before the options), same
+       word as @erq bodies. Renders centred at the declared height. */
+    var figm=(!options.length)&&t.match(/^figure\s*:\s*(.+)$/i);
+    if(figm){
+      if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }
+      var _fp=splitPipes(figm[1]), _fk=_fp[0]||"", _fh="";
+      for(var _fi=1;_fi<_fp.length;_fi++){ var _hm=_fp[_fi].match(/^h(?:eight)?\s*:\s*(\d+(?:\.\d+)?)\s*(?:px)?$/i); if(_hm) _fh=_hm[1]; }
+      stemFigs[stem.length]={key:_fk,h:_fh}; stem.push(""); return;
+    }
+    /* v92: pagebreak (or ---) INSIDE an @mcq — splits the question across
+       pages exactly like @erq: stem-so-far (and any options-so-far) close
+       this page, the rest continues at the top of the next, content column
+       aligned (the number gutter is not repeated). */
+    if(/^(pagebreak|-{3,})\s*$/i.test(t)){
+      rawCuts.push(options.length?{o:options.length}:{s:stem.length});
+      pendGap=0; return;
+    }
+    /* v88: centre: words — a CENTRED stem line (same word as @erq bodies and
+       the paper top level), e.g. a centred equation above the options */
+    var cm=(!options.length)&&t.match(/^cent(?:re|er)\s*:\s*(.+)$/i);
+    if(cm){
+      if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }
+      stemCents[stem.length]=true; stem.push(cm[1].trim()); return;
+    }
     var indm=(!options.length)&&t.match(/^(>{1,2})\s+(.*)$/);   /* v58: stem indent marker */
     if(indm){
       if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }
@@ -2258,8 +2582,9 @@ function parseMcqBody(body){
     if(pendGap){ stemGaps[stem.length]=pendGap; pendGap=0; }   /* v57: gap before this stem line */
     stem.push(t);
   });
+  var pageCuts=rawCuts.map(function(c){ return c.s!==undefined?c.s:stem.length+c.o; });   /* v92: linear position over [stem..., options...] */
   return {layout:layout,answer:answer,why:why,gate:gate,cols:cols,group:group,gap:gap,stem:stem,options:options,source:source,
-    stemGaps:stemGaps,preOptGap:preOptGap,stemInds:stemInds};
+    stemGaps:stemGaps,preOptGap:preOptGap,stemInds:stemInds,stemFigs:stemFigs,stemCents:stemCents,stemTbls:stemTbls,pageCuts:pageCuts};
 }
 function parseFigureBody(body){ var svgKey="",side="",parts=[],html="",height="",place="",nudge="";
   /* Accept "key: value" on ONE line OR "key:" on its own line with the value on
@@ -2347,37 +2672,58 @@ function parseSectionBody(body){
      lines: 8 | lines: fill      more       pagebreak (or ---)
      continued | continued: 01 i.           figure: key-or-url | h: 320 */
 function parseErqBody(body){
-  /* v42: a BLANK source line inside @erq = one line of space (21.25px) in the
-     preview and on the page — leading/trailing blanks are dropped, so the
-     block's own spacing stays predictable. */
+  /* v42: a BLANK source line inside @erq = one line of space (21.25px).
+     v80: leading and trailing blanks now count TOO — the same "you own all
+     the space, no surprises" rule as top level (v55) and @mcq bodies (v57).
+     A blank straight after the opener, or before @end, is a real 21.25px. */
   var flow=[], pendingGaps=0;
   function flushGaps(){ while(pendingGaps>0){ flow.push({t:"gap"}); pendingGaps--; } }
   (body||"").split(/\n/).forEach(function(ln){
     var t=ln.trim();
-    if(!t){ if(flow.length) pendingGaps++; return; }
+    if(!t){ pendingGaps++; return; }
     if(t.indexOf("##")===0) return;
     flushGaps();
     var m;
-    if((m=t.match(/^lines\s*:\s*(fill|\d+(?:\.\d+)?)\s*$/i))){
+    if((m=t.match(/^lines\s*:\s*(fill|\d+(?:\.\d+)?)\s*(\|\s*flow\s*)?$/i))){
       var v=m[1].toLowerCase();
-      flow.push({t:"lines", n:(v==="fill"?"fill":parseFloat(v))}); return; }
+      flow.push({t:"lines", n:(v==="fill"?"fill":parseFloat(v)), flow:!!m[2]&&v!=="fill"}); return; }
     if(/^more(\s*:\s*(y|yes|true|1|on))?\s*$/i.test(t)){ flow.push({t:"more"}); return; }
     if(/^(pagebreak|-{3,})\s*$/i.test(t)){ flow.push({t:"pagebreak"}); return; }
+    /* v93: standalone table rows — consecutive head:/row: lines merge into
+       one table at render (a blank or any other line ends the table) */
+    if((m=t.match(/^head\s*:\s*(.+)$/i))){ flow.push({t:"thead",cells:splitPipes(m[1])}); return; }
+    if((m=t.match(/^row\s*:\s*(.+)$/i))){ flow.push({t:"trow",cells:splitPipes(m[1])}); return; }
     if((m=t.match(/^continued(?:\s*:\s*(.+))?$/i))){
       flow.push({t:"continued", label:(m[1]||"").trim()}); return; }
     if((m=t.match(/^cent(?:re|er)\s*:\s*(.+)$/i))){ flow.push({t:"p", text:m[1].trim(), centre:true}); return; }   /* v61: centred line */
+    if((m=t.match(/^right\s*:\s*(.+)$/i))){ flow.push({t:"p", text:m[1].trim(), right:true}); return; }   /* v83: right-aligned line */
     if((m=t.match(/^(>{1,2})\s+note\s*:\s*(.+)$/i))){ flow.push({t:"note", text:m[2].trim(), ind:m[1].length}); return; }   /* v56: indented note */
     if((m=t.match(/^note\s*:\s*(.+)$/i))){ flow.push({t:"note", text:m[1].trim()}); return; }   /* v53: grey italic comment */
-    if((m=t.match(/^(>{1,2})\s+(.*)$/))){ flow.push({t:"p", text:m[2], ind:m[1].length}); return; }   /* v55: > / >> = first / second hang */
+    if((m=t.match(/^(>{1,2})\s+(.*)$/))){ var _ip={t:"p", text:m[2], ind:m[1].length}; _erqRSplit(_ip); flow.push(_ip); return; }   /* v55: > / >> = first / second hang; v94: |> splits off a right-aligned tail */
     if((m=t.match(/^figure\s*:\s*(.+)$/i))){
       var fp=splitPipes(m[1]), fkey=fp[0]||"", fh="";
       for(var fi=1;fi<fp.length;fi++){
         var hm=fp[fi].match(/^h(?:eight)?\s*:\s*(\d+(?:\.\d+)?)\s*(?:px)?$/i);
         if(hm) fh=hm[1]; }
       flow.push({t:"figure", key:fkey, h:fh}); return; }
-    flow.push({t:"p", text:t});
+    var _pp={t:"p", text:t}; _erqRSplit(_pp); flow.push(_pp);
   });
+  flushGaps();   /* v80: trailing blanks count */
   return flow;
+}
+/* v94: "equation |> ΔH = −57.2 kJ/mol" — the part after |> is right-aligned
+   on the body column (flush with the right edge of the writing lines), the
+   part before keeps its indent. Chemistry convention: reaction equation at
+   the >> hang, its enthalpy change on the same line at the far right. */
+function _erqRSplit(p){
+  var i=(p.text||"").indexOf("|>");
+  if(i>=0){
+    p.rtext=p.text.slice(i+2).trim(); p.text=p.text.slice(0,i).trim();
+    /* v96: "|> < tail" / "|> << tail" — pull the right-aligned tail one or
+       two hangs (28.33px) LEFT of the lines' right edge */
+    var lm=p.rtext.match(/^(<{1,2})\s+(.*)$/);
+    if(lm){ p.rind=lm[1].length; p.rtext=lm[2]; }
+  }
 }
 /* v40: derive an @erq continuation label from the block id —
    "01.ii" -> "01 ii."   "14" -> "14"   (the renderer appends "(continued)") */
@@ -2410,6 +2756,19 @@ function makeBlockInner(kind,headline,body){ kind=kind.toLowerCase(); var info=K
   if(info.block==="heading"){ var _hh=parseHeadingBody(body); var _hb={type:"block",kind:"heading",ref:o.id||autoId("h"),target:"heading-wrap",num:o.number,title:o.descript,spoken:false}; if(_hh.ruleColor)_hb.ruleColor=_hh.ruleColor; return _hb; }
   if(info.block==="rule"){ var _rb=parseRuleBody(body); var _ro={type:"block",kind:"rule",ref:o.id||autoId("rule"),style:_rb.style,spoken:false}; if(_rb.color)_ro.color=_rb.color; if(_rb.thickness)_ro.thickness=_rb.thickness; return _ro; }
   if(info.block==="center"){ var _cb=parseCenterBody(body); return {type:"block",kind:"center",ref:o.id||autoId("ctr"),lines:_cb.lines,spoken:false}; }
+  if(info.block==="table"){
+    var _th=[], _trows=[], _talign="";
+    (body||"").split(/\n/).forEach(function(ln){
+      var t=ln.trim(); if(!t) return;
+      if(t.indexOf("##")===0) return;
+      var m;
+      if((m=t.match(/^head\s*:\s*(.+)$/i))){ _th=splitPipes(m[1]); return; }
+      if((m=t.match(/^align\s*:\s*(.+)$/i))){ _talign=m[1].trim().toLowerCase(); return; }
+      if((m=t.match(/^row\s*:\s*(.+)$/i))){ _trows.push(splitPipes(m[1])); return; }
+      _trows.push(splitPipes(t));
+    });
+    return {type:"block",kind:"table",ref:o.id||autoId("tbl"),head:_th,rows:_trows,talign:_talign,spoken:false};
+  }
   if(info.block==="formula"){ var f=parseFormulaBody(body);
     return {type:"block",kind:"formula",ref:o.id||autoId("f"),target:"formula-wrap",combo:"narrated-selectable-wrap",
       label:info.label,number:o.number,descript:o.descript,equation:f.equation,whereLabel:f.whereLabel,variables:f.variables,
@@ -2470,6 +2829,16 @@ function makeBlockInner(kind,headline,body){ kind=kind.toLowerCase(); var info=K
     /* v58: "> " / ">> " stem indents — only present when used */
     var _hasSI=false; for(var _si in q.stemInds){ _hasSI=true; break; }
     if(_hasSI) mb.stemInds=q.stemInds;
+    /* v79: stem figures — only present when used */
+    var _hasSF=false; for(var _sf in q.stemFigs){ _hasSF=true; break; }
+    if(_hasSF) mb.stemFigs=q.stemFigs;
+    /* v88: centre: stem lines — only present when used */
+    var _hasSC=false; for(var _sc in q.stemCents){ _hasSC=true; break; }
+    if(_hasSC) mb.stemCents=q.stemCents;
+    if(q.pageCuts&&q.pageCuts.length) mb.pageCuts=q.pageCuts;   /* v92 */
+    /* v93: stem tables — only present when used */
+    var _hasST=false; for(var _st in q.stemTbls){ _hasST=true; break; }
+    if(_hasST) mb.stemTbls=q.stemTbls;
     return mb;
   }
   /* v40: paper blocks. Never spoken; emitted in the Lesson JSON for the paper
@@ -2566,7 +2935,7 @@ function unitCount(s){
 }
 /* v33: pull a trailing " |3" or " |Marks" off a line -> the marks-column value.
    Only digits or the word mark/marks qualify, so prose pipes don't misfire. */
-function splitMarks(seg){ var s=String(seg==null?"":seg); var m=s.match(/^([\s\S]*?)[ \t]*\|[ \t]*<?[ \t]*(\d+|marks?)[ \t]*>?[ \t]*$/i); if(m) return {text:m[1], marks:m[2]}; return {text:s, marks:null}; }
+function splitMarks(seg){ var s=String(seg==null?"":seg); var m=s.match(/^([\s\S]*?)[ \t]*\|[ \t]*<?[ \t]*(\d+|marks?)[ \t]*>?[ \t]*$/i); if(m){ var mk=m[2]; if(/^marks?$/i.test(mk)) mk="Marks"; /* v83: the header word is always "Marks" */ return {text:m[1], marks:mk}; } return {text:s, marks:null}; }
 function makeSay(seg){ var _mk=splitMarks(seg); seg=_mk.text; var cues=[],text="",wc=0;
   seg.split(/(\{\{[^}]*\}\})/g).forEach(function(p){ if(!p)return;
     var cm=p.match(/^\{\{([^}]*)\}\}$/); if(cm){var c=parseCue(cm[1]);c.at=wc;cues.push(c);return;}
@@ -2894,6 +3263,37 @@ function buildPaperPrintDoc(text, o){
   L.push('<scr'+'ipt>');
   L.push('(function(){');
   L.push('var DOT=new Array(177).join(".");');   /* v66: covers question-level width; box clips */
+  /* v78: lines: N | flow — same measured reflow as the studio page view */
+  L.push('var FLOWLIM='+ppx(PAPER_PT.contentBottom-PAPER_PT.top)+';');
+  L.push('function flowReflow(){');
+  L.push('  var pages=Array.prototype.slice.call(document.querySelectorAll(".pp-page"));');
+  L.push('  pages.forEach(function(pg,pi){');
+  L.push('    Array.prototype.slice.call(pg.querySelectorAll("[data-flowlines]")).forEach(function(hold){');
+  L.push('      var n=parseInt(hold.getAttribute("data-flowlines"),10)||0;');
+  L.push('      var erq=hold.closest(".ob-erq"); if(!erq) return;');
+  L.push('      var more=erq.querySelector(".oe-flow-more"), tmpl=erq.querySelector(".oe-flow-cont");');
+  L.push('      var lines=hold.querySelectorAll(".oe-line");');
+  L.push('      hold.removeAttribute("data-flowlines");');
+  L.push('      if(!lines.length){ if(more)more.remove(); if(tmpl)tmpl.remove(); return; }');
+  L.push('      var lh=lines[0].getBoundingClientRect().height, z=lh/34;');
+  L.push('      var content=pg.querySelector(".pp-content");');
+  L.push('      var top0=lines[0].getBoundingClientRect().top-content.getBoundingClientRect().top;');
+  L.push('      var fits=Math.floor((FLOWLIM*z-(21.25+4.75)*z-top0)/lh);');
+  L.push('      if(fits>=n){ if(more)more.remove(); if(tmpl)tmpl.remove(); return; }');
+  L.push('      if(fits<0) fits=0;');
+  L.push('      for(var i=lines.length-1;i>=fits;i--) lines[i].remove();');
+  L.push('      var next=pages[pi+1];');
+  L.push('      if(!next||!tmpl){ if(more)more.remove(); return; }');
+  L.push('      if(more) more.style.display="";');
+  L.push('      tmpl.style.display="";');
+  L.push('      var nc=next.querySelector(".pp-content");');
+  L.push('      nc.insertBefore(tmpl,nc.firstChild);');
+  L.push('      var holder=tmpl.querySelector(".oe-flow-lines2"), rest=n-fits, ls="";');
+  L.push('      for(var j=0;j<rest;j++) ls+=\'<div class="oe-line">\'+DOT+\'</div>\';');
+  L.push('      holder.innerHTML=ls;');
+  L.push('    });');
+  L.push('  });');
+  L.push('}');
   L.push('function fills(){');
   L.push('  document.querySelectorAll(".pp-page").forEach(function(pg){');
   L.push('    var content=pg.querySelector(".pp-content");');
@@ -2907,11 +3307,85 @@ function buildPaperPrintDoc(text, o){
   L.push('    });');
   L.push('  });');
   L.push('}');
+  /* v84: figure SVGs are INLINED before printing — an <img>'s isolated SVG
+     context is what Safari serialised with empty font subsets (glyphless
+     labels in the exported PDF). Inline, the labels are ordinary document
+     text in the page's web fonts. The declared h: box is preserved exactly,
+     so pagination is untouched; on any failure the <img> stays. */
+  L.push('var figN=0;');
+  L.push('function scopeFig(txt,pfx){');   /* Illustrator reuses .st0/.SVGID_1_ across files — scope per figure */
+  L.push('  try{');
+  L.push('    txt=txt.replace(/(<style[^>]*>)([\\s\\S]*?)(<\\/style>)/gi,function(_,a,css,b){');
+  L.push('      return a+css.replace(/(^|\\})([^@{}]+)\\{/g,function(_,brace,sel){');
+  L.push('        return brace+sel.split(",").map(function(s){return "#"+pfx+" "+s.trim();}).join(",")+"{";');
+  L.push('      })+b;');
+  L.push('    });');
+  L.push('    var ids={},m,re=/id="([^"]+)"/g;');
+  L.push('    while((m=re.exec(txt))) ids[m[1]]=1;');
+  L.push('    Object.keys(ids).forEach(function(id){');
+  L.push('      var esc=id.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&");');
+  L.push('      txt=txt.replace(new RegExp(\'id="\'+esc+\'"\',"g"),\'id="\'+pfx+"-"+id+\'"\');');
+  L.push('      txt=txt.replace(new RegExp("url\\\\(#"+esc+"\\\\)","g"),"url(#"+pfx+"-"+id+")");');
+  L.push('      txt=txt.replace(new RegExp(\'href="#\'+esc+\'"\',"g"),\'href="#\'+pfx+"-"+id+\'"\');');
+  L.push('    });');
+  L.push('  }catch(e){}');
+  L.push('  return txt;');
+  L.push('}');
+  L.push('function inlineFigs(){');
+  L.push('  var imgs=Array.prototype.slice.call(document.querySelectorAll("img.oe-figimg[src]"));');
+  L.push('  if(!imgs.length) return Promise.resolve();');
+  L.push('  var jobs=imgs.map(function(img){');
+  L.push('    return fetch(img.getAttribute("src"),{mode:"cors"}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(txt){');
+  L.push('      var pfx="figsvg"+(++figN);');
+  L.push('      var doc=new DOMParser().parseFromString(scopeFig(txt,pfx),"image/svg+xml"), svg=doc.documentElement;');
+  L.push('      if(!svg||svg.nodeName.toLowerCase()!=="svg"||doc.querySelector("parsererror")) throw 0;');
+  L.push('      svg=document.importNode(svg,true);');
+  L.push('      Array.prototype.slice.call(svg.querySelectorAll("script")).forEach(function(s){s.remove();});');
+  L.push('      Array.prototype.slice.call(svg.querySelectorAll("font,font-face,missing-glyph,glyph,hkern")).forEach(function(n){n.remove();});'); /* v85: dead Illustrator font data */
+  L.push('      var aw=parseFloat(svg.getAttribute("width"))||0, ah=parseFloat(svg.getAttribute("height"))||0;');
+  L.push('      if(!svg.getAttribute("viewBox")&&aw>0&&ah>0) svg.setAttribute("viewBox","0 0 "+aw+" "+ah);');
+  L.push('      var ratio=0, vb=(svg.getAttribute("viewBox")||"").trim().split(/[\\s,]+/);');
+  L.push('      if(vb.length===4&&parseFloat(vb[3])>0) ratio=parseFloat(vb[2])/parseFloat(vb[3]); else if(ah>0) ratio=aw/ah;');
+  L.push('      var hpx=parseFloat(img.style.height)||ah||0;');
+  L.push('      if(hpx>0){ svg.setAttribute("height",String(hpx)); if(ratio>0) svg.setAttribute("width",String(hpx*ratio)); else svg.removeAttribute("width"); }');
+  L.push('      svg.setAttribute("class","oe-figimg oe-figsvg");');
+  L.push('      svg.setAttribute("id",pfx);');
+  L.push('      img.parentNode&&img.parentNode.replaceChild(svg,img);');
+  L.push('    }).catch(function(e){ console.warn("[stem export] figure failed to inline (kept as <img>): "+img.getAttribute("src"), e); });');
+  /* v85: figures are 1-2MB each (embedded Illustrator font data), so the
+     old blunt 10s race could print mid-download and leave a figure on the
+     broken <img> path. Now each fetch gets up to 45s and the print WAITS
+     for all of them; a failure logs its URL and falls back to the <img>. */
+  L.push('  });');
+  L.push('  var tf=new Promise(function(r){setTimeout(function(){ console.warn("[stem export] figure inlining timed out after 45s — printing anyway"); r(); },45000);});');
+  L.push('  return Promise.race([Promise.all(jobs),tf]);');
+  L.push('}');
+  L.push('function fixMjx(){');   /* v97: Safari inline-equation baseline corrector (dual zero-width probes; scale = the 16/17 print zoom) */
+  L.push('  /* v98: per-container scale detection (the print zoom) */');
+  L.push('  Array.prototype.slice.call(document.querySelectorAll("mjx-container")).forEach(function(c){');
+  L.push('    if(c.getAttribute("display")==="true") return;');
+  L.push('    c.style.top="";');
+  L.push('    var SC=(c.offsetHeight?(c.getBoundingClientRect().height/c.offsetHeight):1)||1;');
+  L.push('    var mk=function(){ var p=document.createElement("span"); p.style.cssText="display:inline-block;width:0;height:0;padding:0;margin:0;border:0;"; return p; };');
+  L.push('    var outer=mk(); c.parentNode.insertBefore(outer,c.nextSibling);');
+  L.push('    var outY=outer.getBoundingClientRect().top; outer.parentNode.removeChild(outer);');
+  L.push('    var math=c.querySelector("mjx-math")||c;');
+  L.push('    var inner=mk(); math.appendChild(inner);');
+  L.push('    var inY=inner.getBoundingClientRect().top; math.removeChild(inner);');
+  L.push('    var err=inY-outY;');
+  L.push('    if(Math.abs(err)>8) return;');
+  L.push('    if(Math.abs(err)>0.25){ c.style.position="relative"; c.style.top=(-err/SC)+"px"; }');
+  L.push('  });');
+  L.push('}');
+  L.push('var figsP=inlineFigs();');   /* v85: start the fetches IMMEDIATELY, parallel with MathJax */
   L.push('function go(){');
   L.push('  var mj=(window.MathJax&&MathJax.startup&&MathJax.startup.promise)?MathJax.startup.promise:Promise.resolve();');
   L.push('  var to=new Promise(function(r){setTimeout(r,15000);});'); /* never hang on a worker */
-  L.push('  Promise.race([mj,to]).then(function(){return document.fonts.ready;}).then(function(){');
-  L.push('    setTimeout(function(){ fills(); setTimeout(function(){ window.print(); },300); },200);');
+  L.push('  Promise.race([mj,to]).then(function(){return document.fonts.ready;})');
+  L.push('  .then(function(){return figsP;})');
+  L.push('  .then(function(){return Promise.all(["12px TimesNewRomanPSMT","12px Times-Roman","12px Times-Bold"].map(function(f){return document.fonts.load(f).catch(function(){});}));})'); /* aliases only start loading once SVG text uses them */
+  L.push('  .then(function(){return document.fonts.ready;}).then(function(){');
+  L.push('    setTimeout(function(){ try{fixMjx();}catch(e){} try{flowReflow();}catch(e){} fills(); setTimeout(function(){ window.print(); },300); },200);');
   L.push('  });');
   L.push('}');
   L.push('if(document.readyState==="complete") go(); else window.addEventListener("load",go);');
@@ -2941,7 +3415,7 @@ function buildPaperLessonBundle(text){
      the lesson column at 1:1. Vertical geometry untouched, so the bands
      sit exactly where the page view and the PDF put them. */
   var html = paperPagesHtml(text);
-  var KEEP=/\.(pp-|ob-paper|ob-psec|ob-erq|ob-mcq|oe-|om-|opp-|ops-|pv-para|pv-mark|helv|ital|bold|rn-)/;
+  var KEEP=/\.(pp-|ob-paper|ob-psec|ob-erq|ob-mcq|oe-|om-|opp-|ops-|pv-para|pv-mark|helv|ital|bold|rn-|chem-)/;   /* v86: chem-sub/chem-sup were missing from the bundle — subscripts on the lesson surface fell back to browser defaults (same latent bug as the ~~word~~ loss) */
   var css=[];
   Array.prototype.forEach.call(document.styleSheets, function(sh){
     var rules; try{ rules=sh.cssRules; }catch(e){ return; }
@@ -2964,9 +3438,24 @@ function buildPaperLessonBundle(text){
      so keyterm callouts and student notes sit ON the paper's margin; the
      footer bands still mark where each page ends. */
   css.push('.pp-page{border:1px dashed #d6d6d6;box-shadow:none;}');   /* v76 outline; v77: a smidge darker per Sophie (was #e0e0e0) */
+  /* v84: inlined figure SVGs carry Illustrator's PostScript font name —
+     alias it to the real Supabase Times so labels render in HER Times on
+     every student device, not just Macs that own the system font. (The
+     KEEP loop above only collects selector rules, so @font-face must be
+     pushed explicitly; a duplicate declaration on the site is harmless.) */
+  css.push('@font-face{font-family:"TimesNewRomanPSMT";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}');
+  css.push('@font-face{font-family:"Times-Roman";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/times-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}');   /* v85 */
+  css.push('@font-face{font-family:"Times-Bold";src:url("https://mqrkoafzauqyyqtdkhts.supabase.co/storage/v1/object/public/Codes/Fonts/Times-Bold.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}');   /* v85 */
+  /* v87: the MathJax subscript nudge has no class in its selector, so the
+     KEEP loop can't collect it — push it explicitly (scoped to the paper) */
+  css.push('.pp-flow mjx-msub > mjx-script{position:relative;top:.19em;}');   /* v91: rel-pos, not transform (Safari) */
+  css.push('.pp-flow mjx-msubsup > mjx-script > :last-child{position:relative;top:.19em;}');
+  css.push('.pp-flow mjx-msup > mjx-script{position:relative;top:.035em;}');
+  css.push('.pp-flow mjx-msubsup > mjx-script > :first-child{position:relative;top:.035em;}');
   return { html:html, css:css.join("\n"),
     frameW:843.31, frameOffset:ppx(PAPER_PT.frameL),
-    fill:{ limit:ppx(PAPER_PT.fillLastTop-PAPER_PT.top), pitch:ppx(PAPER_PT.linePitch) } };
+    fill:{ limit:ppx(PAPER_PT.fillLastTop-PAPER_PT.top), pitch:ppx(PAPER_PT.linePitch) },
+    flowLimit:ppx(PAPER_PT.contentBottom-PAPER_PT.top) };
 }
 window.STEM.buildPaperLessonBundle = buildPaperLessonBundle;
 var STEM_LOGO_URI = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzNi4yNiAzNiI+CiAgPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDIuMS4xIEJ1aWxkIDEyMykgIC0tPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuc3QwIHsKICAgICAgICBmaWxsOiAjMjMxZjIwOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjkuNjgsMTIuMzdsLTUuOTMsMi42NmMxLjc0LDEuNjEsMi43OCwzLjk3LDIuNzgsNi41NnYuMDhjMCw0Ljc3LTMuNDIsOC42Ny04LjM2LDguNjdzLTguNDQtMy45OC04LjQ0LTguNzV2LS4wOGMwLTIuNTksMS4wMS00LjkyLDIuNzItNi41MWwtNS4xNS0yLjMxdjcuNzdsMS4wNSwyLjUzYy4wNy4xNywwLC4zNi0uMTguNDQtLjA0LjAyLS4wOS4wMy0uMTMuMDMtLjEzLDAtLjI1LS4wOC0uMzEtLjIxbC0uMzEtLjc0LjA3LjcyYy4wMi4xOC0uMTIuMzUtLjMuMzYtLjAxLDAtLjAyLDAtLjAzLDAtLjE3LDAtLjMxLS4xMy0uMzMtLjNsLS4wNy0uNzktLjA4Ljc5Yy0uMDIuMTctLjE2LjMtLjMzLjMtLjAxLDAtLjAyLDAtLjAzLDAtLjE4LS4wMi0uMzItLjE4LS4zLS4zNmwuMDctLjcxLS4zMS43M2MtLjA1LjEzLS4xOC4yLS4zMS4yLS4wNCwwLS4wOSwwLS4xMy0uMDMtLjE3LS4wNy0uMjUtLjI3LS4xOC0uNDRsMS4wNS0yLjUxdi03LjU1Yy0xLjg0LDIuNDItMi45LDUuNDItMi45LDguNjd2LjA4YzAsNy45Miw2LjE3LDE0LjMyLDE0Ljc2LDE0LjMyczE0Ljg0LTYuNDksMTQuODQtMTQuNHYtLjA4YzAtMy40OC0xLjE5LTYuNjYtMy4yNS05LjE0Ii8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTYuMjMsMTIuOTNjLjEzLS4xOC4yNi0uMzYuNDEtLjUzbC42Ny4zdi0xLjI4bDguNTctMy4yOC02LjQzLDQuMjQsOC42OSwzLjksMTguMTMtOC4xNEwxOC4xMywwLDAsOC4xNGw2LjIzLDIuOHYxLjk5WiIvPgo8L3N2Zz4=";
@@ -2975,6 +3464,16 @@ var STEM_LOGO_URI = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZ
    a preamble block ("11") or a partless question ("12"). Its content column
    starts one hang earlier (level with sibling blocks' a./i. labels) and its
    writing lines lengthen to match. Part blocks ("a.", "01 i.") are untouched. */
+/* v93: the ONE standalone-table renderer — @table blocks, head:/row: lines
+   in @erq bodies and @mcq stems all come here. NESA skin, centred in its
+   column (the wrap centres, the table shrink-wraps). */
+function omStandaloneTable(head,rows,talign){
+  var h="";
+  if(head&&head.length) h='<tr class="om-colrow">'+head.map(function(c){return '<th>'+parseMarkup(c)+'</th>';}).join("")+'</tr>';
+  var b=(rows||[]).map(function(r){
+    return '<tr>'+r.map(function(c){return '<td>'+parseMarkup(c)+'</td>';}).join("")+'</tr>'; }).join("");
+  return '<div class="om-tblwrap'+(talign==="left"?" om-tleft":"")+'"><table class="om-table om-stable">'+h+b+'</table></div>';
+}
 function erqIsQLevel(bl){
   var g=String(bl.gutter||"").trim();
   return /^\d+$/.test(g) && String(bl.ref||"").indexOf(".")<0;
@@ -3003,11 +3502,28 @@ var DOT_LINE = new Array(177).join(".");   /* v44: dots at the InDesign pitch (2
    both line kinds now reach their shared right edge. */
 function erqItemsHtml(bl, items, paged){
   var out="";
+  /* v93: merge consecutive thead/trow items into one table */
+  var _mg=[]; (items||[]).forEach(function(it){
+    if(it.t==="thead"||it.t==="trow"){
+      var _lt=_mg[_mg.length-1];
+      if(!_lt||_lt.t!=="table"){ _lt={t:"table",head:[],rows:[]}; _mg.push(_lt); }
+      if(it.t==="thead") _lt.head=it.cells; else _lt.rows.push(it.cells);
+      return;
+    }
+    _mg.push(it);
+  });
+  items=_mg;
   (items||[]).forEach(function(it){
+    if(it.t==="table"){ out+=omStandaloneTable(it.head,it.rows,""); return; }
     if(it.t==="p"){
       var isEq=/^\\\[[\s\S]*\\\]$/.test(it.text.trim());
       var ind=it.ind?(' style="padding-left:'+(it.ind*28.33)+'px"'):'';
-      out+='<div class="oe-stem'+(isEq?' oe-eqline':'')+(it.centre?' oe-centrep':'')+'"'+ind+'>'+parseMarkup(it.text)+'</div>'; return; }
+      /* v94: |> right-aligned tail — left part keeps the indent, right part
+         sits flush with the right edge of the writing lines */
+      if(it.rtext){
+        var rsh=it.rind?(' style="padding-right:'+(it.rind*28.33)+'px"'):'';   /* v96 */
+        out+='<div class="oe-stem oe-rrow"'+ind+'><span class="oe-rl">'+parseMarkup(it.text)+'</span><span class="oe-rr"'+rsh+'>'+parseMarkup(it.rtext)+'</span></div>'; return; }
+      out+='<div class="oe-stem'+(isEq?' oe-eqline':'')+(it.centre?' oe-centrep':'')+(it.right?' oe-rightp':'')+'"'+ind+'>'+parseMarkup(it.text)+'</div>'; return; }
     if(it.t==="lines"){
       if(it.n==="fill"){
         if(paged){ out+='<div class="oe-lines oe-fill" data-fill="1"></div>'; }
@@ -3018,6 +3534,21 @@ function erqItemsHtml(bl, items, paged){
         return; }
       var n=Math.max(0,Math.round(it.n)), ls="";
       for(var i=0;i<n;i++) ls+='<div class="oe-line">'+DOT_LINE+'</div>';
+      /* v78: lines: N | flow — render all N plus a HIDDEN More-note and a
+         hidden continuation segment (continued row + empty lines holder).
+         The post-layout reflow measures the real page, trims what doesn't
+         fit, reveals the note, and moves the continuation (with the
+         remaining lines) to the top of the NEXT page. Same machinery on
+         every surface: page view, export, lesson. */
+      if(it.flow && paged){
+        var _cl=erqContinuedLabel(bl,null), _g1=_cl, _g2="";
+        var _sp=_cl.indexOf(" "); if(_sp>0){ _g1=_cl.slice(0,_sp); _g2=_cl.slice(_sp+1); }
+        out+='<div class="oe-lines" data-flowlines="'+n+'">'+ls+'</div>'
+          +'<div class="oe-more oe-flow-more" style="display:none">More writing space is provided on the next page.</div>'
+          +'<div class="oe-flow-cont ob-erq'+(erqIsQLevel(bl)?' oe-qlevel':'')+'" data-pref="'+escapeHtml(bl.ref||"")+'" style="display:none">'
+          +'<div class="oe-row oe-cont-row"><span class="oe-gut"><span class="oe-g1">'+(escapeHtml(_g1)||"&#8203;")+'</span><span class="oe-g2">'+(escapeHtml(_g2)||"&#8203;")+'</span></span>'
+          +'<div class="oe-body"><div class="oe-contword2">(continued)</div><div class="oe-lines oe-flow-lines2"></div></div></div></div>';
+        return; }
       out+='<div class="oe-lines">'+ls+'</div>'; return; }
     if(it.t==="more"){ out+='<div class="oe-more">More writing space is provided on the next page.</div>'; return; }
     if(it.t==="pagebreak"){ if(!paged) out+='<div class="pv-pagebreak"></div>'; return; }
@@ -3058,6 +3589,34 @@ function buildPaperModel(text){
         });
         cur.push(seg);
         if(segFills(seg)) pageFull=true;      /* lines: fill ran to the bottom */
+        return;
+      }
+      /* v92: pagebreak inside an @mcq — split it into per-page parts, the
+         same shape @erq segments take. Each part is a shallow clone with
+         its slice of the stem/options (index maps re-based); continuation
+         parts render an EMPTY number gutter so the content column stays
+         aligned, and only the last part keeps the answer-aids line data. */
+      if(bl.kind==="mcq"&&bl.pageCuts&&bl.pageCuts.length){
+        var S=(bl.stem||[]).length, total=S+((bl.options||[]).length);
+        var bounds=[0].concat(bl.pageCuts.slice().sort(function(a,b){return a-b;})).concat([total]);
+        for(var bi=0;bi<bounds.length-1;bi++){
+          var from=bounds[bi], to=bounds[bi+1];
+          if(from>=to) continue;
+          var part={}; for(var pk in bl) part[pk]=bl[pk];
+          var s0=Math.min(from,S), s1=Math.min(to,S);
+          part.stem=(bl.stem||[]).slice(s0,s1);
+          ["stemGaps","stemInds","stemFigs","stemCents","stemTbls"].forEach(function(f){
+            if(!bl[f]) return; var nm={};
+            Object.keys(bl[f]).forEach(function(k){ var ki=+k; if(ki>=s0&&ki<s1) nm[ki-s0]=bl[f][k]; });
+            part[f]=nm;
+          });
+          var o0=Math.max(0,from-S), o1=Math.max(0,to-S);
+          part.options=(bl.options||[]).slice(o0,o1);
+          if(!(part.stem.length&&o0===0&&part.options.length)) part.preOptGap=0;
+          if(bi>0){ part._cont=true; part.number=""; part.ref=(bl.ref||"")+"~cont"+bi; }
+          cur.push({kind:"block",bl:part});
+          if(bi<bounds.length-2) pushPage();   /* each cut closes a page; the last part stays on the open page */
+        }
         return;
       }
       cur.push({kind:"block",bl:bl}); return;
@@ -3104,6 +3663,11 @@ function buildPaperModel(text){
        the full text frame — e.g. centre: ~Question 11~ ~~continues on the next page.~~ */
     if(/^cent(re|er)\s*:/i.test((im.text||"").trim())){
       cur.push({kind:"html",html:'<div class="pv-para oe-centre">'+parseMarkup(im.text.trim().replace(/^cent(re|er)\s*:\s*/i,""))+'</div>'});
+      return;
+    }
+    /* v83: right: — the mirror of centre:, right-aligned on the text frame */
+    if(/^right\s*:/i.test((im.text||"").trim())){
+      cur.push({kind:"html",html:'<div class="pv-para oe-right">'+parseMarkup(im.text.trim().replace(/^right\s*:\s*/i,""))+'</div>'});
       return;
     }
     /* v53: a top-level line starting "note:" is a grey italic comment on
@@ -3157,12 +3721,161 @@ function paperPagesHtml(text){
 }
 /* after MathJax settles: fill "lines: fill" runs to the page bottom, flag
    overflowing pages, and scale the stack to the preview pane width. */
+/* v78: lines: N | flow — measured reflow. Keeps the lines that fit (reserving
+   room for the More-note), reveals the centred note, and moves the hidden
+   continuation segment (continued row + the remaining lines) to the top of
+   the NEXT page. Zoom-proof: the pitch is read off a rendered line, so the
+   same function serves the page view, the export doc, and the lesson page.
+   If the block sits on the paper's last page, the leftovers stay put and the
+   overflow badge flags it — add a --- or more content after. */
+function paperFlowReflow(root, DOT){
+  var LIMIT=ppx(PAPER_PT.contentBottom-PAPER_PT.top);
+  var pages=Array.prototype.slice.call(root.querySelectorAll(".pp-page"));
+  pages.forEach(function(pg, pi){
+    Array.prototype.slice.call(pg.querySelectorAll("[data-flowlines]")).forEach(function(hold){
+      var n=parseInt(hold.getAttribute("data-flowlines"),10)||0;
+      var erq=hold.closest?hold.closest(".ob-erq"):null; if(!erq) return;
+      var more=erq.querySelector(".oe-flow-more");
+      var tmpl=erq.querySelector(".oe-flow-cont");
+      var lines=hold.querySelectorAll(".oe-line");
+      hold.removeAttribute("data-flowlines");
+      if(!lines.length){ if(more)more.remove(); if(tmpl)tmpl.remove(); return; }
+      var lh=lines[0].getBoundingClientRect().height;      /* real (possibly zoomed) pitch */
+      var z=lh/34;
+      var content=pg.querySelector(".pp-content");
+      var top0=lines[0].getBoundingClientRect().top-content.getBoundingClientRect().top;
+      var moreH=(21.25+4.75)*z;
+      var fits=Math.floor((LIMIT*z-moreH-top0)/lh);
+      if(fits>=n){ if(more)more.remove(); if(tmpl)tmpl.remove(); return; }
+      if(fits<0) fits=0;
+      for(var i=lines.length-1;i>=fits;i--) lines[i].remove();
+      var next=pages[pi+1];
+      if(!next||!tmpl){ if(more)more.remove(); return; }    /* last page — badge will flag */
+      if(more) more.style.display="";
+      tmpl.style.display="";
+      var nc=next.querySelector(".pp-content");
+      nc.insertBefore(tmpl,nc.firstChild);
+      var holder=tmpl.querySelector(".oe-flow-lines2");
+      var rest=n-fits, ls="";
+      for(var j=0;j<rest;j++) ls+='<div class="oe-line">'+DOT+'</div>';
+      holder.innerHTML=ls;
+    });
+  });
+}
+/* ================================================================
+   v84: inlineFigSvgs(root) — fetch every figure <img class="oe-figimg">
+   and replace it with the SVG's own markup, inline in the document.
+   WHY: an <img>'s SVG renders in an isolated context that cannot see
+   the document's @font-face fonts; Safari's print serialisation wrote
+   its text runs against an empty font subset, so every figure label
+   vanished from the exported PDF (curves survived — they're paths).
+   Inline, the SVG <text> is ordinary document text in the page's real
+   fonts, and prints like every other line. Sizing: the declared h: is
+   kept exactly (same box as the <img>), width from the SVG's own
+   aspect ratio — pagination and question anchors are untouched.
+   On ANY failure the <img> stays, so nothing is ever worse.
+   ================================================================ */
+var _figSvgCache = {};
+var _figSvgN = 0;
+/* Illustrator exports reuse the SAME class names (.st0, .st1) and ids
+   (SVGID_1_) in every file. Inline, two figures on one paper would
+   restyle each other and cross-wire gradient/clip references — so each
+   figure's <style> selectors are scoped under a unique id on its root
+   svg, and its ids (plus url(#…)/href="#…" references) are prefixed. */
+function scopeFigSvg(txt, pfx){
+  try{
+    txt = txt.replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/gi, function(_, a, css, b){
+      return a + css.replace(/(^|\})([^@{}]+)\{/g, function(_, brace, sel){
+        return brace + sel.split(",").map(function(s){ return "#"+pfx+" "+s.trim(); }).join(",") + "{";
+      }) + b;
+    });
+    var ids = {}, m, re = /id="([^"]+)"/g;
+    while((m = re.exec(txt))) ids[m[1]] = 1;
+    Object.keys(ids).forEach(function(id){
+      var esc = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      txt = txt.replace(new RegExp('id="'+esc+'"', "g"), 'id="'+pfx+'-'+id+'"');
+      txt = txt.replace(new RegExp('url\\(#'+esc+'\\)', "g"), 'url(#'+pfx+'-'+id+')');
+      txt = txt.replace(new RegExp('href="#'+esc+'"', "g"), 'href="#'+pfx+'-'+id+'"');
+    });
+  }catch(e){}
+  return txt;
+}
+function inlineFigSvgs(root){
+  var imgs = Array.prototype.slice.call(root.querySelectorAll("img.oe-figimg[src]"));
+  if(!imgs.length) return Promise.resolve();
+  return Promise.all(imgs.map(function(img){
+    var url = img.getAttribute("src");
+    var p = _figSvgCache[url] || (_figSvgCache[url] = fetch(url, {mode:"cors"}).then(function(r){
+      if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); }));
+    return p.then(function(txt){
+      var pfx = "figsvg" + (++_figSvgN);
+      var doc = new DOMParser().parseFromString(scopeFigSvg(txt, pfx), "image/svg+xml");
+      var svg = doc.documentElement;
+      if(!svg || svg.nodeName.toLowerCase()!=="svg" || doc.querySelector("parsererror")) throw new Error("not an svg");
+      svg = document.importNode(svg, true);
+      Array.prototype.slice.call(svg.querySelectorAll("script")).forEach(function(s){ s.remove(); });
+      /* v85: Illustrator embeds legacy SVG <font> data (~1MB of glyphs no
+         modern browser reads) — drop it so the DOM stays light */
+      Array.prototype.slice.call(svg.querySelectorAll("font,font-face,missing-glyph,glyph,hkern")).forEach(function(n){ n.remove(); });
+      var aw = parseFloat(svg.getAttribute("width"))||0, ah = parseFloat(svg.getAttribute("height"))||0;
+      if(!svg.getAttribute("viewBox") && aw>0 && ah>0) svg.setAttribute("viewBox","0 0 "+aw+" "+ah);
+      var ratio = 0, vb = (svg.getAttribute("viewBox")||"").trim().split(/[\s,]+/);
+      if(vb.length===4 && parseFloat(vb[3])>0) ratio = parseFloat(vb[2])/parseFloat(vb[3]);
+      else if(ah>0) ratio = aw/ah;
+      var hpx = parseFloat(img.style.height)||ah||0;
+      if(hpx>0){ svg.setAttribute("height",String(hpx));
+        if(ratio>0) svg.setAttribute("width",String(hpx*ratio)); else svg.removeAttribute("width"); }
+      svg.setAttribute("class","oe-figimg oe-figsvg");
+      svg.setAttribute("id", pfx);
+      svg.setAttribute("role","img");
+      if(img.parentNode) img.parentNode.replaceChild(svg, img);
+    }).catch(function(e){ /* keep the <img>: screen still shows the figure */ });
+  }));
+}
+window.STEM = window.STEM || {}; window.STEM.inlineFigSvgs = inlineFigSvgs;
+/* ================================================================
+   v97: fixMjxBaselines(root, scale) — Safari lets an inline equation's
+   baseline drift below the surrounding text's (the sinking Cl₂). This
+   corrector is ASSUMPTION-FREE: a zero-width inline-block sits its
+   bottom on the local text baseline, so one probe INSIDE mjx-math (the
+   equation's own baseline) vs one right AFTER the container (the text
+   baseline) measures the true error — whatever the engine did — and the
+   container is lifted by exactly that, paint-only (position:relative).
+   In engines that align correctly the error measures 0 and nothing
+   changes. `scale` divides out a zoom/transform on the measured subtree
+   (export pages use zoom 16/17; the lesson stage may scale).
+   ================================================================ */
+function fixMjxBaselines(root, scale){
+  Array.prototype.slice.call(root.querySelectorAll("mjx-container")).forEach(function(c){
+    if(c.getAttribute("display")==="true") return;
+    c.style.top="";
+    /* v98: detect the LOCAL visual scale (transform/zoom on an ancestor) so
+       the correction is exact inside scaled subtrees — Sophie's Safari probe
+       showed 0.00px error unscaled, so the sink lives in the zoomed export
+       and the scaled preview panes. rect height is visual, offsetHeight is
+       layout — their ratio is the transform scale (zoom scales both ≈ 1,
+       and its ~6% residual on a 2px shift is invisible). */
+    var sc = scale || (c.offsetHeight ? (c.getBoundingClientRect().height / c.offsetHeight) : 1) || 1;
+    var mk=function(){ var p=document.createElement("span");
+      p.style.cssText="display:inline-block;width:0;height:0;padding:0;margin:0;border:0;"; return p; };
+    var outer=mk(); c.parentNode.insertBefore(outer,c.nextSibling);
+    var outY=outer.getBoundingClientRect().top; outer.parentNode.removeChild(outer);
+    var math=c.querySelector("mjx-math")||c;
+    var inner=mk(); math.appendChild(inner);
+    var inY=inner.getBoundingClientRect().top; math.removeChild(inner);
+    var err=inY-outY;
+    if(Math.abs(err)>8*sc) return;              /* implausible — a probe wrapped lines */
+    if(Math.abs(err)>0.25){ c.style.position="relative"; c.style.top=(-err/sc)+"px"; }
+  });
+}
+window.STEM.fixMjxBaselines = fixMjxBaselines;
 function paperPostLayout(root){
   var vp=root.querySelector(".pp-vp"); if(!vp) return;
   var stack=vp.querySelector(".pp-stack");
   var pitch=ppx(PAPER_PT.linePitch);
   var fillLimit=ppx(PAPER_PT.fillLastTop-PAPER_PT.top);        /* last line TOP may not pass this (content-relative) */
   var bottomLimit=ppx(PAPER_PT.contentBottom-PAPER_PT.top);
+  try{ paperFlowReflow(vp, DOT_LINE); }catch(e){}               /* v78: before badges, so they see the final layout */
   vp.querySelectorAll(".pp-page").forEach(function(pgEl){
     var content=pgEl.querySelector(".pp-content");
     var cTop=content.getBoundingClientRect().top;
@@ -3226,6 +3939,7 @@ function blockHtmlInner(bl){
     var _cl=(bl.lines||[]).map(function(l){ return l?'<div class="obc-line">'+parseMarkup(l)+'</div>':'<div class="obc-gap"></div>'; }).join("");
     return '<div class="ob-center">'+_cl+'</div>';
   }
+  if(bl.kind==="table"){ return omStandaloneTable(bl.head,bl.rows,bl.talign); }   /* v93 */
   if(bl.kind==="formula"){
     var head='<div class="oc-head"><span class="oc-label">'+escapeHtml(bl.label)+'</span> <span class="oc-num">'+escapeHtml(bl.number)+'</span> <span class="oc-descript">'+parseMarkup(bl.descript||"")+'</span></div>';
     var eq=bl.equation?'<div class="oc-eq">'+escapeHtml(bl.equation)+'</div>':'';   /* v41: same "<" escape fix as parseMarkup */
@@ -3256,8 +3970,23 @@ function blockHtmlInner(bl){
     var ms=(bl.stem||[]).map(function(p,pi){
       var g=(bl.stemGaps&&bl.stemGaps[pi])?'<div class="om-sp" style="height:'+(bl.stemGaps[pi]*21.25)+'px"></div>':'';
       var gapAfter=(bl.stemGaps&&bl.stemGaps[pi+1])||(pi===_nstem-1&&bl.preOptGap);
+      /* v93: a stem row that is a standalone TABLE */
+      if(bl.stemTbls&&bl.stemTbls[pi]){
+        var _tb=bl.stemTbls[pi];
+        return g+omStandaloneTable(_tb.head,_tb.rows,"");
+      }
+      /* v79: a stem row that is a FIGURE — centred, declared height */
+      if(bl.stemFigs&&bl.stemFigs[pi]){
+        var _f=bl.stemFigs[pi], _fk2=(_f.key||"").trim(), _fh2=(_f.h?parseFloat(_f.h):0), _fin;
+        if(/^https?:\/\//i.test(_fk2)) _fin='<img class="oe-figimg" src="'+escapeHtml(_fk2)+'"'+(_fh2?' style="height:'+_fh2+'px"':'')+' alt="figure">';
+        else _fin='<div class="oe-figph"'+(_fh2?' style="height:'+Math.max(60,_fh2)+'px"':'')+'><span>SVG&nbsp;key <b>'+escapeHtml(_fk2||"(none)")+'</b>'+(_fh2?' &middot; h: '+_fh2+'px':' &middot; <b>no h: set</b>')+'</span></div>';
+        return g+'<div class="oe-fig">'+_fin+'</div>';
+      }
       var st="";   /* v58: "> " / ">> " indents the stem line to the first / second hang */
       if(gapAfter) st+="margin-bottom:0;";
+      /* v88: centre: stem line — centred on the stem column */
+      if(bl.stemCents&&bl.stemCents[pi])
+        return g+'<div class="om-stem om-centrep"'+(st?' style="'+st+'"':'')+'>'+parseMarkup(p)+'</div>';
       var si=bl.stemInds&&bl.stemInds[pi], ind=si&&(si.ind||si), lab=si&&si.lab;
       /* v62: hanging rows sit one hang LEFT of v60 — "> (i) text" puts the TEXT
          on the option-text column (28.33px) and the right-aligned label in the
@@ -3309,7 +4038,7 @@ function blockHtmlInner(bl){
     if(bl.preOptGap) mo='<div class="om-sp" style="height:'+(bl.preOptGap*21.25)+'px"></div>'+mo;   /* v57: blank between stem and options */
     var mf='<div class="of-parts">answer: <b>'+escapeHtml(bl.answer||"(none set)")+'</b>'+(bl.gate?' &middot; gates the lesson until answered':'')+(bl.why?' &middot; has a "why"':'')+(bl.source?' &middot; '+escapeHtml(bl.source):'')+' &middot; not spoken &middot; number + answer are authoring aids &mdash; on the live page only the number shows</div>';
     /* v36.2: question number in a left gutter (HN 500), stem + options in the content column */
-    var mqnum=(bl.number?'<div class="om-qnum">'+escapeHtml(bl.number)+'</div>':'');
+    var mqnum=(bl.number?'<div class="om-qnum">'+escapeHtml(bl.number)+'</div>':(bl._cont?'<div class="om-qnum">&#8203;</div>':''));   /* v92: continuation part — empty gutter, columns aligned */
     return '<div class="formula-card ob-card ob-mcq" data-target="mcq-callout" data-pref="'+escapeHtml(bl.ref||"")+'"><div class="om-qrow">'+mqnum+'<div class="om-content">'+ms+mo+'</div></div>'+mf+'</div>';
   }
   /* v40: paper blocks — document-style preview. Print-exact metrics arrive
@@ -3397,6 +4126,11 @@ function parseMarkup(text){
   //     equations are tokenised away, so TeX/code hyphens are never touched;
   //     "---" and longer runs stay literal (line-level --- is the pagebreak).
   s = s.replace(/(^|[^-])--(?!-)/g, "$1—");
+  /* v95: a hyphen RIGHT BEFORE A DIGIT, preceded by a space/bracket/pipe or
+     the line start, is a true minus sign: "= -57.2" -> −57.2, "(-)" stays a
+     hyphen (no digit), "non-equilibrium" and ranges like 11-18 untouched.
+     Runs after code/equations are tokenised away, so TeX is never touched. */
+  s = s.replace(/(^|[\s(\[{|])-(?=\d)/g, "$1\u2212");
   // 5) key terms [[term|colour]]
   /* v22: the colour parameter now accepts a palette family ("ocean-blue"), a
      family with a level ("ocean-blue-04"), a legacy name ("blue"), or a raw
@@ -3419,12 +4153,12 @@ function parseMarkup(text){
   // otherwise a line with two braced subscripts lets the italic regex swallow
   // both underscores and italicise everything between them.
   s = s.replace(/\^\{([^}\n]+)\}/g, function(_, txt){
-    var i = tokens.length; tokens.push({ type:"sup", txt:txt });
-    return "T"+i+"";
+    var i = tokens.length; tokens.push({ type:"sup", txt:txt.replace(/-/g,"\u2212") });   /* v95: scripts are maths — hyphens are minus signs (^{-1}, ^{2-}) */
+    return " T"+i+" ";
   });
   s = s.replace(/_\{([^}\n]+)\}/g, function(_, txt){
-    var i = tokens.length; tokens.push({ type:"sub", txt:txt });
-    return "T"+i+"";
+    var i = tokens.length; tokens.push({ type:"sub", txt:txt.replace(/-/g,"\u2212") });
+    return " T"+i+" ";
   });
   // 6a) italic emphasis _word_ or *word* (italic Times, normal ink)
   s = s.replace(/_([^_\n]+)_/g, function(_, txt){
@@ -3452,6 +4186,13 @@ function parseMarkup(text){
     return " T"+i+" ";
   });
 
+  // v88: the equilibrium character U+21CC -> Sophie's Illustrator harpoons
+  // (an inline vector glyph, so it prints identically on every surface)
+  s = s.replace(/\u21CC/g, function(){
+    var i = tokens.length; tokens.push({ type:"eqm" });
+    return " T"+i+" ";
+  });
+
   // audio tags [tag]
   s = s.replace(/\[[^\[\]\n]+\]/g, "");
 
@@ -3459,8 +4200,10 @@ function parseMarkup(text){
   s = smartQuotes(s);   // v31: curly quotes in the preview/reading views (matches the live page)
   s = escapeHtml(s).replace(/\n/g, "<br>");
 
-  // reinsert tokens
-  s = s.replace(/ T(\d+) /g, function(_, n){
+  // reinsert tokens — a NAMED resolver so sup/sub can resolve tokens
+  // NESTED inside their braces (v95: an inline \( \) equation inside ^{ }
+  // used to render as its raw escaped placeholder — "the mess")
+  function _tokHtml(_, n){
     var t = tokens[+n];
     if (t.type === "oblock") return blockHtml(t.block);
     if (t.type === "block"){
@@ -3480,8 +4223,9 @@ function parseMarkup(text){
       return '<span class="keyterm" style="--kt:'+_kt+'" title="key term">'+escapeHtml(t.term)+'</span>';
     }
     if (t.type === "adlib") return escapeHtml(t.txt);   // (( )) folds into normal prose — no aside/bubble
-    if (t.type === "sub")   return '<sub class="chem-sub">'+escapeHtml(t.txt)+'</sub>';
-    if (t.type === "sup")   return '<sup class="chem-sup">'+escapeHtml(t.txt)+'</sup>';
+    if (t.type === "sub")   return '<sub class="chem-sub">'+escapeHtml(t.txt).replace(/ T(\d+) /g, _tokHtml)+'</sub>';
+    if (t.type === "sup")   return '<sup class="chem-sup">'+escapeHtml(t.txt).replace(/ T(\d+) /g, _tokHtml)+'</sup>';
+    if (t.type === "eqm")   return '<svg class="oe-eqm" width="13.67" height="8.9" viewBox="0 0 13.67 8.9" aria-label="\u21CC"><path fill="currentColor" d="M0,3.49V2.82h11.94c-0.12-0.11-0.27-0.27-0.44-0.46c-0.17-0.2-0.35-0.41-0.55-0.64c-0.19-0.23-0.38-0.46-0.57-0.68c-0.19-0.23-0.35-0.43-0.5-0.62L10.31,0c0.53,0.62,1.08,1.23,1.64,1.81c0.57,0.58,1.14,1.14,1.7,1.69H0z M1.73,6.08C1.85,6.2,1.99,6.35,2.17,6.55c0.17,0.2,0.35,0.41,0.55,0.64C2.9,7.41,3.09,7.64,3.28,7.87c0.19,0.23,0.35,0.44,0.5,0.61L3.36,8.9C2.83,8.28,2.28,7.68,1.71,7.1C1.14,6.52,0.57,5.96,0,5.41h13.67v0.67H1.73z"/></svg>';
     if (t.type === "bold")  return '<span class="bold">'+escapeHtml(t.txt)+'</span>';
     if (t.type === "ital")  return '<span class="ital">'+escapeHtml(t.txt)+'</span>';
     if (t.type === "helv")  return '<span class="helv">'+escapeHtml(t.txt)+'</span>';
@@ -3520,7 +4264,8 @@ function parseMarkup(text){
         '>▸ '+escapeHtml(nm)+(gated?' ⏸':'')+tail+'</span>';
     }
     return "";
-  });
+  }
+  s = s.replace(/ T(\d+) /g, _tokHtml);
   return s;
 }
 
@@ -3602,10 +4347,20 @@ function updateBackdrop(el, text){ if (el) el.innerHTML = buildHighlight(text); 
    short beats. */
 function autoSizeSrc(el){
   if (!el) return;
+  /* v81: the momentary height:auto collapse lets the scrolling pane (the
+     .src-wrap in paper beats — and the window elsewhere) clamp its scroll
+     to the top, which is why CUTTING text jumped the Source box to the top.
+     Snapshot both scroll positions and restore them after the remeasure. */
+  var w = el.parentNode && el.parentNode.classList &&
+          el.parentNode.classList.contains("src-wrap") ? el.parentNode : null;
+  var st = w ? w.scrollTop : 0;
+  var wy = window.pageYOffset || 0, wx = window.pageXOffset || 0;
   el.style.height = "auto";
   var cs = getComputedStyle(el);
   var borders = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
   el.style.height = (el.scrollHeight + borders) + "px";
+  if (w && w.scrollTop !== st) w.scrollTop = st;
+  if ((window.pageYOffset || 0) !== wy) window.scrollTo(wx, wy);
 }
 
 /* ================================================================
@@ -3721,8 +4476,13 @@ function renderBeats(){
     }
     prevEl.addEventListener("click", function(e){
       if(!paperViewOn()||!paperHasBlocks(srcEl.value)) return;
-      var t=e.target.closest?e.target.closest("[data-pref]"):null;
-      if(!t||!prevEl.contains(t)) return;
+      /* v82: only the parts the OPENERS draw are click-to-sync handles —
+         a section header, a question number, an @erq gutter or its marks.
+         Clicking option text, stems or lines no longer jumps the Source. */
+      var h=e.target.closest?e.target.closest(".ob-psec, .om-qnum, .oe-gut, .oe-marks"):null;
+      if(!h||!prevEl.contains(h)) return;
+      var t=h.closest?h.closest("[data-pref]"):null;
+      if(!t) return;
       var off=_refOffset(t.getAttribute("data-pref")); if(off<0) return;
       var wrap=srcEl.parentNode, y=_offsetY(off);
       if(wrap.scrollTo) wrap.scrollTo({top:Math.max(0,y-40), behavior:"smooth"});
@@ -3734,9 +4494,14 @@ function renderBeats(){
     });
     srcEl.addEventListener("mouseup", function(){
       if(!paperViewOn()||!paperHasBlocks(srcEl.value)) return;
+      /* v82: the preview scrolls ONLY when the click lands on an opener
+         line itself — @section / @erq / @mcq — not anywhere in a block. */
       var pos=srcEl.selectionStart||0, txt=srcEl.value;
-      var re=/^@\w+[ \t]+([^|\n]+?)[ \t]*(\||$)/gm, m, ref=null;
-      while((m=re.exec(txt))){ if(m.index>pos) break; ref=m[1].trim(); }
+      var ls=txt.lastIndexOf("\n",pos-1)+1, le=txt.indexOf("\n",pos);
+      var line=txt.slice(ls, le<0?txt.length:le);
+      var lm=line.match(/^@(section|erq|mcq)[ \t]+([^|\n]+?)[ \t]*(\||$)/i);
+      if(!lm) return;
+      var ref=lm[2].trim();
       if(!ref) return;
       var model; try{ model=buildPaperModel(txt); }catch(e){ return; }
       var pi=-1;
@@ -3955,7 +4720,8 @@ function renderBeatPreview(el, beat){
     if(beatEl) beatEl.classList.add("paper-pages");
     el.innerHTML = paperPagesHtml(beat.text);
     highlightCode(el);
-    var done=function(){ try{ paperPostLayout(el); }catch(e){} };
+    try{ inlineFigSvgs(el); }catch(e){}   /* v84: fixed h: box — no relayout needed */
+    var done=function(){ try{ fixMjxBaselines(el); }catch(e){} try{ paperPostLayout(el); }catch(e){} };   /* v97: baseline corrector after typeset */
     if (window.MathJax && MathJax.typesetPromise){
       MathJax.typesetClear && MathJax.typesetClear([el]);
       MathJax.typesetPromise([el]).then(done).catch(done);
