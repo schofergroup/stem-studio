@@ -21,6 +21,14 @@
    - Grammar check via LanguageTool (British English; free API, optional key).
    - Autosaves to your browser. Save/Load a project file to back up or move it.
 
+  v101 (question numbers ride the baseline)
+   - .om-qrow, .om-opt and .om-hrow are baseline-aligned flex rows (as
+     @erq's gutter always was): a tall inline equation in the first line
+     no longer leaves "01" floating above the text baseline — the number,
+     option letters and hanging labels all sit ON the line's baseline
+     however tall the maths is. A stem that STARTS with a figure or table
+     gets .om-top (top alignment) since there is no text baseline there.
+
   v100 (true-zero writing-lines block)
    - the lines: block no longer carries hidden edge space: the first
      dotted rule sits immediately below whatever precedes it, and content
@@ -1496,7 +1504,16 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
      sits in a 1p8 (28.33px) left gutter in Helvetica Neue 500; the stem + A.B.C.D.
      labels align at the content-column left, option text hangs at a further 28.33px
      (= 3p4). Times 17/21.25. --om-gap = space between options (default 10px). */
-  .ob-mcq .om-qrow{ display:flex; align-items:flex-start; margin-top:6px; }
+  /* v101: BASELINE-aligned question row — a tall inline equation (a
+     fraction, a stacked intercept) grows the first line, and with the old
+     flex-start the number stayed pinned at the top while the text baseline
+     moved down. align-items:baseline keeps "01" on the SAME baseline as
+     the stem's first line no matter how tall the maths gets — exactly how
+     @erq's gutter rows have always worked. .om-top restores top alignment
+     when the stem STARTS with a figure or table (no text baseline to sit
+     on — the number would sink to the figure's bottom). */
+  .ob-mcq .om-qrow{ display:flex; align-items:baseline; margin-top:6px; }
+  .ob-mcq .om-qrow.om-top{ align-items:flex-start; }
   .ob-mcq .om-qnum{ flex:0 0 28.33px; width:28.33px;
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:500; font-size:17px;
     letter-spacing:0.1px; line-height:21.25px; color:#231f20; }
@@ -1505,7 +1522,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-mcq .om-stem{ margin:0; }   /* v99 WYSIWYG: no invisible gaps — blanks and space: own ALL vertical space */
   /* v59: hanging list rows in the stem — "> (i) text": the (i) keeps its spot,
      the text sits and wraps in its own column one hang (28.33px) further. */
-  .ob-mcq .om-hrow{ display:flex; align-items:flex-start; }
+  .ob-mcq .om-hrow{ display:flex; align-items:baseline; }   /* v101 */
   /* v63: labels RIGHT-ALIGNED so their closing paren lands on the same x as
      the full stop after the option letters ("A." ends at 16.62px in Times 17
      — A=0.722em + .=0.25em + tracking), giving the list the SAME label-to-text
@@ -1515,7 +1532,7 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .ob-mcq .om-hrow .om-htxt{ flex:1 1 auto; min-width:0; }
   /* list */
   .ob-mcq .om-list{ display:flex; flex-direction:column; }
-  .ob-mcq .om-opt{ display:flex; align-items:flex-start; }
+  .ob-mcq .om-opt{ display:flex; align-items:baseline; }   /* v101: option letters ride the text baseline too (tall maths safe) */
   .ob-mcq .om-opt + .om-opt{ margin-top:var(--om-gap,10px); }
   .ob-mcq .om-let{ flex:0 0 28.33px; width:28.33px; }
   .ob-mcq .om-text{ flex:1; }
@@ -4077,7 +4094,8 @@ function blockHtmlInner(bl){
     var mf='<div class="of-parts">answer: <b>'+escapeHtml(bl.answer||"(none set)")+'</b>'+(bl.gate?' &middot; gates the lesson until answered':'')+(bl.why?' &middot; has a "why"':'')+(bl.source?' &middot; '+escapeHtml(bl.source):'')+' &middot; not spoken &middot; number + answer are authoring aids &mdash; on the live page only the number shows</div>';
     /* v36.2: question number in a left gutter (HN 500), stem + options in the content column */
     var mqnum=(bl.number?'<div class="om-qnum">'+escapeHtml(bl.number)+'</div>':(bl._cont?'<div class="om-qnum">&#8203;</div>':''));   /* v92: continuation part — empty gutter, columns aligned */
-    return '<div class="formula-card ob-card ob-mcq" data-target="mcq-callout" data-pref="'+escapeHtml(bl.ref||"")+'"><div class="om-qrow">'+mqnum+'<div class="om-content">'+ms+mo+'</div></div>'+mf+'</div>';
+    var _qtop=((bl.stemFigs&&bl.stemFigs[0])||(bl.stemTbls&&bl.stemTbls[0]))?' om-top':'';   /* v101: figure/table-first stem — keep top alignment */
+    return '<div class="formula-card ob-card ob-mcq" data-target="mcq-callout" data-pref="'+escapeHtml(bl.ref||"")+'"><div class="om-qrow'+_qtop+'">'+mqnum+'<div class="om-content">'+ms+mo+'</div></div>'+mf+'</div>';
   }
   /* v40: paper blocks — document-style preview. Print-exact metrics arrive
      with the Step-2 stylesheet + Step-3 page view; this preview mirrors the
