@@ -21,6 +21,34 @@
    - Grammar check via LanguageTool (British English; free API, optional key).
    - Autosaves to your browser. Save/Load a project file to back up or move it.
 
+  v104 (PDF export: footer lines get breathing room - line-height 16.62 -> 19.46px, the web footer's 17/13 proportion)
+  v103 (column tweaks)
+   - Rename / Delete now sit at the end of EVERY folder and lesson row in
+     the column view (lessons gained Rename — same UPDATE as a Save with a
+     new name; renaming the open lesson also updates the name box).
+   - The vertical divider of each column is click-draggable to resize it
+     (150–640px, remembered per folder; double-click a divider to reset).
+   - The horizontal scrollbar under the columns is always visible, so a deep
+     path with many columns is obviously scrollable (newest column is still
+     scrolled into view automatically).
+
+  v102 (Library columns + new lesson in the folder you're in)
+   - The Library has a Finder-style COLUMN view (default) beside the old
+     tree — a Tree / Columns toggle in the Library header, remembered.
+     Click a folder and its contents open in the next column to the
+     right; the breadcrumb above the columns shows where you are and is
+     clickable to step back up.
+   - Drag-and-drop works in the columns exactly as in the tree: drop a
+     lesson or folder onto a folder row, onto the empty part of a column
+     (= into that column's folder), or onto a breadcrumb. Same writes as
+     before (folder_id / parent_id) — no Supabase change.
+   - "+ Lesson" in every column header starts a BLANK lesson filed in that
+     folder (and "+ Folder" makes a subfolder there). The header of that
+     column shows "new lesson saves here" until the first Save, and the
+     "New draft" label now always names the folder it will land in, e.g.
+     "New draft → saves in Maths / Calculus". The Folder dropdown and the
+     old "New draft" button (which keeps the current beats) are unchanged.
+
   v101 (question numbers ride the baseline)
    - .om-qrow, .om-opt and .om-hrow are baseline-aligned flex rows (as
      @erq's gutter always was): a tall inline equation in the first line
@@ -1852,6 +1880,50 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
   .sb-fold-row.sb-drop-into { box-shadow:inset 0 0 0 2px var(--key-blue); background:#eef2fb; }
   .sb-fold-row.sb-drop-into .sb-fname { color:var(--key-blue); }
 
+  /* v102: Finder-style COLUMN view of the Library */
+  .sb-viewtog { display:inline-flex; border:1px solid var(--border); border-radius:6px; overflow:hidden; margin-left:4px; }
+  .sb-viewtog button { border:0; background:#fff; color:var(--ink-soft); font-size:11px; padding:3px 8px; cursor:pointer; }
+  .sb-viewtog button + button { border-left:1px solid var(--border); }
+  .sb-viewtog button.on { background:var(--bg-soft); color:var(--ink); font-weight:600; }
+  .sb-tree.sb-colmode { padding:0; overflow:hidden; max-height:none; }
+  .sb-crumbs { display:flex; align-items:center; flex-wrap:wrap; gap:2px; padding:6px 8px; font-size:12px; border-bottom:1px solid var(--border); background:var(--bg-soft); border-radius:8px 8px 0 0; }
+  .sb-crumb { cursor:pointer; padding:1px 6px; border-radius:5px; color:var(--ink-soft); }
+  .sb-crumb:hover { background:#fff; color:var(--ink); }
+  .sb-crumb.cur { color:var(--ink); font-weight:600; }
+  .sb-crumb-sep { color:var(--ink-soft); font-size:11px; }
+  .sb-cols { display:flex; height:352px; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; }
+  /* v103: keep the horizontal scrollbar visible on macOS (it otherwise hides
+     until you scroll), so many columns are obviously scrollable */
+  .sb-cols::-webkit-scrollbar { height:10px; }
+  .sb-cols::-webkit-scrollbar-track { background:var(--bg-soft); border-top:1px solid var(--border); }
+  .sb-cols::-webkit-scrollbar-thumb { background:#c9cbcd; border-radius:5px; border:2px solid var(--bg-soft); }
+  .sb-cols::-webkit-scrollbar-thumb:hover { background:#a9acb0; }
+  .sb-col { flex:0 0 230px; width:230px; border-right:1px solid var(--border); display:flex; flex-direction:column; min-height:0; position:relative; }
+  /* v103: drag the vertical divider to resize a column (double-click resets) */
+  .sb-col-resize { position:absolute; top:0; right:-4px; width:8px; height:100%; cursor:col-resize; z-index:2; }
+  .sb-col-resize:hover, .sb-col-resize.on { background:rgba(37,99,168,.22); }
+  body.sb-resizing { cursor:col-resize; user-select:none; -webkit-user-select:none; }
+  .sb-colhead { display:flex; align-items:center; gap:4px; padding:5px 6px; border-bottom:1px solid var(--border); font-size:11px; background:#fbfbfb; flex:0 0 auto; }
+  .sb-colhead .sb-coltitle { font-weight:600; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+  .sb-colhead .sb-act { padding:1px 5px; }
+  .sb-colbody { flex:1; overflow-y:auto; padding:4px; min-height:0; }
+  .sb-col .sb-fold-row, .sb-col .sb-lesson { padding:4px 6px; }
+  .sb-col .sb-fold-row { cursor:pointer; }
+  .sb-col .sb-fold-row .sb-fname { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sb-col .sb-fold-row .sb-chev { color:var(--ink-soft); font-size:12px; margin-left:2px; }
+  .sb-col .sb-fold-row.sel { background:#eef2fb; }
+  .sb-col .sb-fold-row.sel .sb-fname, .sb-col .sb-fold-row.sel .sb-chev { color:var(--key-blue); }
+  /* v103: Rename / Delete always sit at the end of every row */
+  .sb-col .sb-acts { display:flex; margin-left:2px; opacity:1; flex:0 0 auto; }
+  .sb-col .sb-act { font-size:10px; padding:0 4px; }
+  .sb-col .sb-lesson .sb-when { display:none; }              /* the date would crowd the buttons out — it's in the tooltip */
+  .sb-col-divider { color:var(--ink-soft); font-size:11px; font-style:italic; padding:6px 6px 2px; border-top:1px dashed var(--border); margin-top:4px; }
+  .sb-col.sb-drop-into { box-shadow:inset 0 0 0 2px var(--key-blue); background:#f4f7fd; }
+  .sb-crumb.sb-drop-into { box-shadow:inset 0 0 0 2px var(--key-blue); background:#eef2fb; color:var(--key-blue); }
+  .sb-colhead .sb-act { white-space:nowrap; flex:0 0 auto; }
+  .sb-here { flex:0 0 auto; font-size:11px; font-weight:600; color:var(--key-orange); background:#fff4e8; border-bottom:1px solid #efd4ad; padding:3px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-colbody .sb-empty { padding:10px 6px; }
+
   .view { display:none; }
   .view.active { display:block; }
   .hidden { display:none !important; }
@@ -2125,6 +2197,10 @@ div.ML__keyboard .MLK__row .shift svg { max-height: none !important; max-width: 
       <div class="sb-lib">
         <div class="sb-libhead">
           <strong style="font-size:12px;">Library</strong>
+          <span class="sb-viewtog" title="How the Library is laid out">
+            <button type="button" id="sbViewCols" class="on">Columns</button>
+            <button type="button" id="sbViewTree">Tree</button>
+          </span>
           <button class="btn mini" id="sbNewFolder">+ New folder</button>
           <button class="btn mini" id="sbRefresh">Refresh</button>
           <span class="muted" id="sbLibNote"></span>
@@ -3292,7 +3368,7 @@ function buildPaperPrintDoc(text, o){
   L.push('.pp-page{border:0;box-shadow:none;margin:0;height:1192px;page-break-after:always;}');
   L.push('.pp-page:last-child{page-break-after:auto;}');
   L.push('.pp-overflow{display:none !important;}');
-  L.push('.pp-foot{color:#231f20;font-size:14.88px;line-height:16.62px;}'); /* 10.5pt after scale */
+  L.push('.pp-foot{color:#231f20;font-size:14.88px;line-height:19.46px;}'); /* v104: 10.5pt after scale; line-height opened to the web footer's 17/13 proportion - the two left lines printed squished at 16.62 */
   L.push('.ob-erq{--oe-line-ink:#231f20;}');
   /* v49: rules print as BORDERS, not backgrounds — browsers strip background
      fills unless "print background graphics" is ticked in the print dialog,
@@ -5858,8 +5934,27 @@ function sbConnect(url, key, silent){
 /* which cloud lesson (if any) this browser is currently editing. */
 function sbEditingLabel(){
   var e=document.getElementById("sbEditing"); if(!e) return;
-  if(state.cloudId){ e.textContent = "Editing: "+(state.cloudName||"untitled"); e.style.color="var(--ink-soft)"; }
-  else { e.textContent = "New draft"; e.style.color="var(--key-orange)"; }
+  /* v102: always say WHERE the lesson lives / where a new draft will land,
+     so a draft can never quietly go to the wrong folder. */
+  var where = sbFolderPathNames(state.cloudFolderId);
+  var whereTxt = where===null ? "" : (where.length ? where.join(" / ") : "Unfiled");
+  if(state.cloudId){
+    e.textContent = "Editing: "+(state.cloudName||"untitled")+(whereTxt ? "  ·  in "+whereTxt : "");
+    e.style.color="var(--ink-soft)";
+  } else {
+    e.textContent = "New draft → saves in "+(whereTxt || "Unfiled");
+    e.style.color="var(--key-orange)";
+  }
+}
+/* v102: names of the folders from the top level down to `id` (for labels).
+   [] = top level / Unfiled. null = the library isn't loaded yet, so unknown. */
+function sbFolderPathNames(id){
+  if(!id) return [];
+  if(!sbLib.folders.length) return null;
+  var by={}; sbLib.folders.forEach(function(f){ by[String(f.id)]=f; });
+  var names=[], cur=by[String(id)], guard=0;
+  while(cur && guard++<64){ names.unshift(cur.name||"untitled"); cur = cur.parent_id ? by[String(cur.parent_id)] : null; }
+  return names;
 }
 /* Start a fresh, unsaved draft. Clears the cloud link so the NEXT save inserts.
    v38: also clears the name box and folder pick so nothing stale is carried over,
@@ -5869,8 +5964,31 @@ function sbNewDraft(){
   var nm=document.getElementById("sbName"); if(nm) nm.value="";
   var fp=document.getElementById("sbFolderPick"); if(fp) fp.value="";
   sbSnapshot = sbContentSig(); sbDirty=false; sbLastSavedAt=null;
-  sbEditingLabel(); sbRefreshBadge(); sbRenderTree();
-  sbStatus("New draft — give it a name, then Save.");
+  sbEditingLabel(); sbRefreshBadge(); sbRenderLibrary();
+  sbStatus("New draft (Unfiled) — give it a name, then Save. Use the Folder dropdown or a column's “+ Lesson” to file it.");
+}
+/* v102: start a BLANK lesson filed in `folderId` (null = Unfiled). This is the
+   "+ Lesson" button in a column header. Unlike "New draft" it clears the beats
+   (a one-level backup is kept, like Clear all), so a brand-new lesson never
+   inherits the previous one's content — and it can't land in the wrong folder. */
+function sbNewLessonIn(folderId){
+  if(!SB.client){ sbStatus("Connect first."); return; }
+  var names = sbFolderPathNames(folderId) || [];
+  var where = names.length ? names.join(" / ") : "Unfiled";
+  var hasContent = !!(state.beats && state.beats.some(function(b){ return ((b&&b.text)||"").trim(); }));
+  var msg = "Start a blank lesson in “"+where+"”?";
+  if(sbDirty || (!state.cloudId && hasContent)) msg += "\n\nThe lesson open now has changes that are NOT saved to the cloud — they will be replaced (a one-level backup is kept).";
+  else msg += "\n\n(The lesson open now is safe in the cloud.)";
+  if(!confirm(msg)) return;
+  backupState("new-lesson");
+  state = { beats:[ newBeat() ], cloudId:null, cloudName:"", cloudFolderId: folderId||null };
+  save(); renderBeats();
+  var nm=document.getElementById("sbName"); if(nm){ nm.value=""; try{ nm.focus(); }catch(e){} }
+  var fp=document.getElementById("sbFolderPick"); if(fp) fp.value = folderId||"";
+  sbSnapshot = sbContentSig(); sbDirty=false; sbLastSavedAt=null;
+  sbRevealFolder(folderId);
+  sbEditingLabel(); sbRefreshBadge(); sbRenderLibrary();
+  sbStatus("New lesson in “"+where+"” — give it a name, then Save.");
 }
 /* v38 saving. Two rules kill the old rename-clobber:
      1. On UPDATE, an empty name box keeps the lesson's EXISTING name — an empty
@@ -5930,7 +6048,8 @@ function sbLoad(id){
       document.getElementById("sbName").value = res.data.name || "";
       var fp=document.getElementById("sbFolderPick"); if(fp) fp.value = state.cloudFolderId || "";
       sbSnapshot = sbContentSig(); sbDirty=false; sbLastSavedAt=null;
-      sbStatus("Loaded ✓"); sbEditingLabel(); sbRefreshBadge(); sbRenderTree();
+      sbRevealFolder(state.cloudFolderId);
+      sbStatus("Loaded ✓"); sbEditingLabel(); sbRefreshBadge(); sbRenderLibrary();
     } else sbStatus("That saved row has no beats.");
   });
 }
@@ -5962,8 +6081,146 @@ function sbLoadLibrary(){
     if(!r[0].error && !r[1].error) sbLibNote("");
     sbLib.folders = r[0].data || [];
     sbLib.lessons = r[1].data || [];
-    sbRenderTree(); sbFillFolderPick();
+    if(!sbColPath.length) sbRevealFolder(state.cloudFolderId, true);   // v102: first load → show the open lesson's folder
+    sbRenderLibrary(); sbFillFolderPick(); sbEditingLabel();
   });
+}
+/* ================= v102: LIBRARY VIEW SWITCH (tree | columns) ================= */
+var sbLibView = (function(){ try { return localStorage.getItem("sb-libview")==="tree" ? "tree" : "columns"; } catch(e){ return "columns"; } })();
+/* the folder ids selected in each column, top level first */
+var sbColPath = (function(){ try { return JSON.parse(localStorage.getItem("sb-colpath")||"[]") || []; } catch(e){ return []; } })();
+/* v103: per-column widths (keyed by folder id, "__root" for the first column) */
+var sbColWidths = (function(){ try { return JSON.parse(localStorage.getItem("sb-colwidths")||"{}") || {}; } catch(e){ return {}; } })();
+var SB_COL_W = { def:230, min:150, max:640 };
+function sbColWidth(key){ var w=parseInt(sbColWidths[key],10); return (w>=SB_COL_W.min && w<=SB_COL_W.max) ? w : SB_COL_W.def; }
+function sbSaveColWidths(){ try { localStorage.setItem("sb-colwidths", JSON.stringify(sbColWidths)); } catch(e){} }
+/* mouse-drag on a column's right divider */
+function sbColResizeStart(ev){
+  var h = ev.target && ev.target.closest ? ev.target.closest(".sb-col-resize") : null; if(!h) return;
+  var col = h.parentNode, key = col.getAttribute("data-root")==="1" ? "__root" : String(col.getAttribute("data-id")||"");
+  var startX = ev.clientX, startW = col.getBoundingClientRect().width, w = startW;
+  ev.preventDefault(); h.classList.add("on"); document.body.classList.add("sb-resizing");
+  function move(e){ w = Math.max(SB_COL_W.min, Math.min(SB_COL_W.max, Math.round(startW + (e.clientX - startX)))); col.style.width = w+"px"; col.style.flexBasis = w+"px"; }
+  function up(){ document.removeEventListener("mousemove", move); document.removeEventListener("mouseup", up);
+    h.classList.remove("on"); document.body.classList.remove("sb-resizing");
+    sbColWidths[key] = w; sbSaveColWidths(); }
+  document.addEventListener("mousemove", move); document.addEventListener("mouseup", up);
+}
+function sbColResizeReset(ev){
+  var h = ev.target && ev.target.closest ? ev.target.closest(".sb-col-resize") : null; if(!h) return;
+  var col = h.parentNode, key = col.getAttribute("data-root")==="1" ? "__root" : String(col.getAttribute("data-id")||"");
+  delete sbColWidths[key]; sbSaveColWidths(); col.style.width = SB_COL_W.def+"px"; col.style.flexBasis = SB_COL_W.def+"px";
+}
+function sbSaveColPath(){ try { localStorage.setItem("sb-colpath", JSON.stringify(sbColPath)); } catch(e){} }
+function sbSetLibView(v){
+  sbLibView = (v==="tree") ? "tree" : "columns";
+  try { localStorage.setItem("sb-libview", sbLibView); } catch(e){}
+  if(sbLibView==="columns") sbRevealFolder(state.cloudFolderId, true);
+  sbRenderLibrary();
+}
+function sbRenderLibrary(){
+  var a=document.getElementById("sbViewCols"), b=document.getElementById("sbViewTree");
+  if(a) a.classList.toggle("on", sbLibView==="columns");
+  if(b) b.classList.toggle("on", sbLibView==="tree");
+  var host=document.getElementById("sbLibrary");
+  if(host) host.classList.toggle("sb-colmode", sbLibView==="columns" && !!SB.client);
+  if(sbLibView==="columns") sbRenderColumns(); else sbRenderTree();
+}
+/* top-level → … → id, as folder ids (for the column path) */
+function sbFolderChain(id){
+  var by={}; sbLib.folders.forEach(function(f){ by[String(f.id)]=f; });
+  var out=[], cur=by[String(id)], guard=0;
+  while(cur && guard++<64){ out.unshift(String(cur.id)); cur = cur.parent_id ? by[String(cur.parent_id)] : null; }
+  return out;
+}
+/* make the columns show `folderId` (open its ancestors). onlyIfHidden=true
+   leaves the path alone when that folder is already on screen. */
+function sbRevealFolder(folderId, onlyIfHidden){
+  if(!folderId){ return; }
+  if(onlyIfHidden && sbColPath.indexOf(String(folderId))>=0) return;
+  var chain = sbFolderChain(folderId);
+  if(chain.length){ sbColPath = chain; sbSaveColPath(); }
+}
+/* drop any saved ids that no longer exist or no longer chain together */
+function sbCleanColPath(){
+  var by={}; sbLib.folders.forEach(function(f){ by[String(f.id)]=f; });
+  var ok=[], parent=null;
+  for(var i=0;i<sbColPath.length;i++){
+    var f=by[String(sbColPath[i])];
+    if(!f || String(f.parent_id||"")!==String(parent||"")) break;
+    ok.push(String(f.id)); parent=f.id;
+  }
+  if(ok.length!==sbColPath.length){ sbColPath=ok; sbSaveColPath(); }
+}
+function sbRenderColumns(){
+  var host=document.getElementById("sbLibrary"); if(!host) return;
+  if(!SB.client){ host.innerHTML='<p class="muted" style="margin:8px 4px;">Connect to load your folders and lessons.</p>'; return; }
+  sbCleanColPath();
+  var byParent={}, byId={};
+  sbLib.folders.forEach(function(f){ byId[String(f.id)]=f; var p=f.parent_id||"__root"; (byParent[p]=byParent[p]||[]).push(f); });
+  Object.keys(byParent).forEach(function(k){ byParent[k].sort(function(a,b){ return (a.name||"").localeCompare(b.name||""); }); });
+  var byFolder={}, unfiled=[];
+  sbLib.lessons.forEach(function(l){ if(l.folder_id){ (byFolder[l.folder_id]=byFolder[l.folder_id]||[]).push(l); } else unfiled.push(l); });
+  var draftHere = !state.cloudId ? String(state.cloudFolderId||"") : null;   // column that a new draft will save into
+
+  function lessonRow(l){
+    var active = (String(l.id)===String(state.cloudId)) ? " active" : "";
+    var when=(l.updated_at||"").slice(0,10);
+    return '<div class="sb-lesson'+active+'" draggable="true" data-drag="lesson" data-id="'+l.id+'" title="'+sbEsc(l.name||"untitled")+(when?" · saved "+when:"")+' — click to open · drag to move">'
+      + '<span class="sb-lname" data-act="open" data-id="'+l.id+'">'+sbEsc(l.name||"untitled")+'</span>'
+      + '<span class="sb-when">'+when+'</span>'
+      + '<span class="sb-acts">'
+      +   '<button class="sb-act" data-act="renlesson" data-id="'+l.id+'" data-name="'+sbEsc(l.name||"")+'">Rename</button>'
+      +   '<button class="sb-act danger" data-act="dellesson" data-id="'+l.id+'" data-name="'+sbEsc(l.name||"")+'">Delete</button></span>'
+      + '</div>';
+  }
+  function folderRow(f, depth){
+    var kids=(byParent[f.id]||[]).length + (byFolder[f.id]||[]).length;
+    var sel = (String(sbColPath[depth]||"")===String(f.id)) ? " sel" : "";
+    return '<div class="sb-fold-row'+sel+'" draggable="true" data-drag="folder" data-id="'+f.id+'" data-act="colsel" data-depth="'+depth+'" title="Click to open · drag to move · drop a lesson here to file it">'
+      + '<span class="sb-fname">'+sbEsc(f.name||"untitled")+'</span>'
+      + '<span class="sb-count">'+(kids||"")+'</span>'
+      + '<span class="sb-acts">'
+      +   '<button class="sb-act" data-act="renfolder" data-id="'+f.id+'" data-name="'+sbEsc(f.name||"")+'">Rename</button>'
+      +   '<button class="sb-act danger" data-act="delfolder" data-id="'+f.id+'" data-name="'+sbEsc(f.name||"")+'">Delete</button>'
+      + '</span><span class="sb-chev">›</span></div>';
+  }
+  /* one column: fid=null is the top level (root folders + Unfiled lessons) */
+  function column(fid, depth){
+    var isRoot = !fid;
+    var folders = isRoot ? (byParent["__root"]||[]) : (byParent[fid]||[]);
+    var lessons = isRoot ? unfiled : (byFolder[fid]||[]);
+    var title = isRoot ? "Library" : sbEsc((byId[String(fid)]||{}).name||"untitled");
+    var here = (draftHere!==null && draftHere===String(fid||"")) ? '<div class="sb-here" title="Your new draft is filed here — it lands in this folder when you Save">● new draft saves here</div>' : '';
+    var w = sbColWidth(isRoot ? "__root" : String(fid));
+    var h='<div class="sb-col" '+(isRoot?'data-root="1"':'data-id="'+fid+'"')+' style="width:'+w+'px;flex-basis:'+w+'px;">'
+      + '<div class="sb-col-resize" title="Drag to resize this column · double-click to reset"></div>'
+      + '<div class="sb-colhead"><span class="sb-coltitle" title="'+title+'">'+title+'</span>'
+      +   '<button class="sb-act" data-act="newlesson" data-id="'+(fid||"")+'" title="Start a blank lesson in this folder">+ Lesson</button>'
+      +   '<button class="sb-act" data-act="newsub" data-id="'+(fid||"")+'" title="'+(isRoot?"New top-level folder":"New subfolder here")+'">+ Folder</button>'
+      + '</div>'+here+'<div class="sb-colbody">';
+    folders.forEach(function(f){ h+=folderRow(f, depth); });
+    if(isRoot){
+      if(unfiled.length){ h+='<div class="sb-col-divider">Unfiled</div>'; unfiled.forEach(function(l){ h+=lessonRow(l); }); }
+      else if(!folders.length) h+='<div class="sb-empty">No folders or lessons yet. Click “+ Folder” to make your first subject.</div>';
+    } else {
+      lessons.forEach(function(l){ h+=lessonRow(l); });
+      if(!folders.length && !lessons.length) h+='<div class="sb-empty">Empty — click “+ Lesson” to start one here, or drop lessons into this column.</div>';
+    }
+    return h+'</div></div>';
+  }
+  /* breadcrumb */
+  var crumbs='<div class="sb-crumbs"><span class="sb-crumb'+(sbColPath.length?"":" cur")+'" data-act="crumb" data-depth="0" data-root="1" title="Top level (drop here to unfile)">Library</span>';
+  sbColPath.forEach(function(id, i){
+    var f=byId[String(id)]||{};
+    crumbs+='<span class="sb-crumb-sep">›</span><span class="sb-crumb'+(i===sbColPath.length-1?" cur":"")+'" data-act="crumb" data-depth="'+(i+1)+'" data-id="'+id+'" title="Drop a lesson or folder here to move it into “'+sbEsc(f.name||"")+'”">'+sbEsc(f.name||"untitled")+'</span>';
+  });
+  crumbs+='</div>';
+  var cols='<div class="sb-cols">'+column(null, 0);
+  sbColPath.forEach(function(id, i){ cols+=column(id, i+1); });
+  cols+='</div>';
+  host.innerHTML = crumbs+cols;
+  var sc=host.querySelector(".sb-cols"); if(sc) sc.scrollLeft = sc.scrollWidth;   // keep the newest column in view
 }
 /* folders flattened in tree order → [{id,name,depth}] for the picker */
 function sbFolderList(){
@@ -5995,7 +6252,9 @@ function sbRenderTree(){
     return '<div class="sb-lesson'+active+'" draggable="true" data-drag="lesson" data-id="'+l.id+'" title="Drag onto a folder to move it">'
       + '<span class="sb-lname" data-act="open" data-id="'+l.id+'" title="Open lesson">'+sbEsc(l.name||"untitled")+'</span>'
       + '<span class="sb-when">'+when+'</span>'
-      + '<span class="sb-acts"><button class="sb-act danger" data-act="dellesson" data-id="'+l.id+'" data-name="'+sbEsc(l.name||"")+'">Delete</button></span>'
+      + '<span class="sb-acts">'
+      +   '<button class="sb-act" data-act="renlesson" data-id="'+l.id+'" data-name="'+sbEsc(l.name||"")+'">Rename</button>'
+      +   '<button class="sb-act danger" data-act="dellesson" data-id="'+l.id+'" data-name="'+sbEsc(l.name||"")+'">Delete</button></span>'
       + '</div>';
   }
   function folderNode(f){
@@ -6038,10 +6297,31 @@ function sbTreeClick(ev){
   var act=t.getAttribute("data-act"), id=t.getAttribute("data-id"), nm=t.getAttribute("data-name");
   if(act==="twist"){ if(sbCollapsed.has(id)) sbCollapsed.delete(id); else sbCollapsed.add(id); sbSaveCollapsed(); sbRenderTree(); }
   else if(act==="open"){ sbLoad(id); }
-  else if(act==="newsub"){ sbCreateFolder(id); }
+  /* v102 column view: select a folder → it opens in the next column */
+  else if(act==="colsel"){
+    var depth=parseInt(t.getAttribute("data-depth"),10)||0;
+    if(String(sbColPath[depth]||"")===String(id)) sbColPath = sbColPath.slice(0, depth);   // click again to close it
+    else sbColPath = sbColPath.slice(0, depth).concat([String(id)]);
+    sbSaveColPath(); sbRenderColumns();
+  }
+  else if(act==="crumb"){ var d=parseInt(t.getAttribute("data-depth"),10)||0; sbColPath = sbColPath.slice(0, d); sbSaveColPath(); sbRenderColumns(); }
+  else if(act==="newlesson"){ sbNewLessonIn(id||null); }
+  else if(act==="newsub"){ sbCreateFolder(id||null); }
   else if(act==="renfolder"){ sbRenameFolder(id, nm); }
   else if(act==="delfolder"){ sbDeleteFolder(id, nm); }
   else if(act==="dellesson"){ sbDeleteLesson(id, nm); }
+  else if(act==="renlesson"){ sbRenameLesson(id, nm); }
+}
+/* v103: rename a lesson from the Library (same UPDATE as a Save with a new name) */
+function sbRenameLesson(id, cur){
+  if(!SB.client || !id) return;
+  var name=(prompt("Rename lesson:", cur||"")||"").trim();
+  if(!name || name===cur) return;
+  SB.client.from("lesson_scripts").update({ name:name, updated_at:new Date().toISOString() }).eq("id",id).then(function(res){
+    if(res.error){ sbLibNote("Rename failed: "+res.error.message); return; }
+    if(String(state.cloudId)===String(id)){ state.cloudName=name; save(); var nm=document.getElementById("sbName"); if(nm) nm.value=name; sbEditingLabel(); sbRefreshBadge(); }
+    sbStatus("Renamed ✓"); sbLoadLibrary();
+  });
 }
 function sbCreateFolder(parentId){
   if(!SB.client){ sbStatus("Connect first."); return; }
@@ -6082,6 +6362,7 @@ function sbFolderPickChange(){
       sbStatus("Moved ✓"); sbLoadLibrary();
     });
   } else {
+    sbRevealFolder(fid); sbEditingLabel(); sbRenderLibrary();
     sbStatus(fid ? "New lesson will be saved into this folder." : "New lesson will be Unfiled.");
   }
 }
@@ -6156,7 +6437,10 @@ function sbFolderDescendants(id){
   (function walk(pid){ (byParent[pid]||[]).forEach(function(c){ out.add(String(c.id)); walk(c.id); }); })(String(id));
   return out;
 }
-function sbDropRow(ev){ return (ev.target && ev.target.closest) ? ev.target.closest(".sb-fold-row") : null; }
+/* v102: a drop target is a folder row (tree or column), the empty part of a
+   column (= that column's folder; the first column = Unfiled), or a breadcrumb.
+   All three carry data-id (a folder) or data-root="1" (top level). */
+function sbDropRow(ev){ return (ev.target && ev.target.closest) ? ev.target.closest(".sb-fold-row, .sb-crumb, .sb-col") : null; }
 function sbDropAllowed(row){
   if(!sbDrag || !row) return false;
   var isRoot = row.getAttribute("data-root")==="1";
@@ -6207,6 +6491,8 @@ function sbTreeDragEnd(){
 }
 function sbMoveLesson(id, folderId){
   if(!SB.client) return;
+  var cur=null, found=false; sbLib.lessons.forEach(function(l){ if(String(l.id)===String(id)){ found=true; cur=l.folder_id||null; } });
+  if(found && String(cur||"")===String(folderId||"")) return;   // already there — nothing to do
   SB.client.from("lesson_scripts").update({ folder_id:folderId||null, updated_at:new Date().toISOString() }).eq("id",id).then(function(res){
     if(res.error){ sbLibNote("Move failed: "+res.error.message); return; }
     if(String(state.cloudId)===String(id)){ state.cloudFolderId=folderId||null; save(); var fp=document.getElementById("sbFolderPick"); if(fp) fp.value=folderId||""; }
@@ -6260,12 +6546,19 @@ renderBeats();
   document.getElementById("sbRefresh").addEventListener("click", sbLoadLibrary);
   document.getElementById("sbFolderPick").addEventListener("change", sbFolderPickChange);
   document.getElementById("sbLibrary").addEventListener("click", sbTreeClick);
+  /* v102: Tree / Columns toggle */
+  document.getElementById("sbViewCols").addEventListener("click", function(){ sbSetLibView("columns"); });
+  document.getElementById("sbViewTree").addEventListener("click", function(){ sbSetLibView("tree"); });
+  sbRenderLibrary();
   /* v39: drag-and-drop, delegated on the tree container (survives re-renders) */
   var _lib=document.getElementById("sbLibrary");
   _lib.addEventListener("dragstart", sbTreeDragStart);
   _lib.addEventListener("dragover",  sbTreeDragOver);
   _lib.addEventListener("drop",      sbTreeDrop);
   _lib.addEventListener("dragend",   sbTreeDragEnd);
+  /* v103: column resize handles */
+  _lib.addEventListener("mousedown", sbColResizeStart);
+  _lib.addEventListener("dblclick",  sbColResizeReset);
   document.getElementById("sbAutosave").addEventListener("change", function(){
     if(this.checked && sbDirty && SB.client && state.cloudId) sbScheduleAutosave();
   });
